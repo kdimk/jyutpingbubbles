@@ -284,6 +284,10 @@
             pointer-events: auto; /* Enable when ready */
         }
 
+        .bubble.answered {
+            pointer-events: none; /* Disable after answer */
+        }
+
         /* Responsive bubble sizes - MUCH LARGER */
         .layout-1player .bubble {
             width: clamp(150px, 25vw, 300px);
@@ -611,7 +615,7 @@
 <body class="layout-2players">
     <!-- Player Selection Menu -->
     <div class="player-selection" id="playerSelection">
-        <h1>🎵 Choose Number of Players 🎵</h1>
+        <h1>🎵 Jyutping Game 🎵</h1>
         <div class="player-options">
             <button class="player-btn" onclick="selectPlayers(1)">👤 1 Player</button>
             <button class="player-btn" onclick="selectPlayers(2)">👥 2 Players</button>
@@ -691,15 +695,15 @@
         </div>
 
         <div class="instructions" id="instructions">
-            <div>🎯 Pop the bubble that matches the sound! 🎯</div>
-            <div>⚡ Fastest finger gets the point! ⚡</div>
+            <div>🎯 Listen and click the correct Jyutping! 🎯</div>
+            <div>⚡ Multiple players can score simultaneously! ⚡</div>
         </div>
     </div>
 
     <audio id="gameAudio" preload="auto"></audio>
 
     <script>
-        // Game data - Add your own audio files and text here
+        // Jyutping Game Data
         const gameData = [
             { text: "aa", audio: "audio/final-01-aa.mp3" },
             { text: "a", audio: "audio/final-02-a.mp3" },
@@ -709,7 +713,7 @@
             { text: "u", audio: "audio/final-06-u.mp3" },
             { text: "eo", audio: "audio/final-07-eo.mp3" },
             { text: "oe", audio: "audio/final-08-oe.mp3" },
-            { text: "yu", audio: "audio/final-09-yu.mp3" },
+            { text: "yu", audio: "audio/final-09-yu.mp3" }
         ];
 
         let gameState = {
@@ -723,11 +727,13 @@
             roundStartTime: 0,
             answered: false,
             audioReady: false,
-            roundInProgress: false
+            roundInProgress: false,
+            correctAnswers: new Set(), // Track players who answered correctly
+            answerWindow: 150 // ms window for simultaneous answers
         };
 
         const audio = document.getElementById('gameAudio');
-        let answerProcessing = false; // Prevent multiple simultaneous answers
+        let roundEndTimeout = null;
 
         function selectPlayers(count) {
             gameState.playerCount = count;
@@ -778,14 +784,14 @@
             gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
             gameState.audioReady = false;
             gameState.roundInProgress = false;
-            answerProcessing = false;
+            gameState.correctAnswers.clear();
             
             // Hide instructions when game starts
             document.getElementById('instructions').classList.add('hidden');
             
             updateScores();
             updateRoundInfo();
-            document.getElementById('gameStatus').textContent = '🎵 Get ready for musical fun! 🎵';
+            document.getElementById('gameStatus').textContent = '🎵 Get ready for Jyutping practice! 🎵';
             
             setTimeout(() => {
                 playRound();
@@ -799,8 +805,14 @@
             gameState.answered = false;
             gameState.audioReady = false;
             gameState.roundInProgress = true;
-            answerProcessing = false;
+            gameState.correctAnswers.clear();
             gameState.roundStartTime = 0;
+
+            // Clear any existing timeout
+            if (roundEndTimeout) {
+                clearTimeout(roundEndTimeout);
+                roundEndTimeout = null;
+            }
 
             // Select random correct answer
             const correctAnswer = gameData[Math.floor(Math.random() * gameData.length)];
@@ -854,7 +866,7 @@
                         document.getElementById('gameStatus').textContent = '❌ Audio file not found! Check file path.';
                     });
                     
-                    document.getElementById('gameStatus').textContent = '🎧 Listen carefully and pop the right bubble! 🎧';
+                    document.getElementById('gameStatus').textContent = '🎧 Listen and click the correct Jyutping! 🎧';
                 }, { once: true });
             });
         }
@@ -876,54 +888,86 @@
         }
 
         function handleAnswer(playerId, isCorrect, bubbleElement) {
-            // Multiple protection layers
-            if (answerProcessing || gameState.answered || !gameState.audioReady || !gameState.roundInProgress) {
+            // Check if round is still active and audio is ready
+            if (!gameState.audioReady || !gameState.roundInProgress || bubbleElement.classList.contains('answered')) {
                 return;
             }
 
-            // Immediately set processing flag to prevent concurrent calls
-            answerProcessing = true;
-            gameState.answered = true;
-            
             const responseTime = Date.now() - gameState.roundStartTime;
+            const playerNumber = playerId.replace('options', '');
+            const playerKey = `player${playerNumber}`;
 
-            // Stop audio immediately
-            audio.pause();
+            // Mark this bubble as answered to prevent double-clicking
+            bubbleElement.classList.add('answered');
 
-            // Disable ALL bubbles immediately
-            document.querySelectorAll('.bubble').forEach(bubble => {
-                bubble.classList.remove('active');
-                bubble.style.pointerEvents = 'none';
-            });
-
-            // Visual feedback
             if (isCorrect) {
+                // Add to correct answers set
+                gameState.correctAnswers.add(playerKey);
+                
+                // Visual feedback
                 bubbleElement.classList.add('correct');
                 createSparkles(bubbleElement);
                 
-                const playerNum = playerId.replace('options', 'player');
-                gameState.scores[playerNum]++;
+                // Award point immediately
+                gameState.scores[playerKey]++;
+                updateScores();
                 
-                const playerNumber = playerId.replace('options', '');
-                document.getElementById('gameStatus').textContent = 
-                    `🎉 Player ${playerNumber} got it! (${responseTime}ms) 🎉`;
+                // If this is the first correct answer, start the end-round timer
+                if (gameState.correctAnswers.size === 1) {
+                    document.getElementById('gameStatus').textContent = 
+                        `🎉 Player ${playerNumber} got it! Others have ${gameState.answerWindow}ms to answer! 🎉`;
+                    
+                    // Set timeout to end round after answer window
+                    roundEndTimeout = setTimeout(() => {
+                        endRound();
+                    }, gameState.answerWindow);
+                } else {
+                    // Multiple correct answers
+                    const players = Array.from(gameState.correctAnswers).map(p => p.replace('player', 'Player ')).join(' & ');
+                    document.getElementById('gameStatus').textContent = 
+                        `🎉 ${players} got it right! 🎉`;
+                }
             } else {
+                // Wrong answer
                 bubbleElement.classList.add('incorrect');
-                document.getElementById('gameStatus').textContent = '💥 Oops! Wrong bubble! 💥';
+                document.getElementById('gameStatus').textContent = 
+                    `💥 Player ${playerNumber} - Wrong answer! 💥`;
                 
-                // Highlight correct answer
-                document.querySelectorAll('.bubble').forEach(bubble => {
-                    if (bubble.textContent === gameState.currentQuestion.correct.text) {
-                        bubble.classList.add('correct');
-                        createSparkles(bubble);
-                    }
-                });
+                // If no one has answered correctly yet, don't end the round
+                if (gameState.correctAnswers.size === 0) {
+                    // Keep round going
+                    return;
+                }
+            }
+        }
+
+        function endRound() {
+            if (!gameState.roundInProgress) return;
+            
+            gameState.roundInProgress = false;
+            
+            // Stop audio immediately
+            audio.pause();
+
+            // Clear timeout if it exists
+            if (roundEndTimeout) {
+                clearTimeout(roundEndTimeout);
+                roundEndTimeout = null;
             }
 
-            updateScores();
+            // Disable ALL bubbles
+            document.querySelectorAll('.bubble').forEach(bubble => {
+                bubble.classList.remove('active');
+                bubble.classList.add('answered');
+            });
 
-            // Mark round as finished
-            gameState.roundInProgress = false;
+            // Highlight correct answer for any incorrect bubbles
+            document.querySelectorAll('.bubble').forEach(bubble => {
+                if (bubble.textContent === gameState.currentQuestion.correct.text && !bubble.classList.contains('correct')) {
+                    bubble.classList.add('correct');
+                    createSparkles(bubble);
+                }
+            });
 
             // Move to next round after delay
             setTimeout(() => {
@@ -932,8 +976,6 @@
                 } else {
                     gameState.currentRound++;
                     updateRoundInfo();
-                    // Reset processing flag before next round
-                    answerProcessing = false;
                     playRound();
                 }
             }, 2500);
@@ -1008,6 +1050,12 @@
                 document.querySelectorAll('.bubble').forEach(bubble => {
                     bubble.classList.remove('active');
                 });
+                
+                // Clear timeout when paused
+                if (roundEndTimeout) {
+                    clearTimeout(roundEndTimeout);
+                    roundEndTimeout = null;
+                }
             } else {
                 pauseBtn.innerHTML = '⏸️ Pause';
                 resumeGame();
@@ -1018,12 +1066,12 @@
             gameState.isPaused = false;
             document.getElementById('pauseBtn').innerHTML = '⏸️ Pause';
             
-            if (gameState.currentQuestion && gameState.audioReady) {
-                document.querySelectorAll('.bubble').forEach(bubble => {
+            if (gameState.currentQuestion && gameState.audioReady && gameState.roundInProgress) {
+                document.querySelectorAll('.bubble:not(.answered)').forEach(bubble => {
                     bubble.classList.add('active');
                 });
                 audio.play();
-                document.getElementById('gameStatus').textContent = '🎧 Listen carefully and pop the right bubble! 🎧';
+                document.getElementById('gameStatus').textContent = '🎧 Listen and click the correct Jyutping! 🎧';
             }
         }
 
@@ -1035,7 +1083,13 @@
             gameState.answered = false;
             gameState.audioReady = false;
             gameState.roundInProgress = false;
-            answerProcessing = false;
+            gameState.correctAnswers.clear();
+
+            // Clear timeout
+            if (roundEndTimeout) {
+                clearTimeout(roundEndTimeout);
+                roundEndTimeout = null;
+            }
 
             audio.pause();
             audio.currentTime = 0;
@@ -1067,7 +1121,13 @@
         function endGame() {
             gameState.isPlaying = false;
             gameState.roundInProgress = false;
-            answerProcessing = false;
+            gameState.correctAnswers.clear();
+            
+            // Clear timeout
+            if (roundEndTimeout) {
+                clearTimeout(roundEndTimeout);
+                roundEndTimeout = null;
+            }
             
             // Show instructions again when game ends
             document.getElementById('instructions').classList.remove('hidden');
@@ -1115,4 +1175,3 @@
     </script>
 </body>
 </html>
-
