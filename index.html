@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Bubble Pop Audio Game 🎵</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #ff9a9e 75%, #fad0c4 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Player Selection Menu */
+        .player-selection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.9));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: #333;
+            text-align: center;
+        }
+
+        .player-selection h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(24px, 5vw, 48px);
+            margin-bottom: 30px;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .player-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .player-btn {
+            padding: 15px 30px;
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(16px, 3vw, 24px);
+            font-weight: 700;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.8);
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            min-width: 200px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .player-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 1);
+            border-color: #667eea;
+        }
+
+        /* Floating background elements */
+        .bg-decoration {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            width: 20px;
+            height: 20px;
+            background: #FFD700;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        .heart {
+            width: 16px;
+            height: 16px;
+            background: #ff69b4;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .game-container {
+            display: none;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        .game-container.active {
+            display: flex;
+        }
+
+        /* 1 Player Layout - Full Screen */
+        .layout-1player .game-container {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .layout-1player .player-area {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        /* 2 Player Layout */
+        .layout-2players .game-container {
+            flex-direction: row;
+        }
+
+        .layout-2players .player-area {
+            flex: 1;
+        }
+
+        /* 4 Player Layout */
+        .layout-4players .game-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .layout-4players .player-area {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .layout-4players .game-controls {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .layout-4players .round-info {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(10px, 2vw, 14px);
+            padding: 5px 10px;
+        }
+
+        /* Player Areas */
+        .player-area {
+            padding: clamp(10px, 2vw, 20px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .player-left {
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 218, 185, 0.3));
+        }
+
+        .player-right {
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.3), rgba(221, 160, 221, 0.3));
+        }
+
+        /* 4 Player specific orientations - FIXED */
+        .player-top-left {
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 218, 185, 0.3));
+            border-right: 2px solid rgba(255, 255, 255, 0.4);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+            transform: rotate(180deg); /* Player 1 upside down */
+        }
+
+        .player-top-right {
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.3), rgba(221, 160, 221, 0.3));
+            border-left: 2px solid rgba(255, 255, 255, 0.4);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+            transform: rotate(180deg); /* Player 2 upside down */
+        }
+
+        .player-bottom-left {
+            background: linear-gradient(135deg, rgba(144, 238, 144, 0.3), rgba(255, 255, 224, 0.3));
+            border-right: 2px solid rgba(255, 255, 255, 0.4);
+            border-top: 2px solid rgba(255, 255, 255, 0.4);
+            /* Player 3 normal orientation */
+        }
+
+        .player-bottom-right {
+            background: linear-gradient(135deg, rgba(255, 192, 203, 0.3), rgba(238, 130, 238, 0.3));
+            border-left: 2px solid rgba(255, 255, 255, 0.4);
+            border-top: 2px solid rgba(255, 255, 255, 0.4);
+            /* Player 4 normal orientation */
+        }
+
+        .player-header {
+            text-align: center;
+            margin-bottom: clamp(15px, 3vw, 30px);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .player-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(16px, 3vw, 28px);
+            margin-bottom: clamp(8px, 1.5vw, 15px);
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+        }
+
+        .score {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(24px, 5vw, 48px);
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .options-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            color: #333333;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            animation: float 6s ease-in-out infinite;
+            text-align: center;
+            word-wrap: break-word;
+            border: 4px solid rgba(255, 255, 255, 0.6);
+            z-index: 10;
+        }
+
+        /* Responsive bubble sizes - MUCH LARGER */
+        .layout-1player .bubble {
+            width: clamp(150px, 25vw, 300px);
+            height: clamp(150px, 25vw, 300px);
+            font-size: clamp(20px, 4vw, 36px);
+            padding: clamp(15px, 3vw, 25px);
+        }
+
+        .layout-2players .bubble {
+            width: clamp(120px, 20vw, 200px);
+            height: clamp(120px, 20vw, 200px);
+            font-size: clamp(16px, 3vw, 26px);
+            padding: clamp(12px, 2.5vw, 20px);
+        }
+
+        .layout-4players .bubble {
+            width: clamp(80px, 15vw, 140px);
+            height: clamp(80px, 15vw, 140px);
+            font-size: clamp(12px, 2.5vw, 18px);
+            padding: clamp(8px, 2vw, 15px);
+        }
+
+        /* Mobile specific bubble sizes */
+        @media (max-width: 768px) {
+            .layout-1player .bubble {
+                width: clamp(120px, 30vw, 200px);
+                height: clamp(120px, 30vw, 200px);
+                font-size: clamp(16px, 4vw, 24px);
+            }
+            
+            .layout-2players .bubble {
+                width: clamp(100px, 25vw, 150px);
+                height: clamp(100px, 25vw, 150px);
+                font-size: clamp(14px, 3.5vw, 20px);
+            }
+            
+            .layout-4players .bubble {
+                width: clamp(70px, 18vw, 100px);
+                height: clamp(70px, 18vw, 100px);
+                font-size: clamp(10px, 2.5vw, 14px);
+            }
+        }
+
+        /* Bubble positioning - SPREAD OUT MORE */
+        .bubble:nth-child(1) {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            top: 5%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .bubble:nth-child(2) {
+            background: linear-gradient(135deg, #4ecdc4, #7fdbda);
+            bottom: 10%;
+            left: 10%;
+            animation-delay: 1.5s;
+        }
+
+        .bubble:nth-child(3) {
+            background: linear-gradient(135deg, #45b7d1, #74c0fc);
+            top: 8%;
+            right: 8%;
+            animation-delay: 3s;
+        }
+
+        .bubble:nth-child(4) {
+            background: linear-gradient(135deg, #96ceb4, #c7f0db);
+            bottom: 5%;
+            right: 5%;
+            animation-delay: 4.5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(5deg); }
+            66% { transform: translateY(10px) rotate(-3deg); }
+        }
+
+        .bubble:hover {
+            transform: scale(1.1) translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border-color: rgba(255, 255, 255, 0.9);
+            color: #222222;
+            z-index: 20;
+        }
+
+        .bubble:active {
+            transform: scale(0.95);
+        }
+
+        .bubble.correct {
+            animation: bubblePop 0.8s ease, correctSpin 0.8s ease;
+            background: linear-gradient(135deg, #51cf66, #8ce99a) !important;
+            transform: scale(1.3);
+            color: #ffffff !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6) !important;
+            z-index: 30;
+        }
+
+        .bubble.incorrect {
+            animation: bubbleShake 0.6s ease, incorrectPulse 0.6s ease;
+            background: linear-gradient(135deg, #ff6b6b, #ff8787) !important;
+            color: #ffffff !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6) !important;
+            z-index: 25;
+        }
+
+        @keyframes bubblePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1.3); }
+        }
+
+        @keyframes correctSpin {
+            0% { transform: rotate(0deg) scale(1.3); }
+            100% { transform: rotate(360deg) scale(1.3); }
+        }
+
+        @keyframes bubbleShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes incorrectPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+        }
+
+        .game-controls {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: clamp(6px, 1.5vw, 10px);
+            z-index: 100;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-button {
+            padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px);
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(10px, 2vw, 14px);
+            font-weight: 700;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .control-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 1);
+            border-color: #667eea;
+        }
+
+        .control-button:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+            color: #999;
+        }
+
+        .round-info {
+            position: absolute;
+            top: clamp(50px, 10vw, 70px);
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333333;
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(12px, 2.5vw, 16px);
+            text-align: center;
+            z-index: 100;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.9);
+            padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        /* Individual countdown for each player */
+        .player-countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(32px, 8vw, 64px);
+            font-weight: bold;
+            color: #333333;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            z-index: 150;
+            animation: countdownPulse 1s ease-in-out;
+            background: rgba(255, 255, 255, 0.95);
+            padding: clamp(8px, 2vw, 15px) clamp(15px, 3vw, 25px);
+            border-radius: 25px;
+            border: 3px solid #FFD700;
+            display: none;
+        }
+
+        @keyframes countdownPulse {
+            0% { transform: translate(-50%, -50%) scale(0.5) rotate(-10deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(5deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .winner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.9), rgba(78, 205, 196, 0.9));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(18px, 4vw, 36px);
+            z-index: 300;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            animation: winnerCelebration 2s ease-in-out;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @keyframes winnerCelebration {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.05); }
+            50% { transform: scale(1.1); }
+            75% { transform: scale(1.05); }
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: clamp(10px, 2vw, 20px);
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333333;
+            text-align: center;
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(10px, 2vw, 14px);
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.9);
+            padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            max-width: 90%;
+            transition: opacity 0.3s ease;
+        }
+
+        .instructions.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Sparkle effects */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #FFD700;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkleAnimation 1.5s ease-out forwards;
+        }
+
+        @keyframes sparkleAnimation {
+            0% {
+                opacity: 1;
+                transform: scale(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1) rotate(180deg);
+            }
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            .layout-2players .game-container {
+                flex-direction: column;
+            }
+            
+            .layout-2players .player-area {
+                height: 50%;
+            }
+
+            .game-controls {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .control-button {
+                min-width: 60px;
+            }
+        }
+
+        /* Tablet landscape for 4 players */
+        @media (orientation: landscape) and (min-width: 768px) {
+            .layout-4players .bubble {
+                width: clamp(80px, 12vw, 120px);
+                height: clamp(80px, 12vw, 120px);
+                font-size: clamp(12px, 2vw, 16px);
+            }
+        }
+
+        /* Hide elements for different player counts */
+        .layout-1player .player-area:not(.player-1) { display: none; }
+        .layout-2players .player-area:not(.player-1):not(.player-2) { display: none; }
+    </style>
+</head>
+<body class="layout-2players">
+    <!-- Player Selection Menu -->
+    <div class="player-selection" id="playerSelection">
+        <h1>🎵 Choose Number of Players 🎵</h1>
+        <div class="player-options">
+            <button class="player-btn" onclick="selectPlayers(1)">👤 1 Player</button>
+            <button class="player-btn" onclick="selectPlayers(2)">👥 2 Players</button>
+            <button class="player-btn" onclick="selectPlayers(4)">👥👥 4 Players (iPad)</button>
+        </div>
+    </div>
+
+    <!-- Background decorations -->
+    <div class="bg-decoration star" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+    <div class="bg-decoration heart" style="top: 20%; right: 15%; animation-delay: 1s;"></div>
+    <div class="bg-decoration star" style="bottom: 20%; left: 20%; animation-delay: 2s;"></div>
+    <div class="bg-decoration heart" style="bottom: 30%; right: 25%; animation-delay: 3s;"></div>
+    <div class="bg-decoration star" style="top: 60%; left: 5%; animation-delay: 4s;"></div>
+    <div class="bg-decoration heart" style="top: 70%; right: 5%; animation-delay: 5s;"></div>
+
+    <div class="game-container" id="gameContainer">
+        <div class="game-controls">
+            <button class="control-button" onclick="startGame()">🎮 Start</button>
+            <button class="control-button" onclick="resetGame()">🔄 Reset</button>
+            <button class="control-button" onclick="pauseGame()" id="pauseBtn">⏸️ Pause</button>
+            <button class="control-button" onclick="backToMenu()">👥 Players</button>
+        </div>
+
+        <div class="round-info">
+            <div id="roundCounter">Round: 1/10</div>
+            <div id="gameStatus">🎵 Press Start to begin! 🎵</div>
+        </div>
+
+        <!-- Player Areas -->
+        <div class="player-area player-left player-1">
+            <div class="player-header">
+                <div class="player-name">🌟 Player 1 🌟</div>
+                <div class="score" id="score1">0</div>
+            </div>
+            <div class="options-container" id="options1">
+                <!-- Bubble options will be dynamically generated -->
+            </div>
+            <div class="player-countdown" id="countdown1"></div>
+        </div>
+
+        <div class="player-area player-right player-2">
+            <div class="player-header">
+                <div class="player-name">⭐ Player 2 ⭐</div>
+                <div class="score" id="score2">0</div>
+            </div>
+            <div class="options-container" id="options2">
+                <!-- Bubble options will be dynamically generated -->
+            </div>
+            <div class="player-countdown" id="countdown2"></div>
+        </div>
+
+        <div class="player-area player-bottom-left player-3">
+            <div class="player-header">
+                <div class="player-name">🎯 Player 3 🎯</div>
+                <div class="score" id="score3">0</div>
+            </div>
+            <div class="options-container" id="options3">
+                <!-- Bubble options will be dynamically generated -->
+            </div>
+            <div class="player-countdown" id="countdown3"></div>
+        </div>
+
+        <div class="player-area player-bottom-right player-4">
+            <div class="player-header">
+                <div class="player-name">🚀 Player 4 🚀</div>
+                <div class="score" id="score4">0</div>
+            </div>
+            <div class="options-container" id="options4">
+                <!-- Bubble options will be dynamically generated -->
+            </div>
+            <div class="player-countdown" id="countdown4"></div>
+        </div>
+
+        <div class="winner-overlay" id="winnerOverlay" style="display: none;">
+            <div id="winnerText"></div>
+            <button class="control-button" onclick="resetGame()" style="margin-top: 30px; font-size: 20px;">🎉 Play Again! 🎉</button>
+        </div>
+
+        <div class="instructions" id="instructions">
+            <div>🎯 Pop the bubble that matches the sound! 🎯</div>
+            <div>⚡ Fastest finger gets the point! ⚡</div>
+        </div>
+    </div>
+
+    <audio id="gameAudio" preload="auto"></audio>
+
+    <script>
+        // Game data - Add your own audio files and text here
+        const gameData = [
+            { text: "aa", audio: "audio/final-01-aa.mp3" },
+            { text: "a", audio: "audio/final-02-a.mp3" },
+            { text: "e", audio: "audio/final-03-e.mp3" },
+            { text: "i", audio: "audio/final-04-i.mp3" },
+            { text: "o", audio: "audio/final-05-o.mp3" },
+            { text: "u", audio: "audio/final-06-u.mp3" },
+            { text: "eo", audio: "audio/final-07-eo.mp3" },
+            { text: "oe", audio: "audio/final-08-oe.mp3" },
+            { text: "yu", audio: "audio/final-09-yu.mp3" },
+        ];
+
+        let gameState = {
+            isPlaying: false,
+            isPaused: false,
+            currentRound: 1,
+            maxRounds: 10,
+            playerCount: 2,
+            scores: { player1: 0, player2: 0, player3: 0, player4: 0 },
+            currentQuestion: null,
+            roundStartTime: 0,
+            answered: false
+        };
+
+        const audio = document.getElementById('gameAudio');
+
+        function selectPlayers(count) {
+            gameState.playerCount = count;
+            document.body.className = `layout-${count}player${count > 1 ? 's' : ''}`;
+            
+            document.getElementById('playerSelection').style.display = 'none';
+            document.getElementById('gameContainer').classList.add('active');
+            
+            // Reset scores for new player count
+            gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
+            updateScores();
+            
+            // Show instructions initially
+            document.getElementById('instructions').classList.remove('hidden');
+        }
+
+        function backToMenu() {
+            document.getElementById('playerSelection').style.display = 'flex';
+            document.getElementById('gameContainer').classList.remove('active');
+            resetGame();
+        }
+
+        function createSparkles(element) {
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = (element.offsetLeft + Math.random() * element.offsetWidth) + 'px';
+                    sparkle.style.top = (element.offsetTop + Math.random() * element.offsetHeight) + 'px';
+                    element.parentElement.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, 1500);
+                }, i * 100);
+            }
+        }
+
+        function startGame() {
+            if (gameState.isPaused) {
+                resumeGame();
+                return;
+            }
+
+            gameState.isPlaying = true;
+            gameState.isPaused = false;
+            gameState.currentRound = 1;
+            gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
+            
+            // Hide instructions when game starts
+            document.getElementById('instructions').classList.add('hidden');
+            
+            updateScores();
+            updateRoundInfo();
+            document.getElementById('gameStatus').textContent = '🎵 Get ready for musical fun! 🎵';
+            
+            setTimeout(() => {
+                playRound();
+            }, 1000);
+        }
+
+        function playRound() {
+            if (!gameState.isPlaying || gameState.isPaused) return;
+
+            gameState.answered = false;
+            gameState.roundStartTime = Date.now();
+
+            // Select random correct answer
+            const correctAnswer = gameData[Math.floor(Math.random() * gameData.length)];
+            
+            // Select 3 random wrong answers
+            const wrongAnswers = gameData
+                .filter(item => item.text !== correctAnswer.text)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3);
+
+            // Combine and shuffle all options
+            const allOptions = [correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+            
+            gameState.currentQuestion = {
+                correct: correctAnswer,
+                options: allOptions
+            };
+
+            // Generate UI for active players
+            for (let i = 1; i <= gameState.playerCount; i++) {
+                generatePlayerBubbles(`options${i}`, allOptions, correctAnswer.text);
+            }
+
+            // Show countdown in each player area
+            showPlayerCountdowns(() => {
+                // Play audio
+                audio.src = correctAnswer.audio;
+                audio.play().catch(e => {
+                    console.error('Error playing audio:', e);
+                    document.getElementById('gameStatus').textContent = '❌ Audio file not found! Check file path.';
+                });
+                
+                document.getElementById('gameStatus').textContent = '🎧 Listen carefully and pop the right bubble! 🎧';
+            });
+        }
+
+        function generatePlayerBubbles(containerId, options, correctText) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            options.forEach((option, index) => {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.textContent = option.text;
+                bubble.onclick = () => handleAnswer(containerId, option.text === correctText, bubble);
+                
+                container.appendChild(bubble);
+            });
+        }
+
+        function handleAnswer(playerId, isCorrect, bubbleElement) {
+            if (gameState.answered) return;
+
+            gameState.answered = true;
+            const responseTime = Date.now() - gameState.roundStartTime;
+
+            // Disable all bubbles
+            document.querySelectorAll('.bubble').forEach(bubble => {
+                bubble.style.pointerEvents = 'none';
+            });
+
+            // Visual feedback
+            if (isCorrect) {
+                bubbleElement.classList.add('correct');
+                createSparkles(bubbleElement);
+                
+                const playerNum = playerId.replace('options', 'player');
+                gameState.scores[playerNum]++;
+                
+                const playerNumber = playerId.replace('options', '');
+                document.getElementById('gameStatus').textContent = 
+                    `🎉 Player ${playerNumber} got it! (${responseTime}ms) 🎉`;
+            } else {
+                bubbleElement.classList.add('incorrect');
+                document.getElementById('gameStatus').textContent = '💥 Oops! Wrong bubble! 💥';
+                
+                // Highlight correct answer
+                document.querySelectorAll('.bubble').forEach(bubble => {
+                    if (bubble.textContent === gameState.currentQuestion.correct.text) {
+                        bubble.classList.add('correct');
+                        createSparkles(bubble);
+                    }
+                });
+            }
+
+            updateScores();
+
+            // Move to next round after delay
+            setTimeout(() => {
+                if (gameState.currentRound >= gameState.maxRounds) {
+                    endGame();
+                } else {
+                    gameState.currentRound++;
+                    updateRoundInfo();
+                    playRound();
+                }
+            }, 2500);
+        }
+
+        function showPlayerCountdowns(callback) {
+            let count = 3;
+            
+            // Show countdown in each active player area
+            for (let i = 1; i <= gameState.playerCount; i++) {
+                const countdownEl = document.getElementById(`countdown${i}`);
+                if (countdownEl) {
+                    countdownEl.style.display = 'block';
+                    countdownEl.textContent = count;
+                }
+            }
+
+            const countInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    for (let i = 1; i <= gameState.playerCount; i++) {
+                        const countdownEl = document.getElementById(`countdown${i}`);
+                        if (countdownEl) {
+                            countdownEl.textContent = count;
+                        }
+                    }
+                } else {
+                    for (let i = 1; i <= gameState.playerCount; i++) {
+                        const countdownEl = document.getElementById(`countdown${i}`);
+                        if (countdownEl) {
+                            countdownEl.textContent = 'GO! 🎵';
+                        }
+                    }
+                    setTimeout(() => {
+                        for (let i = 1; i <= gameState.playerCount; i++) {
+                            const countdownEl = document.getElementById(`countdown${i}`);
+                            if (countdownEl) {
+                                countdownEl.style.display = 'none';
+                            }
+                        }
+                        callback();
+                    }, 800);
+                    clearInterval(countInterval);
+                }
+            }, 1000);
+        }
+
+        function updateScores() {
+            for (let i = 1; i <= 4; i++) {
+                const scoreEl = document.getElementById(`score${i}`);
+                if (scoreEl) {
+                    scoreEl.textContent = gameState.scores[`player${i}`];
+                }
+            }
+        }
+
+        function updateRoundInfo() {
+            document.getElementById('roundCounter').textContent = 
+                `Round: ${gameState.currentRound}/${gameState.maxRounds}`;
+        }
+
+        function pauseGame() {
+            if (!gameState.isPlaying) return;
+
+            gameState.isPaused = !gameState.isPaused;
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (gameState.isPaused) {
+                audio.pause();
+                pauseBtn.innerHTML = '▶️ Resume';
+                document.getElementById('gameStatus').textContent = '⏸️ Game Paused - Take a break! ⏸️';
+                document.querySelectorAll('.bubble').forEach(bubble => {
+                    bubble.style.pointerEvents = 'none';
+                });
+            } else {
+                pauseBtn.innerHTML = '⏸️ Pause';
+                resumeGame();
+            }
+        }
+
+        function resumeGame() {
+            gameState.isPaused = false;
+            document.getElementById('pauseBtn').innerHTML = '⏸️ Pause';
+            document.querySelectorAll('.bubble').forEach(bubble => {
+                bubble.style.pointerEvents = 'auto';
+            });
+            
+            if (gameState.currentQuestion) {
+                audio.play();
+                document.getElementById('gameStatus').textContent = '🎧 Listen carefully and pop the right bubble! 🎧';
+            }
+        }
+
+        function resetGame() {
+            gameState.isPlaying = false;
+            gameState.isPaused = false;
+            gameState.currentRound = 1;
+            gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
+            gameState.answered = false;
+
+            audio.pause();
+            audio.currentTime = 0;
+
+            updateScores();
+            updateRoundInfo();
+            
+            document.getElementById('gameStatus').textContent = '🎵 Press Start to begin! 🎵';
+            document.getElementById('pauseBtn').innerHTML = '⏸️ Pause';
+            
+            // Hide all countdowns
+            for (let i = 1; i <= 4; i++) {
+                const countdownEl = document.getElementById(`countdown${i}`);
+                if (countdownEl) countdownEl.style.display = 'none';
+            }
+            
+            document.getElementById('winnerOverlay').style.display = 'none';
+            
+            // Show instructions again when game resets
+            document.getElementById('instructions').classList.remove('hidden');
+
+            // Clear options
+            for (let i = 1; i <= 4; i++) {
+                const container = document.getElementById(`options${i}`);
+                if (container) container.innerHTML = '';
+            }
+        }
+
+        function endGame() {
+            gameState.isPlaying = false;
+            
+            // Show instructions again when game ends
+            document.getElementById('instructions').classList.remove('hidden');
+            
+            // Find winner(s)
+            let maxScore = 0;
+            let winners = [];
+            
+            for (let i = 1; i <= gameState.playerCount; i++) {
+                const score = gameState.scores[`player${i}`];
+                if (score > maxScore) {
+                    maxScore = score;
+                    winners = [`Player ${i}`];
+                } else if (score === maxScore) {
+                    winners.push(`Player ${i}`);
+                }
+            }
+            
+            let winnerText;
+            if (winners.length === 1) {
+                winnerText = `🏆 ${winners[0]} Wins! 🏆<br>🎉 Score: ${maxScore} 🎉`;
+            } else {
+                winnerText = `🤝 Tie Game! 🤝<br>🎊 Winners: ${winners.join(' & ')} 🎊<br>Score: ${maxScore}`;
+            }
+
+            // Show all scores
+            let allScores = '<br>Final Scores:<br>';
+            for (let i = 1; i <= gameState.playerCount; i++) {
+                allScores += `Player ${i}: ${gameState.scores[`player${i}`]} `;
+            }
+
+            document.getElementById('winnerText').innerHTML = winnerText + allScores;
+            document.getElementById('winnerOverlay').style.display = 'flex';
+        }
+
+        // Audio error handling
+        audio.addEventListener('error', function(e) {
+            console.error('Audio error:', e);
+            document.getElementById('gameStatus').textContent = '❌ Audio file not found. Please check the file path.';
+        });
+
+        // Initialize game
+        resetGame();
+    </script>
+</body>
+</html>
