@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Jyutping Game 🎵</title>
+    <title>🎵 Bubble Pop Audio Game 🎵</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@600;700;800&display=swap');
 
@@ -277,6 +277,11 @@
             word-wrap: break-word;
             border: 4px solid rgba(255, 255, 255, 0.6);
             z-index: 10;
+            pointer-events: none; /* Start disabled */
+        }
+
+        .bubble.active {
+            pointer-events: auto; /* Enable when ready */
         }
 
         /* Responsive bubble sizes - MUCH LARGER */
@@ -658,7 +663,7 @@
             <div class="player-countdown" id="countdown2"></div>
         </div>
 
-        <div class="player-area player-bottom-left player-3">
+        <div class="player-area player-top-left player-3">
             <div class="player-header">
                 <div class="player-name">🎯 Player 3 🎯</div>
                 <div class="score" id="score3">0</div>
@@ -697,14 +702,14 @@
         // Game data - Add your own audio files and text here
         const gameData = [
             { text: "aa", audio: "audio/final-01-aa.mp3" },
-            { text: "a", audio: "audio/final-02-a.mp3" },
-            { text: "e", audio: "audio/final-03-e.mp3" },
-            { text: "i", audio: "audio/final-04-i.mp3" },
-            { text: "o", audio: "audio/final-05-o.mp3" },
-            { text: "u", audio: "audio/final-06-u.mp3" },
-            { text: "eo", audio: "audio/final-07-eo.mp3" },
-            { text: "oe", audio: "audio/final-08-oe.mp3" },
-            { text: "yu", audio: "audio/final-09-yu.mp3" },
+            { text: "a", audio: "final-02-a.mp3" },
+            { text: "e", audio: "final-03-e.mp3" },
+            { text: "i", audio: "final-04-i.mp3" },
+            { text: "o", audio: "final-05-o.mp3" },
+            { text: "u", audio: "final-06-u.mp3" },
+            { text: "eo", audio: "final-07-eo.mp3" },
+            { text: "oe", audio: "final-08-oe.mp3" },
+            { text: "yu", audio: "final-09-yu.mp3" },
         ];
 
         let gameState = {
@@ -716,10 +721,13 @@
             scores: { player1: 0, player2: 0, player3: 0, player4: 0 },
             currentQuestion: null,
             roundStartTime: 0,
-            answered: false
+            answered: false,
+            audioReady: false,
+            roundInProgress: false
         };
 
         const audio = document.getElementById('gameAudio');
+        let answerProcessing = false; // Prevent multiple simultaneous answers
 
         function selectPlayers(count) {
             gameState.playerCount = count;
@@ -768,6 +776,9 @@
             gameState.isPaused = false;
             gameState.currentRound = 1;
             gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
+            gameState.audioReady = false;
+            gameState.roundInProgress = false;
+            answerProcessing = false;
             
             // Hide instructions when game starts
             document.getElementById('instructions').classList.add('hidden');
@@ -784,8 +795,12 @@
         function playRound() {
             if (!gameState.isPlaying || gameState.isPaused) return;
 
+            // Reset round state
             gameState.answered = false;
-            gameState.roundStartTime = Date.now();
+            gameState.audioReady = false;
+            gameState.roundInProgress = true;
+            answerProcessing = false;
+            gameState.roundStartTime = 0;
 
             // Select random correct answer
             const correctAnswer = gameData[Math.floor(Math.random() * gameData.length)];
@@ -804,21 +819,43 @@
                 options: allOptions
             };
 
-            // Generate UI for active players
+            // Generate UI for active players - BUBBLES START DISABLED
             for (let i = 1; i <= gameState.playerCount; i++) {
                 generatePlayerBubbles(`options${i}`, allOptions, correctAnswer.text);
             }
 
             // Show countdown in each player area
             showPlayerCountdowns(() => {
-                // Play audio
-                audio.src = correctAnswer.audio;
-                audio.play().catch(e => {
-                    console.error('Error playing audio:', e);
-                    document.getElementById('gameStatus').textContent = '❌ Audio file not found! Check file path.';
-                });
+                // Stop any previous audio
+                audio.pause();
+                audio.currentTime = 0;
                 
-                document.getElementById('gameStatus').textContent = '🎧 Listen carefully and pop the right bubble! 🎧';
+                // Set up audio source
+                audio.src = correctAnswer.audio;
+                
+                // Preload and then play
+                audio.load();
+                
+                audio.addEventListener('canplaythrough', function audioReadyHandler() {
+                    audio.removeEventListener('canplaythrough', audioReadyHandler);
+                    
+                    // Audio is ready, enable bubbles and start timing
+                    gameState.audioReady = true;
+                    gameState.roundStartTime = Date.now();
+                    
+                    // Enable all bubbles
+                    document.querySelectorAll('.bubble').forEach(bubble => {
+                        bubble.classList.add('active');
+                    });
+                    
+                    // Play audio
+                    audio.play().catch(e => {
+                        console.error('Error playing audio:', e);
+                        document.getElementById('gameStatus').textContent = '❌ Audio file not found! Check file path.';
+                    });
+                    
+                    document.getElementById('gameStatus').textContent = '🎧 Listen carefully and pop the right bubble! 🎧';
+                }, { once: true });
             });
         }
 
@@ -830,7 +867,7 @@
 
             options.forEach((option, index) => {
                 const bubble = document.createElement('div');
-                bubble.className = 'bubble';
+                bubble.className = 'bubble'; // Start without 'active' class
                 bubble.textContent = option.text;
                 bubble.onclick = () => handleAnswer(containerId, option.text === correctText, bubble);
                 
@@ -839,13 +876,23 @@
         }
 
         function handleAnswer(playerId, isCorrect, bubbleElement) {
-            if (gameState.answered) return;
+            // Multiple protection layers
+            if (answerProcessing || gameState.answered || !gameState.audioReady || !gameState.roundInProgress) {
+                return;
+            }
 
+            // Immediately set processing flag to prevent concurrent calls
+            answerProcessing = true;
             gameState.answered = true;
+            
             const responseTime = Date.now() - gameState.roundStartTime;
 
-            // Disable all bubbles
+            // Stop audio immediately
+            audio.pause();
+
+            // Disable ALL bubbles immediately
             document.querySelectorAll('.bubble').forEach(bubble => {
+                bubble.classList.remove('active');
                 bubble.style.pointerEvents = 'none';
             });
 
@@ -875,6 +922,9 @@
 
             updateScores();
 
+            // Mark round as finished
+            gameState.roundInProgress = false;
+
             // Move to next round after delay
             setTimeout(() => {
                 if (gameState.currentRound >= gameState.maxRounds) {
@@ -882,6 +932,8 @@
                 } else {
                     gameState.currentRound++;
                     updateRoundInfo();
+                    // Reset processing flag before next round
+                    answerProcessing = false;
                     playRound();
                 }
             }, 2500);
@@ -954,7 +1006,7 @@
                 pauseBtn.innerHTML = '▶️ Resume';
                 document.getElementById('gameStatus').textContent = '⏸️ Game Paused - Take a break! ⏸️';
                 document.querySelectorAll('.bubble').forEach(bubble => {
-                    bubble.style.pointerEvents = 'none';
+                    bubble.classList.remove('active');
                 });
             } else {
                 pauseBtn.innerHTML = '⏸️ Pause';
@@ -965,11 +1017,11 @@
         function resumeGame() {
             gameState.isPaused = false;
             document.getElementById('pauseBtn').innerHTML = '⏸️ Pause';
-            document.querySelectorAll('.bubble').forEach(bubble => {
-                bubble.style.pointerEvents = 'auto';
-            });
             
-            if (gameState.currentQuestion) {
+            if (gameState.currentQuestion && gameState.audioReady) {
+                document.querySelectorAll('.bubble').forEach(bubble => {
+                    bubble.classList.add('active');
+                });
                 audio.play();
                 document.getElementById('gameStatus').textContent = '🎧 Listen carefully and pop the right bubble! 🎧';
             }
@@ -981,6 +1033,9 @@
             gameState.currentRound = 1;
             gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
             gameState.answered = false;
+            gameState.audioReady = false;
+            gameState.roundInProgress = false;
+            answerProcessing = false;
 
             audio.pause();
             audio.currentTime = 0;
@@ -1002,7 +1057,7 @@
             // Show instructions again when game resets
             document.getElementById('instructions').classList.remove('hidden');
 
-            // Clear options
+            // Clear options and disable all bubbles
             for (let i = 1; i <= 4; i++) {
                 const container = document.getElementById(`options${i}`);
                 if (container) container.innerHTML = '';
@@ -1011,6 +1066,8 @@
 
         function endGame() {
             gameState.isPlaying = false;
+            gameState.roundInProgress = false;
+            answerProcessing = false;
             
             // Show instructions again when game ends
             document.getElementById('instructions').classList.remove('hidden');
@@ -1050,6 +1107,7 @@
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
             document.getElementById('gameStatus').textContent = '❌ Audio file not found. Please check the file path.';
+            gameState.audioReady = false;
         });
 
         // Initialize game
