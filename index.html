@@ -164,7 +164,7 @@
 
         .layout-1player .player-header {
             position: absolute;
-            top: clamp(40px, 8vw, 60px); /* MOVE SCORE HIGHER */
+            top: clamp(35px, 7vw, 50px); /* MOVED SCORE HIGHER */
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
@@ -173,9 +173,15 @@
 
         .layout-1player .round-info {
             position: absolute;
-            top: clamp(90px, 16vw, 120px); /* BELOW SCORE */
+            top: clamp(80px, 14vw, 110px); /* BELOW SCORE */
             left: 50%;
             transform: translateX(-50%);
+        }
+
+        /* 1 Player specific options container - LOWER POSITION */
+        .layout-1player .options-container {
+            margin-top: clamp(140px, 25vw, 180px); /* ENSURE BUBBLES START BELOW MESSAGES */
+            height: calc(100% - clamp(140px, 25vw, 180px));
         }
 
         /* 2 Player Layout - Side by Side, No Rotation */
@@ -984,7 +990,7 @@
 
         <div class="instructions" id="instructions">
             <div>🎯 Listen and click the correct Jyutping! 🎯</div>
-            <div>⚡ Faster = Higher Score! Wrong = -1000 points! ⚡</div>
+            <div>⚡ Faster = Higher Score! Wrong = -10000 points! ⚡</div>
         </div>
     </div>
 
@@ -1199,10 +1205,10 @@
             }
         }
 
-        // CHANGED PENALTY TO -1000
+        // CHANGED PENALTY TO -10000
         function calculateScore(responseTime, isCorrect) {
             if (!isCorrect) {
-                return -1000; // CHANGED: Penalty for wrong answer
+                return -10000; // CHANGED: Penalty for wrong answer
             }
             
             // Base score starts at 10000, decreases based on response time
@@ -1216,7 +1222,7 @@
             popup.className = 'score-popup';
             
             if (score > 0) {
-                popup.textContent = `+${score}`; // SIMPLIFIED: No ms display
+                popup.textContent = `+${score}`;
                 popup.style.color = '#00C851';
             } else {
                 popup.textContent = `${score}`;
@@ -1278,12 +1284,12 @@
 
         initializeAudio();
 
-        // REVERTED TO ORIGINAL bubble overlap detection settings
+        // bubble overlap detection and positioning
         function checkOverlap(bubble1, bubble2) {
             const dx = bubble1.x - bubble2.x;
             const dy = bubble1.y - bubble2.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            const minDistance = bubble1.radius + bubble2.radius + 40; // Back to original 40px
+            const minDistance = bubble1.radius + bubble2.radius + 40;
             return distance < minDistance;
         }
 
@@ -1291,7 +1297,7 @@
             const containerRect = container.getBoundingClientRect();
             const bubbleRadius = bubbleSize / 2;
             
-            const margin = 20; // Back to original 20px
+            const margin = 20;
             const minX = bubbleRadius + margin;
             const maxX = containerRect.width - bubbleRadius - margin;
             const minY = bubbleRadius + margin;
@@ -1314,7 +1320,7 @@
                 
                 let position;
                 let attempts = 0;
-                const maxAttempts = 200; // Back to original 200
+                const maxAttempts = 200;
                 const seed = gameState.roundSeed + parseInt(playerId.replace('options', '')) * 1000 + index * 100;
                 
                 do {
@@ -1329,7 +1335,7 @@
                 if (attempts >= maxAttempts) {
                     const containerRect = container.getBoundingClientRect();
                     const gridPositions = [
-                        { x: containerRect.width * 0.25, y: containerRect.height * 0.25 }, // Back to original 25%/75%
+                        { x: containerRect.width * 0.25, y: containerRect.height * 0.25 },
                         { x: containerRect.width * 0.75, y: containerRect.height * 0.25 },
                         { x: containerRect.width * 0.25, y: containerRect.height * 0.75 },
                         { x: containerRect.width * 0.75, y: containerRect.height * 0.75 }
@@ -1366,7 +1372,16 @@
                 const bubble = document.createElement('div');
                 bubble.className = `bubble color-${index + 1}`;
                 bubble.textContent = option.text;
-                bubble.onclick = () => handleAnswer(containerId, option.text === correctText, bubble);
+                
+                // ENHANCED: Use both click and touch events for better simultaneous support
+                const handleClick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAnswer(containerId, option.text === correctText, bubble);
+                };
+                
+                bubble.addEventListener('click', handleClick, { passive: false });
+                bubble.addEventListener('touchstart', handleClick, { passive: false });
                 
                 const bubbleId = `${containerId}-${index}`;
                 bubble.setAttribute('data-bubble-id', bubbleId);
@@ -1645,7 +1660,16 @@
                 const bubble = document.createElement('div');
                 bubble.className = `bubble color-${index + 1}`;
                 bubble.textContent = option.text;
-                bubble.onclick = () => handleAnswer(containerId, option.text === correctText, bubble);
+                
+                // ENHANCED: Use both click and touch events for better simultaneous support
+                const handleClick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAnswer(containerId, option.text === correctText, bubble);
+                };
+                
+                bubble.addEventListener('click', handleClick, { passive: false });
+                bubble.addEventListener('touchstart', handleClick, { passive: false });
                 
                 container.appendChild(bubble);
                 bubbles.push(bubble);
@@ -1657,7 +1681,10 @@
             }, 50);
         }
 
-        // REVERTED TO ORIGINAL answer handling (no second response restriction)
+        // ENHANCED: Support for truly simultaneous responses using requestAnimationFrame
+        let pendingAnswers = [];
+        let processingAnswers = false;
+
         function handleAnswer(playerId, isCorrect, bubbleElement) {
             if (!gameState.audioReady || !gameState.roundInProgress || bubbleElement.classList.contains('answered')) {
                 return;
@@ -1668,58 +1695,99 @@
             const playerKey = `player${playerNumber}`;
             const bubbleId = bubbleElement.getAttribute('data-bubble-id');
 
+            // Queue the answer for processing
+            pendingAnswers.push({
+                playerId,
+                playerKey,
+                playerNumber,
+                bubbleId,
+                isCorrect,
+                bubbleElement,
+                responseTime
+            });
+
+            // Mark bubble as answered immediately to prevent duplicate clicks
             bubbleElement.classList.add('answered');
 
-            // Update bubble state
-            if (gameState.bubbleStates[bubbleId]) {
-                gameState.bubbleStates[bubbleId].answered = true;
-                gameState.bubbleStates[bubbleId].correct = isCorrect;
-                gameState.bubbleStates[bubbleId].incorrect = !isCorrect;
+            // Process answers in next frame to handle simultaneous clicks
+            if (!processingAnswers) {
+                processingAnswers = true;
+                requestAnimationFrame(processAnswers);
             }
+        }
 
-            // Calculate score based on response time and correctness
-            const score = calculateScore(responseTime, isCorrect);
-            
-            // Show score popup
-            showScorePopup(bubbleElement, score, responseTime);
+        function processAnswers() {
+            const answersToProcess = [...pendingAnswers];
+            pendingAnswers = [];
+            processingAnswers = false;
 
-            if (isCorrect) {
-                gameState.correctAnswers.add(playerKey);
-                
-                bubbleElement.classList.add('correct');
-                createSparkles(bubbleElement);
-                
-                // Add time-based score - ALLOW NEGATIVE SCORES
-                gameState.scores[playerKey] += score;
-                gameState.totalScore += score;
-                updateScores();
-                saveGameState();
-                
-                if (gameState.correctAnswers.size === 1) {
-                    document.getElementById('gameStatus').textContent = 
-                        `🎉 Player ${playerNumber} got it! +${score} points! 🎉`; // SIMPLIFIED message
-                    
-                    roundEndTimeout = setTimeout(() => {
-                        endRound();
-                    }, gameState.answerWindow);
-                } else {
-                    const players = Array.from(gameState.correctAnswers).map(p => p.replace('player', 'Player ')).join(' & ');
-                    document.getElementById('gameStatus').textContent = 
-                        `🎉 ${players} got it right! 🎉`;
+            answersToProcess.forEach(answer => {
+                const { playerId, playerKey, playerNumber, bubbleId, isCorrect, bubbleElement, responseTime } = answer;
+
+                // Update bubble state
+                if (gameState.bubbleStates[bubbleId]) {
+                    gameState.bubbleStates[bubbleId].answered = true;
+                    gameState.bubbleStates[bubbleId].correct = isCorrect;
+                    gameState.bubbleStates[bubbleId].incorrect = !isCorrect;
                 }
-            } else {
-                bubbleElement.classList.add('incorrect');
+
+                // Calculate score based on response time and correctness
+                const score = calculateScore(responseTime, isCorrect);
                 
-                // Apply penalty - ALLOW NEGATIVE SCORES (no minimum)
-                gameState.scores[playerKey] += score; // Score is -1000
-                updateScores();
-                saveGameState();
-                
-                document.getElementById('gameStatus').textContent = 
-                    `💥 Player ${playerNumber} - Wrong answer! ${score} points! 💥`;
-                
-                if (gameState.correctAnswers.size === 0) {
-                    return;
+                // Show score popup
+                showScorePopup(bubbleElement, score, responseTime);
+
+                if (isCorrect) {
+                    gameState.correctAnswers.add(playerKey);
+                    
+                    bubbleElement.classList.add('correct');
+                    createSparkles(bubbleElement);
+                    
+                    // Add time-based score
+                    gameState.scores[playerKey] += score;
+                    gameState.totalScore += score;
+                    updateScores();
+                    saveGameState();
+                } else {
+                    bubbleElement.classList.add('incorrect');
+                    
+                    // Apply penalty
+                    gameState.scores[playerKey] += score; // Score is -10000
+                    updateScores();
+                    saveGameState();
+                }
+            });
+
+            // Update status message after processing all answers
+            if (answersToProcess.length > 0) {
+                const correctResponses = answersToProcess.filter(a => a.isCorrect);
+                const incorrectResponses = answersToProcess.filter(a => !a.isCorrect);
+
+                if (correctResponses.length > 0) {
+                    if (correctResponses.length === 1) {
+                        const response = correctResponses[0];
+                        document.getElementById('gameStatus').textContent = 
+                            `🎉 Player ${response.playerNumber} got it! +${calculateScore(response.responseTime, true)} points! 🎉`;
+                    } else {
+                        const players = correctResponses.map(r => `Player ${r.playerNumber}`).join(' & ');
+                        document.getElementById('gameStatus').textContent = 
+                            `🎉 ${players} got it right! 🎉`;
+                    }
+                    
+                    if (!roundEndTimeout) {
+                        roundEndTimeout = setTimeout(() => {
+                            endRound();
+                        }, gameState.answerWindow);
+                    }
+                } else if (incorrectResponses.length > 0) {
+                    if (incorrectResponses.length === 1) {
+                        document.getElementById('gameStatus').textContent = 
+                            `💥 Player ${incorrectResponses[0].playerNumber} - Wrong answer! -10000 points! 💥`;
+                    } else {
+                        const players = incorrectResponses.map(r => `Player ${r.playerNumber}`).join(' & ');
+                        document.getElementById('gameStatus').textContent = 
+                            `💥 ${players} - Wrong answers! -10000 points each! 💥`;
+                    }
                 }
             }
         }
@@ -1878,6 +1946,10 @@
             gameState.roundSeed = 0;
             gameState.needsResume = false;
 
+            // Clear pending answers
+            pendingAnswers = [];
+            processingAnswers = false;
+
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
                 roundEndTimeout = null;
@@ -1918,6 +1990,10 @@
             gameState.currentQuestion = null;
             gameState.bubbleStates = {};
             gameState.needsResume = false;
+            
+            // Clear pending answers
+            pendingAnswers = [];
+            processingAnswers = false;
             
             // Calculate total game score
             const totalGameScore = Object.values(gameState.scores).reduce((sum, score) => sum + score, 0);
