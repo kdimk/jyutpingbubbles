@@ -159,13 +159,16 @@
         }
 
         .layout-1player .player-header {
-            margin-top: clamp(40px, 8vw, 60px); /* MOVED HIGHER */
-            margin-bottom: clamp(15px, 3vw, 30px);
+            position: absolute;
+            top: clamp(50px, 10vw, 70px); /* RIGHT BELOW CONTROLS */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
         }
 
         .layout-1player .round-info {
             position: absolute;
-            top: clamp(100px, 18vw, 130px); /* MOVED LOWER */
+            top: clamp(120px, 20vw, 150px); /* BELOW PLAYER HEADER */
             left: 50%;
             transform: translateX(-50%);
         }
@@ -292,6 +295,10 @@
             margin-bottom: clamp(15px, 3vw, 30px);
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .layout-1player .player-header {
+            margin-bottom: 0; /* Remove margin for 1-player mode since it's positioned absolutely */
         }
 
         .player-name {
@@ -567,13 +574,13 @@
             100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
         }
 
+        /* ENHANCED WINNER OVERLAY WITH CHAMPION CHART */
         .winner-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            /* MATCH GAME AREA COLOR SCHEME */
             background: linear-gradient(45deg, 
                 rgba(255, 154, 158, 0.95) 0%, 
                 rgba(254, 207, 239, 0.95) 25%, 
@@ -594,6 +601,148 @@
             backdrop-filter: blur(10px);
             text-align: center;
             padding: 20px;
+            overflow-y: auto;
+        }
+
+        .champion-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(15px, 3vw, 25px);
+            margin: clamp(20px, 4vw, 30px) 0;
+        }
+
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 20px);
+            margin-bottom: clamp(20px, 4vw, 30px);
+        }
+
+        .podium-place {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .podium-player {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 18px);
+            border-radius: 15px;
+            margin-bottom: 10px;
+            font-size: clamp(12px, 2.5vw, 18px);
+            font-weight: bold;
+            text-shadow: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 3px solid;
+        }
+
+        .podium-base {
+            width: clamp(60px, 12vw, 100px);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: clamp(14px, 3vw, 24px);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .first-place {
+            order: 2;
+        }
+        .first-place .podium-player {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        .first-place .podium-base {
+            height: clamp(80px, 15vw, 120px);
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        .first-place::before {
+            content: "🏆";
+            position: absolute;
+            top: -30px;
+            font-size: clamp(24px, 5vw, 40px);
+            animation: trophyBounce 2s ease-in-out infinite;
+        }
+
+        .second-place {
+            order: 1;
+        }
+        .second-place .podium-player {
+            border-color: #C0C0C0;
+            background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+        }
+        .second-place .podium-base {
+            height: clamp(60px, 12vw, 90px);
+            background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+        }
+        .second-place::before {
+            content: "🥈";
+            position: absolute;
+            top: -25px;
+            font-size: clamp(20px, 4vw, 32px);
+        }
+
+        .third-place {
+            order: 3;
+        }
+        .third-place .podium-player {
+            border-color: #CD7F32;
+            background: linear-gradient(135deg, #CD7F32, #B8860B);
+        }
+        .third-place .podium-base {
+            height: clamp(40px, 9vw, 60px);
+            background: linear-gradient(135deg, #CD7F32, #B8860B);
+        }
+        .third-place::before {
+            content: "🥉";
+            position: absolute;
+            top: -20px;
+            font-size: clamp(18px, 3.5vw, 28px);
+        }
+
+        .fourth-place .podium-player {
+            border-color: #8B4513;
+            background: linear-gradient(135deg, #DEB887, #D2691E);
+        }
+        .fourth-place .podium-base {
+            height: clamp(20px, 6vw, 40px);
+            background: linear-gradient(135deg, #DEB887, #D2691E);
+        }
+
+        @keyframes trophyBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .stats-section {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: clamp(15px, 3vw, 25px);
+            border-radius: 20px;
+            margin-top: clamp(20px, 4vw, 30px);
+            text-shadow: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            max-width: 90%;
+        }
+
+        .stats-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: clamp(16px, 3vw, 24px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            font-size: clamp(12px, 2.5vw, 16px);
         }
 
         .instructions {
@@ -703,6 +852,23 @@
             .layout-4players .round-info {
                 max-width: 90%;
             }
+
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .podium-place {
+                flex-direction: row;
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .podium-base {
+                width: 50px !important;
+                height: 50px !important;
+                margin-left: 10px;
+            }
         }
 
         /* Tablet landscape for 4 players */
@@ -806,6 +972,8 @@
 
         <div class="winner-overlay" id="winnerOverlay" style="display: none;">
             <div id="winnerText"></div>
+            <div class="champion-chart" id="championChart"></div>
+            <div class="stats-section" id="statsSection"></div>
             <button class="control-button" onclick="resetGame()" style="margin-top: 30px; font-size: 20px;">🎉 Play Again! 🎉</button>
         </div>
 
@@ -851,7 +1019,8 @@
             gameInProgress: false,
             bubbleStates: {},
             roundSeed: 0,
-            needsResume: false // Track if game needs manual resume
+            needsResume: false,
+            currentRoundResponses: new Set() // Track responses in current round
         };
 
         const audio = document.getElementById('gameAudio');
@@ -1026,16 +1195,16 @@
             }
         }
 
-        // CHANGED SCORE BASE TO 1000
+        // CHANGED SCORE BASE TO 10000
         function calculateScore(responseTime, isCorrect) {
             if (!isCorrect) {
                 return -10; // Penalty for wrong answer
             }
             
-            // Base score starts at 1000, decreases based on response time
-            const baseScore = 1000;
-            const timeBonus = Math.max(0, baseScore - Math.floor(responseTime / 5));
-            return Math.max(100, timeBonus); // Minimum 100 points for correct answer
+            // Base score starts at 10000, decreases based on response time
+            const baseScore = 10000;
+            const timeBonus = Math.max(0, baseScore - Math.floor(responseTime / 1));
+            return Math.max(1000, timeBonus); // Minimum 1000 points for correct answer
         }
 
         function showScorePopup(element, score, responseTime) {
@@ -1105,12 +1274,12 @@
 
         initializeAudio();
 
-        // Enhanced bubble overlap detection and positioning with seeded random
+        // ENHANCED bubble overlap detection and positioning with better spacing
         function checkOverlap(bubble1, bubble2) {
             const dx = bubble1.x - bubble2.x;
             const dy = bubble1.y - bubble2.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            const minDistance = bubble1.radius + bubble2.radius + 40;
+            const minDistance = bubble1.radius + bubble2.radius + 60; // INCREASED buffer to 60px
             return distance < minDistance;
         }
 
@@ -1118,7 +1287,7 @@
             const containerRect = container.getBoundingClientRect();
             const bubbleRadius = bubbleSize / 2;
             
-            const margin = 20;
+            const margin = 30; // Increased margin
             const minX = bubbleRadius + margin;
             const maxX = containerRect.width - bubbleRadius - margin;
             const minY = bubbleRadius + margin;
@@ -1141,7 +1310,7 @@
                 
                 let position;
                 let attempts = 0;
-                const maxAttempts = 200;
+                const maxAttempts = 500; // Increased attempts for better placement
                 const seed = gameState.roundSeed + parseInt(playerId.replace('options', '')) * 1000 + index * 100;
                 
                 do {
@@ -1154,12 +1323,13 @@
                 );
                 
                 if (attempts >= maxAttempts) {
+                    // Enhanced fallback with better spacing
                     const containerRect = container.getBoundingClientRect();
                     const gridPositions = [
-                        { x: containerRect.width * 0.25, y: containerRect.height * 0.25 },
-                        { x: containerRect.width * 0.75, y: containerRect.height * 0.25 },
-                        { x: containerRect.width * 0.25, y: containerRect.height * 0.75 },
-                        { x: containerRect.width * 0.75, y: containerRect.height * 0.75 }
+                        { x: containerRect.width * 0.2, y: containerRect.height * 0.2 },
+                        { x: containerRect.width * 0.8, y: containerRect.height * 0.2 },
+                        { x: containerRect.width * 0.2, y: containerRect.height * 0.8 },
+                        { x: containerRect.width * 0.8, y: containerRect.height * 0.8 }
                     ];
                     const fallback = gridPositions[index] || gridPositions[0];
                     position.x = fallback.x;
@@ -1229,6 +1399,59 @@
             }, 500);
         }
 
+        function createChampionChart() {
+            const chartContainer = document.getElementById('championChart');
+            const players = [];
+            
+            // Collect all players with their scores
+            for (let i = 1; i <= gameState.playerCount; i++) {
+                players.push({
+                    name: `Player ${i}`,
+                    score: gameState.scores[`player${i}`],
+                    emoji: ['🌟', '⭐', '🎯', '🚀'][i-1]
+                });
+            }
+            
+            // Sort by score (highest first)
+            players.sort((a, b) => b.score - a.score);
+            
+            // Create podium
+            const podium = document.createElement('div');
+            podium.className = 'podium';
+            
+            players.forEach((player, index) => {
+                const place = document.createElement('div');
+                const positions = ['first-place', 'second-place', 'third-place', 'fourth-place'];
+                place.className = `podium-place ${positions[index] || 'fourth-place'}`;
+                
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'podium-player';
+                playerDiv.innerHTML = `${player.emoji} ${player.name}<br>${player.score}`;
+                
+                const base = document.createElement('div');
+                base.className = 'podium-base';
+                base.textContent = `#${index + 1}`;
+                
+                place.appendChild(playerDiv);
+                place.appendChild(base);
+                podium.appendChild(place);
+            });
+            
+            chartContainer.appendChild(podium);
+            
+            // Create stats section
+            const statsSection = document.getElementById('statsSection');
+            statsSection.innerHTML = `
+                <h3>🏆 Game Statistics</h3>
+                <div class="stats-grid">
+                    <div><strong>Games Played:</strong> ${gameState.gamesPlayed}</div>
+                    <div><strong>Best Score:</strong> ${gameState.bestScore}</div>
+                    <div><strong>Total Rounds:</strong> ${gameState.maxRounds}</div>
+                    <div><strong>Current Round:</strong> ${gameState.currentRound}</div>
+                </div>
+            `;
+        }
+
         function selectPlayers(count) {
             // RESET GAME when switching player modes
             gameState.isPlaying = false;
@@ -1241,6 +1464,7 @@
             gameState.bubbleStates = {};
             gameState.roundSeed = 0;
             gameState.needsResume = false;
+            gameState.currentRoundResponses.clear();
             
             // Stop audio to prevent errors
             audio.pause();
@@ -1329,6 +1553,7 @@
             gameState.bubbleStates = {};
             gameState.roundSeed = Math.floor(Math.random() * 1000000);
             gameState.needsResume = false;
+            gameState.currentRoundResponses.clear();
             
             document.getElementById('resumeButton').style.display = 'none';
             document.getElementById('instructions').classList.add('hidden');
@@ -1352,6 +1577,7 @@
             gameState.correctAnswers.clear();
             gameState.roundStartTime = 0;
             gameState.bubbleStates = {};
+            gameState.currentRoundResponses.clear();
 
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
@@ -1431,6 +1657,7 @@
             }, 50);
         }
 
+        // FIXED: Allow multiple simultaneous responses
         function handleAnswer(playerId, isCorrect, bubbleElement) {
             if (!gameState.audioReady || !gameState.roundInProgress || bubbleElement.classList.contains('answered')) {
                 return;
@@ -1440,6 +1667,14 @@
             const playerNumber = playerId.replace('options', '');
             const playerKey = `player${playerNumber}`;
             const bubbleId = bubbleElement.getAttribute('data-bubble-id');
+
+            // Check if this player has already responded in this round
+            if (gameState.currentRoundResponses.has(playerKey)) {
+                return; // Player already responded
+            }
+
+            // Mark player as having responded
+            gameState.currentRoundResponses.add(playerKey);
 
             bubbleElement.classList.add('answered');
 
@@ -1570,10 +1805,10 @@
                             }
                         }
                         callback();
-                    }, 300); // Increased from 200ms to 300ms
+                    }, 300);
                     clearInterval(countInterval);
                 }
-            }, 800); // Increased from 600ms to 800ms for slower countdown
+            }, 800);
         }
 
         function updateScores() {
@@ -1650,6 +1885,7 @@
             gameState.bubbleStates = {};
             gameState.roundSeed = 0;
             gameState.needsResume = false;
+            gameState.currentRoundResponses.clear();
 
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
@@ -1691,6 +1927,7 @@
             gameState.currentQuestion = null;
             gameState.bubbleStates = {};
             gameState.needsResume = false;
+            gameState.currentRoundResponses.clear();
             
             // Calculate total game score
             const totalGameScore = Object.values(gameState.scores).reduce((sum, score) => sum + score, 0);
@@ -1725,14 +1962,12 @@
                 winnerText = `🤝 Tie Game! 🤝<br>🎊 Winners: ${winners.join(' & ')} 🎊<br>Score: ${maxScore}`;
             }
 
-            let allScores = '<br>Final Scores:<br>';
-            for (let i = 1; i <= gameState.playerCount; i++) {
-                allScores += `Player ${i}: ${gameState.scores[`player${i}`]} `;
-            }
+            document.getElementById('winnerText').innerHTML = winnerText;
             
-            allScores += `<br><br>🎮 Games Played: ${gameState.gamesPlayed}<br>🏆 Best Game Score: ${gameState.bestScore}`;
-
-            document.getElementById('winnerText').innerHTML = winnerText + allScores;
+            // Clear and create champion chart
+            document.getElementById('championChart').innerHTML = '';
+            createChampionChart();
+            
             document.getElementById('winnerOverlay').style.display = 'flex';
         }
 
