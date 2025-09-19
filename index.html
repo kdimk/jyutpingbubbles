@@ -149,7 +149,7 @@
             margin: 0;
         }
 
-        /* 1 Player specific controls and header positioning */
+        /* 1 Player specific controls and layout */
         .layout-1player .game-controls {
             position: absolute;
             top: 10px;
@@ -158,17 +158,22 @@
             z-index: 100;
         }
 
+        .layout-1player .player-name {
+            display: none; /* HIDE PLAYER 1 TEXT */
+        }
+
         .layout-1player .player-header {
             position: absolute;
-            top: clamp(50px, 10vw, 70px); /* RIGHT BELOW CONTROLS */
+            top: clamp(40px, 8vw, 60px); /* MOVE SCORE HIGHER */
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
+            margin-bottom: 0;
         }
 
         .layout-1player .round-info {
             position: absolute;
-            top: clamp(120px, 20vw, 150px); /* BELOW PLAYER HEADER */
+            top: clamp(90px, 16vw, 120px); /* BELOW SCORE */
             left: 50%;
             transform: translateX(-50%);
         }
@@ -979,7 +984,7 @@
 
         <div class="instructions" id="instructions">
             <div>🎯 Listen and click the correct Jyutping! 🎯</div>
-            <div>⚡ Faster = Higher Score! Wrong = -10 points! ⚡</div>
+            <div>⚡ Faster = Higher Score! Wrong = -1000 points! ⚡</div>
         </div>
     </div>
 
@@ -1019,8 +1024,7 @@
             gameInProgress: false,
             bubbleStates: {},
             roundSeed: 0,
-            needsResume: false,
-            currentRoundResponses: new Set() // Track responses in current round
+            needsResume: false
         };
 
         const audio = document.getElementById('gameAudio');
@@ -1195,10 +1199,10 @@
             }
         }
 
-        // CHANGED SCORE BASE TO 10000
+        // CHANGED PENALTY TO -1000
         function calculateScore(responseTime, isCorrect) {
             if (!isCorrect) {
-                return -10; // Penalty for wrong answer
+                return -1000; // CHANGED: Penalty for wrong answer
             }
             
             // Base score starts at 10000, decreases based on response time
@@ -1212,7 +1216,7 @@
             popup.className = 'score-popup';
             
             if (score > 0) {
-                popup.textContent = `+${score} (${responseTime}ms)`;
+                popup.textContent = `+${score}`; // SIMPLIFIED: No ms display
                 popup.style.color = '#00C851';
             } else {
                 popup.textContent = `${score}`;
@@ -1274,12 +1278,12 @@
 
         initializeAudio();
 
-        // ENHANCED bubble overlap detection and positioning with better spacing
+        // REVERTED TO ORIGINAL bubble overlap detection settings
         function checkOverlap(bubble1, bubble2) {
             const dx = bubble1.x - bubble2.x;
             const dy = bubble1.y - bubble2.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            const minDistance = bubble1.radius + bubble2.radius + 60; // INCREASED buffer to 60px
+            const minDistance = bubble1.radius + bubble2.radius + 40; // Back to original 40px
             return distance < minDistance;
         }
 
@@ -1287,7 +1291,7 @@
             const containerRect = container.getBoundingClientRect();
             const bubbleRadius = bubbleSize / 2;
             
-            const margin = 30; // Increased margin
+            const margin = 20; // Back to original 20px
             const minX = bubbleRadius + margin;
             const maxX = containerRect.width - bubbleRadius - margin;
             const minY = bubbleRadius + margin;
@@ -1310,7 +1314,7 @@
                 
                 let position;
                 let attempts = 0;
-                const maxAttempts = 500; // Increased attempts for better placement
+                const maxAttempts = 200; // Back to original 200
                 const seed = gameState.roundSeed + parseInt(playerId.replace('options', '')) * 1000 + index * 100;
                 
                 do {
@@ -1323,13 +1327,12 @@
                 );
                 
                 if (attempts >= maxAttempts) {
-                    // Enhanced fallback with better spacing
                     const containerRect = container.getBoundingClientRect();
                     const gridPositions = [
-                        { x: containerRect.width * 0.2, y: containerRect.height * 0.2 },
-                        { x: containerRect.width * 0.8, y: containerRect.height * 0.2 },
-                        { x: containerRect.width * 0.2, y: containerRect.height * 0.8 },
-                        { x: containerRect.width * 0.8, y: containerRect.height * 0.8 }
+                        { x: containerRect.width * 0.25, y: containerRect.height * 0.25 }, // Back to original 25%/75%
+                        { x: containerRect.width * 0.75, y: containerRect.height * 0.25 },
+                        { x: containerRect.width * 0.25, y: containerRect.height * 0.75 },
+                        { x: containerRect.width * 0.75, y: containerRect.height * 0.75 }
                     ];
                     const fallback = gridPositions[index] || gridPositions[0];
                     position.x = fallback.x;
@@ -1464,7 +1467,6 @@
             gameState.bubbleStates = {};
             gameState.roundSeed = 0;
             gameState.needsResume = false;
-            gameState.currentRoundResponses.clear();
             
             // Stop audio to prevent errors
             audio.pause();
@@ -1553,7 +1555,6 @@
             gameState.bubbleStates = {};
             gameState.roundSeed = Math.floor(Math.random() * 1000000);
             gameState.needsResume = false;
-            gameState.currentRoundResponses.clear();
             
             document.getElementById('resumeButton').style.display = 'none';
             document.getElementById('instructions').classList.add('hidden');
@@ -1577,7 +1578,6 @@
             gameState.correctAnswers.clear();
             gameState.roundStartTime = 0;
             gameState.bubbleStates = {};
-            gameState.currentRoundResponses.clear();
 
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
@@ -1657,7 +1657,7 @@
             }, 50);
         }
 
-        // FIXED: Allow multiple simultaneous responses
+        // REVERTED TO ORIGINAL answer handling (no second response restriction)
         function handleAnswer(playerId, isCorrect, bubbleElement) {
             if (!gameState.audioReady || !gameState.roundInProgress || bubbleElement.classList.contains('answered')) {
                 return;
@@ -1667,14 +1667,6 @@
             const playerNumber = playerId.replace('options', '');
             const playerKey = `player${playerNumber}`;
             const bubbleId = bubbleElement.getAttribute('data-bubble-id');
-
-            // Check if this player has already responded in this round
-            if (gameState.currentRoundResponses.has(playerKey)) {
-                return; // Player already responded
-            }
-
-            // Mark player as having responded
-            gameState.currentRoundResponses.add(playerKey);
 
             bubbleElement.classList.add('answered');
 
@@ -1705,7 +1697,7 @@
                 
                 if (gameState.correctAnswers.size === 1) {
                     document.getElementById('gameStatus').textContent = 
-                        `🎉 Player ${playerNumber} got it! +${score} points (${responseTime}ms)! 🎉`;
+                        `🎉 Player ${playerNumber} got it! +${score} points! 🎉`; // SIMPLIFIED message
                     
                     roundEndTimeout = setTimeout(() => {
                         endRound();
@@ -1719,7 +1711,7 @@
                 bubbleElement.classList.add('incorrect');
                 
                 // Apply penalty - ALLOW NEGATIVE SCORES (no minimum)
-                gameState.scores[playerKey] += score; // Score is -10
+                gameState.scores[playerKey] += score; // Score is -1000
                 updateScores();
                 saveGameState();
                 
@@ -1885,7 +1877,6 @@
             gameState.bubbleStates = {};
             gameState.roundSeed = 0;
             gameState.needsResume = false;
-            gameState.currentRoundResponses.clear();
 
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
@@ -1927,7 +1918,6 @@
             gameState.currentQuestion = null;
             gameState.bubbleStates = {};
             gameState.needsResume = false;
-            gameState.currentRoundResponses.clear();
             
             // Calculate total game score
             const totalGameScore = Object.values(gameState.scores).reduce((sum, score) => sum + score, 0);
