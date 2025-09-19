@@ -11,6 +11,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            /* Prevent touch zooming and scrolling */
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
 
         body {
@@ -21,6 +26,9 @@
             height: 100vh;
             overflow: hidden;
             position: relative;
+            /* Prevent zoom on mobile */
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
         }
 
         @keyframes gradientShift {
@@ -128,7 +136,7 @@
             display: flex;
         }
 
-        /* 1 Player Layout - Full Screen */
+        /* 1 Player Layout - Single Panel */
         .layout-1player .game-container {
             flex-direction: column;
             justify-content: center;
@@ -141,7 +149,28 @@
             margin: 0;
         }
 
-        /* 2 Player Layout */
+        /* 1 Player specific controls and header positioning */
+        .layout-1player .game-controls {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .layout-1player .player-header {
+            margin-top: clamp(40px, 8vw, 60px); /* MOVED HIGHER */
+            margin-bottom: clamp(15px, 3vw, 30px);
+        }
+
+        .layout-1player .round-info {
+            position: absolute;
+            top: clamp(100px, 18vw, 130px); /* MOVED LOWER */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 2 Player Layout - Side by Side, No Rotation */
         .layout-2players .game-container {
             flex-direction: row;
         }
@@ -150,7 +179,26 @@
             flex: 1;
         }
 
-        /* 4 Player Layout */
+        .layout-2players .game-controls {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: clamp(4px, 1vw, 6px);
+            z-index: 100;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .layout-2players .round-info {
+            position: absolute;
+            top: clamp(45px, 8vw, 60px);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 4 Player Layout - 2x2 Grid */
         .layout-4players .game-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -161,22 +209,32 @@
             border: 3px solid rgba(255, 255, 255, 0.3);
         }
 
+        /* 4 Player specific controls - EXACTLY CENTER, NO WHITE BOX */
         .layout-4players .game-controls {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            flex-direction: column;
-            gap: 5px;
+            display: flex;
+            flex-direction: row;
+            gap: clamp(4px, 1vw, 6px);
+            z-index: 200;
         }
 
+        /* 4 Player specific round info - SLIGHTLY BELOW CONTROLS */
         .layout-4players .round-info {
             position: absolute;
-            top: 10px;
+            top: 58%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             font-size: clamp(10px, 2vw, 14px);
-            padding: 5px 10px;
+            padding: clamp(4px, 1vw, 6px) clamp(8px, 1.5vw, 10px);
+            z-index: 200;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         /* Player Areas */
@@ -189,41 +247,44 @@
             backdrop-filter: blur(10px);
         }
 
-        .player-left {
+        /* 2 Player Styles - No Rotation */
+        .layout-2players .player-1 {
             background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 218, 185, 0.3));
+            border-right: 2px solid rgba(255, 255, 255, 0.4);
         }
 
-        .player-right {
+        .layout-2players .player-2 {
             background: linear-gradient(135deg, rgba(173, 216, 230, 0.3), rgba(221, 160, 221, 0.3));
+            border-left: 2px solid rgba(255, 255, 255, 0.4);
         }
 
-        /* 4 Player specific orientations - FIXED */
-        .player-top-left {
+        /* 4 Player Styles with Proper Rotation */
+        .layout-4players .player-1 {
             background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 218, 185, 0.3));
             border-right: 2px solid rgba(255, 255, 255, 0.4);
             border-bottom: 2px solid rgba(255, 255, 255, 0.4);
-            transform: rotate(180deg); /* Player 1 upside down */
+            transform: rotate(180deg); /* Top-left, rotated */
         }
 
-        .player-top-right {
+        .layout-4players .player-2 {
             background: linear-gradient(135deg, rgba(173, 216, 230, 0.3), rgba(221, 160, 221, 0.3));
             border-left: 2px solid rgba(255, 255, 255, 0.4);
             border-bottom: 2px solid rgba(255, 255, 255, 0.4);
-            transform: rotate(180deg); /* Player 2 upside down */
+            transform: rotate(180deg); /* Top-right, rotated */
         }
 
-        .player-bottom-left {
+        .layout-4players .player-3 {
             background: linear-gradient(135deg, rgba(144, 238, 144, 0.3), rgba(255, 255, 224, 0.3));
             border-right: 2px solid rgba(255, 255, 255, 0.4);
             border-top: 2px solid rgba(255, 255, 255, 0.4);
-            /* Player 3 normal orientation */
+            /* Bottom-left, no rotation */
         }
 
-        .player-bottom-right {
+        .layout-4players .player-4 {
             background: linear-gradient(135deg, rgba(255, 192, 203, 0.3), rgba(238, 130, 238, 0.3));
             border-left: 2px solid rgba(255, 255, 255, 0.4);
             border-top: 2px solid rgba(255, 255, 255, 0.4);
-            /* Player 4 normal orientation */
+            /* Bottom-right, no rotation */
         }
 
         .player-header {
@@ -249,6 +310,10 @@
             text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
         }
 
+        .score.negative {
+            color: #FF6B6B;
+        }
+
         .options-container {
             flex: 1;
             position: relative;
@@ -272,7 +337,7 @@
             text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
             transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            animation: float 6s ease-in-out infinite;
+            animation: floatMovement 6s ease-in-out infinite;
             text-align: center;
             word-wrap: break-word;
             border: 4px solid rgba(255, 255, 255, 0.6);
@@ -288,154 +353,139 @@
             pointer-events: none; /* Disable after answer */
         }
 
-        /* Responsive bubble sizes - MUCH LARGER */
+        /* Responsive bubble sizes - 20% SMALLER, LARGER FONT */
         .layout-1player .bubble {
-            width: clamp(150px, 25vw, 300px);
-            height: clamp(150px, 25vw, 300px);
-            font-size: clamp(20px, 4vw, 36px);
-            padding: clamp(15px, 3vw, 25px);
-        }
-
-        .layout-2players .bubble {
-            width: clamp(120px, 20vw, 200px);
-            height: clamp(120px, 20vw, 200px);
-            font-size: clamp(16px, 3vw, 26px);
+            width: clamp(120px, 20vw, 240px);
+            height: clamp(120px, 20vw, 240px);
+            font-size: clamp(28px, 6vw, 48px);
             padding: clamp(12px, 2.5vw, 20px);
         }
 
+        .layout-2players .bubble {
+            width: clamp(96px, 16vw, 160px);
+            height: clamp(96px, 16vw, 160px);
+            font-size: clamp(22px, 4vw, 32px);
+            padding: clamp(10px, 2vw, 16px);
+        }
+
         .layout-4players .bubble {
-            width: clamp(80px, 15vw, 140px);
-            height: clamp(80px, 15vw, 140px);
-            font-size: clamp(12px, 2.5vw, 18px);
-            padding: clamp(8px, 2vw, 15px);
+            width: clamp(64px, 12vw, 112px);
+            height: clamp(64px, 12vw, 112px);
+            font-size: clamp(18px, 3.5vw, 24px);
+            padding: clamp(6px, 1.5vw, 12px);
         }
 
         /* Mobile specific bubble sizes */
         @media (max-width: 768px) {
             .layout-1player .bubble {
-                width: clamp(120px, 30vw, 200px);
-                height: clamp(120px, 30vw, 200px);
-                font-size: clamp(16px, 4vw, 24px);
+                width: clamp(96px, 24vw, 160px);
+                height: clamp(96px, 24vw, 160px);
+                font-size: clamp(20px, 5vw, 28px);
             }
             
             .layout-2players .bubble {
-                width: clamp(100px, 25vw, 150px);
-                height: clamp(100px, 25vw, 150px);
-                font-size: clamp(14px, 3.5vw, 20px);
+                width: clamp(80px, 20vw, 120px);
+                height: clamp(80px, 20vw, 120px);
+                font-size: clamp(18px, 4.5vw, 24px);
             }
             
             .layout-4players .bubble {
-                width: clamp(70px, 18vw, 100px);
-                height: clamp(70px, 18vw, 100px);
-                font-size: clamp(10px, 2.5vw, 14px);
+                width: clamp(56px, 14vw, 80px);
+                height: clamp(56px, 14vw, 80px);
+                font-size: clamp(14px, 3.5vw, 18px);
             }
         }
 
-        /* Bubble positioning - SPREAD OUT MORE */
-        .bubble:nth-child(1) {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-            top: 5%;
-            left: 5%;
-            animation-delay: 0s;
+        /* Base bubble colors - DIFFERENT COLORS, AVOID GREEN/RED */
+        .bubble.color-1 {
+            background: linear-gradient(135deg, #9b59b6, #c87ad4); /* Purple */
         }
 
-        .bubble:nth-child(2) {
-            background: linear-gradient(135deg, #4ecdc4, #7fdbda);
-            bottom: 10%;
-            left: 10%;
-            animation-delay: 1.5s;
+        .bubble.color-2 {
+            background: linear-gradient(135deg, #3498db, #74a8db); /* Blue */
         }
 
-        .bubble:nth-child(3) {
-            background: linear-gradient(135deg, #45b7d1, #74c0fc);
-            top: 8%;
-            right: 8%;
-            animation-delay: 3s;
+        .bubble.color-3 {
+            background: linear-gradient(135deg, #f39c12, #f5b042); /* Orange */
         }
 
-        .bubble:nth-child(4) {
-            background: linear-gradient(135deg, #96ceb4, #c7f0db);
-            bottom: 5%;
-            right: 5%;
-            animation-delay: 4.5s;
+        .bubble.color-4 {
+            background: linear-gradient(135deg, #e91e63, #f48fb1); /* Pink */
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(5deg); }
-            66% { transform: translateY(10px) rotate(-3deg); }
+        /* Enhanced float animation with more movement */
+        @keyframes floatMovement {
+            0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+            20% { transform: translateY(-15px) translateX(10px) rotate(3deg); }
+            40% { transform: translateY(-5px) translateX(-8px) rotate(-2deg); }
+            60% { transform: translateY(-20px) translateX(5px) rotate(4deg); }
+            80% { transform: translateY(10px) translateX(-12px) rotate(-1deg); }
+            100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
         }
 
         .bubble:hover {
-            transform: scale(1.1) translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
             border-color: rgba(255, 255, 255, 0.9);
             color: #222222;
             z-index: 20;
         }
 
         .bubble:active {
-            transform: scale(0.95);
+            transform: scale(0.98);
         }
 
+        /* ENHANCED VISUAL FEEDBACK */
         .bubble.correct {
-            animation: bubblePop 0.8s ease, correctSpin 0.8s ease;
-            background: linear-gradient(135deg, #51cf66, #8ce99a) !important;
-            transform: scale(1.3);
+            animation: correctPulse 1.2s ease-out forwards;
+            background: linear-gradient(135deg, #00C851, #2ECC71) !important; /* Bright Green */
+            transform: scale(1.4) !important;
             color: #ffffff !important;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.6) !important;
-            z-index: 30;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.8) !important;
+            border: 6px solid #ffffff !important;
+            box-shadow: 0 0 30px rgba(0, 200, 81, 0.8), 0 0 60px rgba(0, 200, 81, 0.4) !important;
+            z-index: 50;
         }
 
         .bubble.incorrect {
-            animation: bubbleShake 0.6s ease, incorrectPulse 0.6s ease;
-            background: linear-gradient(135deg, #ff6b6b, #ff8787) !important;
+            animation: incorrectShake 1s ease-out forwards;
+            background: linear-gradient(135deg, #FF3547, #DC3545) !important; /* Bright Red */
             color: #ffffff !important;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.6) !important;
-            z-index: 25;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.8) !important;
+            border: 6px solid #ffffff !important;
+            box-shadow: 0 0 30px rgba(255, 53, 71, 0.8), 0 0 60px rgba(255, 53, 71, 0.4) !important;
+            z-index: 40;
         }
 
-        @keyframes bubblePop {
+        @keyframes correctPulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.4); }
-            100% { transform: scale(1.3); }
+            25% { transform: scale(1.6) rotate(10deg); }
+            50% { transform: scale(1.3) rotate(-5deg); }
+            75% { transform: scale(1.5) rotate(3deg); }
+            100% { transform: scale(1.4) rotate(0deg); }
         }
 
-        @keyframes correctSpin {
-            0% { transform: rotate(0deg) scale(1.3); }
-            100% { transform: rotate(360deg) scale(1.3); }
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0) scale(1); }
+            10% { transform: translateX(-15px) scale(0.9); }
+            20% { transform: translateX(15px) scale(1.1); }
+            30% { transform: translateX(-12px) scale(0.95); }
+            40% { transform: translateX(12px) scale(1.05); }
+            50% { transform: translateX(-8px) scale(0.98); }
+            60% { transform: translateX(8px) scale(1.02); }
+            70% { transform: translateX(-4px) scale(0.99); }
+            80% { transform: translateX(4px) scale(1.01); }
+            90% { transform: translateX(-2px) scale(1); }
         }
 
-        @keyframes bubbleShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        @keyframes incorrectPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(0.9); }
-        }
-
-        .game-controls {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: clamp(6px, 1.5vw, 10px);
-            z-index: 100;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
+        /* SMALLER CONTROL BUTTONS */
         .control-button {
-            padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px);
+            padding: clamp(4px, 1vw, 6px) clamp(8px, 1.5vw, 12px);
             font-family: 'Nunito', sans-serif;
-            font-size: clamp(10px, 2vw, 14px);
+            font-size: clamp(9px, 1.5vw, 12px);
             font-weight: 700;
             border: none;
-            border-radius: 20px;
+            border-radius: 15px;
             cursor: pointer;
             background: rgba(255, 255, 255, 0.9);
             color: #667eea;
@@ -459,10 +509,6 @@
         }
 
         .round-info {
-            position: absolute;
-            top: clamp(50px, 10vw, 70px);
-            left: 50%;
-            transform: translateX(-50%);
             color: #333333;
             font-family: 'Fredoka One', cursive;
             font-size: clamp(12px, 2.5vw, 16px);
@@ -474,6 +520,25 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        /* Score popup for time-based scoring */
+        .score-popup {
+            position: absolute;
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(18px, 4vw, 28px);
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 60;
+            pointer-events: none;
+            animation: scorePopup 2s ease-out forwards;
+        }
+
+        @keyframes scorePopup {
+            0% { transform: scale(0.5) translateY(0); opacity: 0; }
+            20% { transform: scale(1.2) translateY(-10px); opacity: 1; }
+            100% { transform: scale(1) translateY(-50px); opacity: 0; }
         }
 
         /* Individual countdown for each player */
@@ -488,7 +553,7 @@
             color: #333333;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
             z-index: 150;
-            animation: countdownPulse 1s ease-in-out;
+            animation: countdownPulse 0.6s ease-in-out;
             background: rgba(255, 255, 255, 0.95);
             padding: clamp(8px, 2vw, 15px) clamp(15px, 3vw, 25px);
             border-radius: 25px;
@@ -508,7 +573,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.9), rgba(78, 205, 196, 0.9));
+            /* MATCH GAME AREA COLOR SCHEME */
+            background: linear-gradient(45deg, 
+                rgba(255, 154, 158, 0.95) 0%, 
+                rgba(254, 207, 239, 0.95) 25%, 
+                rgba(254, 207, 239, 0.95) 50%, 
+                rgba(255, 154, 158, 0.95) 75%, 
+                rgba(250, 208, 196, 0.95) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -518,16 +591,9 @@
             font-size: clamp(18px, 4vw, 36px);
             z-index: 300;
             text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
-            animation: winnerCelebration 2s ease-in-out;
+            backdrop-filter: blur(10px);
             text-align: center;
             padding: 20px;
-        }
-
-        @keyframes winnerCelebration {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.05); }
-            50% { transform: scale(1.1); }
-            75% { transform: scale(1.05); }
         }
 
         .instructions {
@@ -555,15 +621,47 @@
             pointer-events: none;
         }
 
+        /* Resume button for restored games */
+        .resume-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(16px, 3vw, 24px);
+            font-weight: 700;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #00C851, #2ECC71);
+            color: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 250;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            animation: resumePulse 1.5s ease-in-out infinite;
+        }
+
+        .resume-button:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+        }
+
+        @keyframes resumePulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.03); }
+        }
+
         /* Sparkle effects */
         .sparkle {
             position: absolute;
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
             background: #FFD700;
             border-radius: 50%;
             pointer-events: none;
-            animation: sparkleAnimation 1.5s ease-out forwards;
+            animation: sparkleAnimation 2s ease-out forwards;
         }
 
         @keyframes sparkleAnimation {
@@ -573,7 +671,7 @@
             }
             100% {
                 opacity: 0;
-                transform: scale(1) rotate(180deg);
+                transform: scale(3) rotate(360deg);
             }
         }
 
@@ -590,20 +688,29 @@
             .game-controls {
                 flex-direction: row;
                 flex-wrap: wrap;
-                gap: 4px;
+                gap: 2px;
             }
 
             .control-button {
-                min-width: 60px;
+                min-width: 50px;
+            }
+
+            .layout-4players .game-controls {
+                flex-wrap: wrap;
+                max-width: 90%;
+            }
+
+            .layout-4players .round-info {
+                max-width: 90%;
             }
         }
 
         /* Tablet landscape for 4 players */
         @media (orientation: landscape) and (min-width: 768px) {
             .layout-4players .bubble {
-                width: clamp(80px, 12vw, 120px);
-                height: clamp(80px, 12vw, 120px);
-                font-size: clamp(12px, 2vw, 16px);
+                width: clamp(64px, 10vw, 96px);
+                height: clamp(64px, 10vw, 96px);
+                font-size: clamp(16px, 2.5vw, 20px);
             }
         }
 
@@ -644,8 +751,13 @@
             <div id="gameStatus">🎵 Press Start to begin! 🎵</div>
         </div>
 
-        <!-- Player Areas -->
-        <div class="player-area player-left player-1">
+        <!-- Resume button for restored games -->
+        <button class="resume-button" id="resumeButton" onclick="continueRestoredGame()" style="display: none;">
+            🎮 Continue Game 🎮
+        </button>
+
+        <!-- Player 1 - Always present -->
+        <div class="player-area player-1">
             <div class="player-header">
                 <div class="player-name">🌟 Player 1 🌟</div>
                 <div class="score" id="score1">0</div>
@@ -656,7 +768,8 @@
             <div class="player-countdown" id="countdown1"></div>
         </div>
 
-        <div class="player-area player-right player-2">
+        <!-- Player 2 - Shown in 2-player and 4-player mode -->
+        <div class="player-area player-2">
             <div class="player-header">
                 <div class="player-name">⭐ Player 2 ⭐</div>
                 <div class="score" id="score2">0</div>
@@ -667,7 +780,8 @@
             <div class="player-countdown" id="countdown2"></div>
         </div>
 
-        <div class="player-area player-top-left player-3">
+        <!-- Player 3 - Shown only in 4-player mode -->
+        <div class="player-area player-3">
             <div class="player-header">
                 <div class="player-name">🎯 Player 3 🎯</div>
                 <div class="score" id="score3">0</div>
@@ -678,7 +792,8 @@
             <div class="player-countdown" id="countdown3"></div>
         </div>
 
-        <div class="player-area player-bottom-right player-4">
+        <!-- Player 4 - Shown only in 4-player mode -->
+        <div class="player-area player-4">
             <div class="player-header">
                 <div class="player-name">🚀 Player 4 🚀</div>
                 <div class="score" id="score4">0</div>
@@ -696,7 +811,7 @@
 
         <div class="instructions" id="instructions">
             <div>🎯 Listen and click the correct Jyutping! 🎯</div>
-            <div>⚡ Multiple players can score simultaneously! ⚡</div>
+            <div>⚡ Faster = Higher Score! Wrong = -10 points! ⚡</div>
         </div>
     </div>
 
@@ -728,36 +843,460 @@
             answered: false,
             audioReady: false,
             roundInProgress: false,
-            correctAnswers: new Set(), // Track players who answered correctly
-            answerWindow: 150 // ms window for simultaneous answers
+            correctAnswers: new Set(),
+            answerWindow: 150,
+            totalScore: 0,
+            gamesPlayed: 0,
+            bestScore: 0,
+            gameInProgress: false,
+            bubbleStates: {},
+            roundSeed: 0,
+            needsResume: false // Track if game needs manual resume
         };
 
         const audio = document.getElementById('gameAudio');
         let roundEndTimeout = null;
 
+        // Seeded random function for consistent bubble positioning
+        function seededRandom(seed) {
+            const x = Math.sin(seed) * 10000;
+            return x - Math.floor(x);
+        }
+
+        // Cookie management
+        function setCookie(name, value, days = 365) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${JSON.stringify(value)};expires=${expires.toUTCString()};path=/`;
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    try {
+                        return JSON.parse(c.substring(nameEQ.length, c.length));
+                    } catch (e) {
+                        return null;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function saveGameState() {
+            setCookie('jyutpingGameState', {
+                scores: gameState.scores,
+                currentRound: gameState.currentRound,
+                totalScore: gameState.totalScore,
+                gamesPlayed: gameState.gamesPlayed,
+                bestScore: gameState.bestScore,
+                playerCount: gameState.playerCount,
+                isPlaying: gameState.isPlaying,
+                isPaused: gameState.isPaused,
+                gameInProgress: gameState.gameInProgress,
+                currentQuestion: gameState.currentQuestion,
+                roundInProgress: gameState.roundInProgress,
+                bubbleStates: gameState.bubbleStates,
+                correctAnswers: Array.from(gameState.correctAnswers),
+                roundSeed: gameState.roundSeed,
+                roundStartTime: gameState.roundStartTime,
+                audioReady: gameState.audioReady,
+                needsResume: gameState.needsResume
+            });
+        }
+
+        function loadGameState() {
+            const saved = getCookie('jyutpingGameState');
+            if (saved) {
+                gameState.scores = saved.scores || { player1: 0, player2: 0, player3: 0, player4: 0 };
+                gameState.currentRound = saved.currentRound || 1;
+                gameState.totalScore = saved.totalScore || 0;
+                gameState.gamesPlayed = saved.gamesPlayed || 0;
+                gameState.bestScore = saved.bestScore || 0;
+                gameState.playerCount = saved.playerCount || 2;
+                gameState.isPlaying = saved.isPlaying || false;
+                gameState.isPaused = saved.isPaused || false;
+                gameState.gameInProgress = saved.gameInProgress || false;
+                gameState.currentQuestion = saved.currentQuestion || null;
+                gameState.roundInProgress = saved.roundInProgress || false;
+                gameState.bubbleStates = saved.bubbleStates || {};
+                gameState.correctAnswers = new Set(saved.correctAnswers || []);
+                gameState.roundSeed = saved.roundSeed || 0;
+                gameState.roundStartTime = saved.roundStartTime || 0;
+                gameState.audioReady = saved.audioReady || false;
+                gameState.needsResume = saved.needsResume || false;
+                
+                // Update display
+                updateScores();
+                updateRoundInfo();
+                document.body.className = `layout-${gameState.playerCount}player${gameState.playerCount > 1 ? 's' : ''}`;
+                
+                // If there was a game in progress, restore the UI state
+                if (gameState.gameInProgress) {
+                    document.getElementById('playerSelection').style.display = 'none';
+                    document.getElementById('gameContainer').classList.add('active');
+                    
+                    if (gameState.isPaused) {
+                        document.getElementById('pauseBtn').innerHTML = '▶️ Resume';
+                        document.getElementById('gameStatus').textContent = '⏸️ Game Paused - Click Resume to continue! ⏸️';
+                        document.getElementById('instructions').classList.add('hidden');
+                    } else if (gameState.isPlaying) {
+                        document.getElementById('instructions').classList.add('hidden');
+                        if (gameState.roundInProgress && gameState.currentQuestion) {
+                            // Check if any correct answers were selected
+                            const hasCorrectAnswers = gameState.correctAnswers.size > 0;
+                            
+                            if (hasCorrectAnswers) {
+                                // Show resume button instead of auto-continuing
+                                gameState.needsResume = true;
+                                document.getElementById('resumeButton').style.display = 'block';
+                                document.getElementById('gameStatus').textContent = '🎮 Game paused after correct answer - Click Continue to proceed! 🎮';
+                                
+                                // Restore bubbles but don't enable them
+                                for (let i = 1; i <= gameState.playerCount; i++) {
+                                    restorePlayerBubbles(`options${i}`, gameState.currentQuestion.options, gameState.currentQuestion.correct.text);
+                                }
+                                
+                                setTimeout(() => {
+                                    document.querySelectorAll('.bubble').forEach(bubble => {
+                                        const bubbleId = bubble.getAttribute('data-bubble-id');
+                                        const bubbleState = gameState.bubbleStates[bubbleId];
+                                        
+                                        if (bubbleState) {
+                                            if (bubbleState.answered) {
+                                                bubble.classList.add('answered');
+                                                if (bubbleState.correct) {
+                                                    bubble.classList.add('correct');
+                                                } else if (bubbleState.incorrect) {
+                                                    bubble.classList.add('incorrect');
+                                                }
+                                            }
+                                        }
+                                    });
+                                }, 500);
+                            } else {
+                                // No correct answers yet, restore normally
+                                document.getElementById('gameStatus').textContent = '🎵 Game restored - Continue playing! 🎵';
+                                
+                                for (let i = 1; i <= gameState.playerCount; i++) {
+                                    restorePlayerBubbles(`options${i}`, gameState.currentQuestion.options, gameState.currentQuestion.correct.text);
+                                }
+                                
+                                setTimeout(() => {
+                                    document.querySelectorAll('.bubble').forEach(bubble => {
+                                        const bubbleId = bubble.getAttribute('data-bubble-id');
+                                        const bubbleState = gameState.bubbleStates[bubbleId];
+                                        
+                                        if (bubbleState) {
+                                            if (bubbleState.answered) {
+                                                bubble.classList.add('answered');
+                                                if (bubbleState.correct) {
+                                                    bubble.classList.add('correct');
+                                                } else if (bubbleState.incorrect) {
+                                                    bubble.classList.add('incorrect');
+                                                }
+                                            } else {
+                                                bubble.classList.add('active');
+                                            }
+                                        }
+                                    });
+                                    
+                                    gameState.audioReady = true;
+                                    if (gameState.roundStartTime > 0) {
+                                        gameState.roundStartTime = Date.now() - (saved.roundStartTime || 0);
+                                    }
+                                    document.getElementById('gameStatus').textContent = '🎧 Listen and click the correct Jyutping! 🎧';
+                                }, 500);
+                            }
+                        } else {
+                            document.getElementById('gameStatus').textContent = '🎵 Game restored - Continue or Reset! 🎵';
+                        }
+                    } else {
+                        document.getElementById('instructions').classList.remove('hidden');
+                    }
+                } else {
+                    // Show player selection if no game in progress
+                    document.getElementById('playerSelection').style.display = 'flex';
+                    document.getElementById('gameContainer').classList.remove('active');
+                }
+            }
+        }
+
+        // CHANGED SCORE BASE TO 1000
+        function calculateScore(responseTime, isCorrect) {
+            if (!isCorrect) {
+                return -10; // Penalty for wrong answer
+            }
+            
+            // Base score starts at 1000, decreases based on response time
+            const baseScore = 1000;
+            const timeBonus = Math.max(0, baseScore - Math.floor(responseTime / 5));
+            return Math.max(100, timeBonus); // Minimum 100 points for correct answer
+        }
+
+        function showScorePopup(element, score, responseTime) {
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            
+            if (score > 0) {
+                popup.textContent = `+${score} (${responseTime}ms)`;
+                popup.style.color = '#00C851';
+            } else {
+                popup.textContent = `${score}`;
+                popup.style.color = '#FF3547';
+            }
+            
+            popup.style.left = (element.offsetLeft + element.offsetWidth / 2) + 'px';
+            popup.style.top = (element.offsetTop + element.offsetHeight / 2) + 'px';
+            
+            element.parentElement.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.remove();
+            }, 2000);
+        }
+
+        // Prevent zooming and scrolling on mobile
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('gesturechange', function (e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('gestureend', function (e) {
+            e.preventDefault();
+        });
+
+        // Prevent double-tap zoom
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Simplified audio initialization for better compatibility
+        function initializeAudio() {
+            const unlockAudio = () => {
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(e => {
+                    console.log('Audio unlock failed:', e);
+                });
+                
+                document.removeEventListener('touchstart', unlockAudio);
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('keydown', unlockAudio);
+            };
+
+            document.addEventListener('touchstart', unlockAudio, { once: true });
+            document.addEventListener('click', unlockAudio, { once: true });
+            document.addEventListener('keydown', unlockAudio, { once: true });
+        }
+
+        initializeAudio();
+
+        // Enhanced bubble overlap detection and positioning with seeded random
+        function checkOverlap(bubble1, bubble2) {
+            const dx = bubble1.x - bubble2.x;
+            const dy = bubble1.y - bubble2.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const minDistance = bubble1.radius + bubble2.radius + 40;
+            return distance < minDistance;
+        }
+
+        function generateRandomPosition(container, bubbleSize, seed) {
+            const containerRect = container.getBoundingClientRect();
+            const bubbleRadius = bubbleSize / 2;
+            
+            const margin = 20;
+            const minX = bubbleRadius + margin;
+            const maxX = containerRect.width - bubbleRadius - margin;
+            const minY = bubbleRadius + margin;
+            const maxY = containerRect.height - bubbleRadius - margin;
+            
+            const x = minX + seededRandom(seed) * Math.max(0, maxX - minX);
+            const y = minY + seededRandom(seed + 1000) * Math.max(0, maxY - minY);
+            
+            return { x, y };
+        }
+
+        function positionBubblesRandomly(container, bubbles, playerId) {
+            const bubbleSize = bubbles[0].offsetWidth || 100;
+            const radius = bubbleSize / 2;
+            const positions = [];
+            
+            bubbles.forEach((bubble, index) => {
+                const bubbleId = `${playerId}-${index}`;
+                bubble.setAttribute('data-bubble-id', bubbleId);
+                
+                let position;
+                let attempts = 0;
+                const maxAttempts = 200;
+                const seed = gameState.roundSeed + parseInt(playerId.replace('options', '')) * 1000 + index * 100;
+                
+                do {
+                    position = generateRandomPosition(container, bubbleSize, seed + attempts);
+                    position.radius = radius;
+                    attempts++;
+                } while (
+                    positions.some(pos => checkOverlap(position, pos)) && 
+                    attempts < maxAttempts
+                );
+                
+                if (attempts >= maxAttempts) {
+                    const containerRect = container.getBoundingClientRect();
+                    const gridPositions = [
+                        { x: containerRect.width * 0.25, y: containerRect.height * 0.25 },
+                        { x: containerRect.width * 0.75, y: containerRect.height * 0.25 },
+                        { x: containerRect.width * 0.25, y: containerRect.height * 0.75 },
+                        { x: containerRect.width * 0.75, y: containerRect.height * 0.75 }
+                    ];
+                    const fallback = gridPositions[index] || gridPositions[0];
+                    position.x = fallback.x;
+                    position.y = fallback.y;
+                }
+                
+                bubble.style.left = (position.x - radius) + 'px';
+                bubble.style.top = (position.y - radius) + 'px';
+                positions.push(position);
+                
+                // Store bubble state
+                gameState.bubbleStates[bubbleId] = {
+                    position: position,
+                    answered: false,
+                    correct: false,
+                    incorrect: false
+                };
+                
+                bubble.style.animationDelay = (index * 1.5) + 's';
+            });
+        }
+
+        function restorePlayerBubbles(containerId, options, correctText) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            const bubbles = [];
+            options.forEach((option, index) => {
+                const bubble = document.createElement('div');
+                bubble.className = `bubble color-${index + 1}`;
+                bubble.textContent = option.text;
+                bubble.onclick = () => handleAnswer(containerId, option.text === correctText, bubble);
+                
+                const bubbleId = `${containerId}-${index}`;
+                bubble.setAttribute('data-bubble-id', bubbleId);
+                
+                container.appendChild(bubble);
+                bubbles.push(bubble);
+            });
+
+            // Restore exact positions from saved state
+            setTimeout(() => {
+                bubbles.forEach((bubble, index) => {
+                    const bubbleId = `${containerId}-${index}`;
+                    const bubbleState = gameState.bubbleStates[bubbleId];
+                    
+                    if (bubbleState && bubbleState.position) {
+                        const radius = bubble.offsetWidth / 2;
+                        bubble.style.left = (bubbleState.position.x - radius) + 'px';
+                        bubble.style.top = (bubbleState.position.y - radius) + 'px';
+                    }
+                    
+                    bubble.style.animationDelay = (index * 1.5) + 's';
+                });
+            }, 50);
+        }
+
+        function continueRestoredGame() {
+            document.getElementById('resumeButton').style.display = 'none';
+            gameState.needsResume = false;
+            
+            // Continue with the round end sequence
+            setTimeout(() => {
+                endRound();
+            }, 500);
+        }
+
         function selectPlayers(count) {
+            // RESET GAME when switching player modes
+            gameState.isPlaying = false;
+            gameState.isPaused = false;
+            gameState.roundInProgress = false;
+            gameState.answered = false;
+            gameState.audioReady = false;
+            gameState.correctAnswers.clear();
+            gameState.currentQuestion = null;
+            gameState.bubbleStates = {};
+            gameState.roundSeed = 0;
+            gameState.needsResume = false;
+            
+            // Stop audio to prevent errors
+            audio.pause();
+            audio.currentTime = 0;
+            
+            // Clear any existing timeout
+            if (roundEndTimeout) {
+                clearTimeout(roundEndTimeout);
+                roundEndTimeout = null;
+            }
+            
+            // Hide resume button
+            document.getElementById('resumeButton').style.display = 'none';
+            
             gameState.playerCount = count;
+            gameState.gameInProgress = true;
             document.body.className = `layout-${count}player${count > 1 ? 's' : ''}`;
             
             document.getElementById('playerSelection').style.display = 'none';
             document.getElementById('gameContainer').classList.add('active');
             
-            // Reset scores for new player count
+            // Reset scores for new player count but keep total stats
             gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
+            gameState.currentRound = 1;
             updateScores();
+            updateRoundInfo();
+            saveGameState();
             
-            // Show instructions initially
+            // Clear all player areas
+            for (let i = 1; i <= 4; i++) {
+                const container = document.getElementById(`options${i}`);
+                if (container) container.innerHTML = '';
+            }
+            
+            // Reset UI state
+            document.getElementById('gameStatus').textContent = '🎵 Press Start to begin! 🎵';
+            document.getElementById('pauseBtn').innerHTML = '⏸️ Pause';
+            document.getElementById('winnerOverlay').style.display = 'none';
             document.getElementById('instructions').classList.remove('hidden');
         }
 
         function backToMenu() {
+            gameState.gameInProgress = false;
+            gameState.needsResume = false;
+            // Stop audio to prevent errors
+            audio.pause();
+            audio.currentTime = 0;
+            document.getElementById('resumeButton').style.display = 'none';
             document.getElementById('playerSelection').style.display = 'flex';
             document.getElementById('gameContainer').classList.remove('active');
+            saveGameState();
             resetGame();
         }
 
         function createSparkles(element) {
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 15; i++) {
                 setTimeout(() => {
                     const sparkle = document.createElement('div');
                     sparkle.className = 'sparkle';
@@ -767,8 +1306,8 @@
                     
                     setTimeout(() => {
                         sparkle.remove();
-                    }, 1500);
-                }, i * 100);
+                    }, 2000);
+                }, i * 150);
             }
         }
 
@@ -785,12 +1324,18 @@
             gameState.audioReady = false;
             gameState.roundInProgress = false;
             gameState.correctAnswers.clear();
+            gameState.gameInProgress = true;
+            gameState.currentQuestion = null;
+            gameState.bubbleStates = {};
+            gameState.roundSeed = Math.floor(Math.random() * 1000000);
+            gameState.needsResume = false;
             
-            // Hide instructions when game starts
+            document.getElementById('resumeButton').style.display = 'none';
             document.getElementById('instructions').classList.add('hidden');
             
             updateScores();
             updateRoundInfo();
+            saveGameState();
             document.getElementById('gameStatus').textContent = '🎵 Get ready for Jyutping practice! 🎵';
             
             setTimeout(() => {
@@ -801,29 +1346,25 @@
         function playRound() {
             if (!gameState.isPlaying || gameState.isPaused) return;
 
-            // Reset round state
             gameState.answered = false;
             gameState.audioReady = false;
             gameState.roundInProgress = true;
             gameState.correctAnswers.clear();
             gameState.roundStartTime = 0;
+            gameState.bubbleStates = {};
 
-            // Clear any existing timeout
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
                 roundEndTimeout = null;
             }
 
-            // Select random correct answer
             const correctAnswer = gameData[Math.floor(Math.random() * gameData.length)];
             
-            // Select 3 random wrong answers
             const wrongAnswers = gameData
                 .filter(item => item.text !== correctAnswer.text)
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 3);
 
-            // Combine and shuffle all options
             const allOptions = [correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
             
             gameState.currentQuestion = {
@@ -831,43 +1372,39 @@
                 options: allOptions
             };
 
-            // Generate UI for active players - BUBBLES START DISABLED
+            // Generate new round seed
+            gameState.roundSeed = Math.floor(Math.random() * 1000000);
+
+            // Save state with current question
+            saveGameState();
+
             for (let i = 1; i <= gameState.playerCount; i++) {
                 generatePlayerBubbles(`options${i}`, allOptions, correctAnswer.text);
             }
 
-            // Show countdown in each player area
             showPlayerCountdowns(() => {
-                // Stop any previous audio
-                audio.pause();
-                audio.currentTime = 0;
-                
-                // Set up audio source
                 audio.src = correctAnswer.audio;
                 
-                // Preload and then play
-                audio.load();
+                gameState.audioReady = true;
+                gameState.roundStartTime = Date.now();
                 
-                audio.addEventListener('canplaythrough', function audioReadyHandler() {
-                    audio.removeEventListener('canplaythrough', audioReadyHandler);
-                    
-                    // Audio is ready, enable bubbles and start timing
-                    gameState.audioReady = true;
-                    gameState.roundStartTime = Date.now();
-                    
-                    // Enable all bubbles
-                    document.querySelectorAll('.bubble').forEach(bubble => {
-                        bubble.classList.add('active');
-                    });
-                    
-                    // Play audio
-                    audio.play().catch(e => {
+                document.querySelectorAll('.bubble').forEach(bubble => {
+                    bubble.classList.add('active');
+                });
+                
+                saveGameState(); // Save timing state
+                
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        document.getElementById('gameStatus').textContent = '🎧 Listen and click the correct Jyutping! 🎧';
+                    }).catch(e => {
                         console.error('Error playing audio:', e);
                         document.getElementById('gameStatus').textContent = '❌ Audio file not found! Check file path.';
                     });
-                    
+                } else {
                     document.getElementById('gameStatus').textContent = '🎧 Listen and click the correct Jyutping! 🎧';
-                }, { once: true });
+                }
             });
         }
 
@@ -877,18 +1414,24 @@
             
             container.innerHTML = '';
 
+            const bubbles = [];
             options.forEach((option, index) => {
                 const bubble = document.createElement('div');
-                bubble.className = 'bubble'; // Start without 'active' class
+                bubble.className = `bubble color-${index + 1}`;
                 bubble.textContent = option.text;
                 bubble.onclick = () => handleAnswer(containerId, option.text === correctText, bubble);
                 
                 container.appendChild(bubble);
+                bubbles.push(bubble);
             });
+
+            // Position bubbles with consistent seeded random
+            setTimeout(() => {
+                positionBubblesRandomly(container, bubbles, containerId);
+            }, 50);
         }
 
         function handleAnswer(playerId, isCorrect, bubbleElement) {
-            // Check if round is still active and audio is ready
             if (!gameState.audioReady || !gameState.roundInProgress || bubbleElement.classList.contains('answered')) {
                 return;
             }
@@ -896,46 +1439,59 @@
             const responseTime = Date.now() - gameState.roundStartTime;
             const playerNumber = playerId.replace('options', '');
             const playerKey = `player${playerNumber}`;
+            const bubbleId = bubbleElement.getAttribute('data-bubble-id');
 
-            // Mark this bubble as answered to prevent double-clicking
             bubbleElement.classList.add('answered');
 
+            // Update bubble state
+            if (gameState.bubbleStates[bubbleId]) {
+                gameState.bubbleStates[bubbleId].answered = true;
+                gameState.bubbleStates[bubbleId].correct = isCorrect;
+                gameState.bubbleStates[bubbleId].incorrect = !isCorrect;
+            }
+
+            // Calculate score based on response time and correctness
+            const score = calculateScore(responseTime, isCorrect);
+            
+            // Show score popup
+            showScorePopup(bubbleElement, score, responseTime);
+
             if (isCorrect) {
-                // Add to correct answers set
                 gameState.correctAnswers.add(playerKey);
                 
-                // Visual feedback
                 bubbleElement.classList.add('correct');
                 createSparkles(bubbleElement);
                 
-                // Award point immediately
-                gameState.scores[playerKey]++;
+                // Add time-based score - ALLOW NEGATIVE SCORES
+                gameState.scores[playerKey] += score;
+                gameState.totalScore += score;
                 updateScores();
+                saveGameState();
                 
-                // If this is the first correct answer, start the end-round timer
                 if (gameState.correctAnswers.size === 1) {
                     document.getElementById('gameStatus').textContent = 
-                        `🎉 Player ${playerNumber} got it! Others have ${gameState.answerWindow}ms to answer! 🎉`;
+                        `🎉 Player ${playerNumber} got it! +${score} points (${responseTime}ms)! 🎉`;
                     
-                    // Set timeout to end round after answer window
                     roundEndTimeout = setTimeout(() => {
                         endRound();
                     }, gameState.answerWindow);
                 } else {
-                    // Multiple correct answers
                     const players = Array.from(gameState.correctAnswers).map(p => p.replace('player', 'Player ')).join(' & ');
                     document.getElementById('gameStatus').textContent = 
                         `🎉 ${players} got it right! 🎉`;
                 }
             } else {
-                // Wrong answer
                 bubbleElement.classList.add('incorrect');
-                document.getElementById('gameStatus').textContent = 
-                    `💥 Player ${playerNumber} - Wrong answer! 💥`;
                 
-                // If no one has answered correctly yet, don't end the round
+                // Apply penalty - ALLOW NEGATIVE SCORES (no minimum)
+                gameState.scores[playerKey] += score; // Score is -10
+                updateScores();
+                saveGameState();
+                
+                document.getElementById('gameStatus').textContent = 
+                    `💥 Player ${playerNumber} - Wrong answer! ${score} points! 💥`;
+                
                 if (gameState.correctAnswers.size === 0) {
-                    // Keep round going
                     return;
                 }
             }
@@ -946,22 +1502,19 @@
             
             gameState.roundInProgress = false;
             
-            // Stop audio immediately
             audio.pause();
 
-            // Clear timeout if it exists
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
                 roundEndTimeout = null;
             }
 
-            // Disable ALL bubbles
             document.querySelectorAll('.bubble').forEach(bubble => {
                 bubble.classList.remove('active');
                 bubble.classList.add('answered');
             });
 
-            // Highlight correct answer for any incorrect bubbles
+            // Highlight correct answer for any bubbles that haven't been marked correct
             document.querySelectorAll('.bubble').forEach(bubble => {
                 if (bubble.textContent === gameState.currentQuestion.correct.text && !bubble.classList.contains('correct')) {
                     bubble.classList.add('correct');
@@ -969,22 +1522,22 @@
                 }
             });
 
-            // Move to next round after delay
             setTimeout(() => {
                 if (gameState.currentRound >= gameState.maxRounds) {
                     endGame();
                 } else {
                     gameState.currentRound++;
                     updateRoundInfo();
+                    saveGameState();
                     playRound();
                 }
-            }, 2500);
+            }, 3000);
         }
 
+        // SLOWER COUNTDOWN
         function showPlayerCountdowns(callback) {
             let count = 3;
             
-            // Show countdown in each active player area
             for (let i = 1; i <= gameState.playerCount; i++) {
                 const countdownEl = document.getElementById(`countdown${i}`);
                 if (countdownEl) {
@@ -1017,17 +1570,25 @@
                             }
                         }
                         callback();
-                    }, 800);
+                    }, 300); // Increased from 200ms to 300ms
                     clearInterval(countInterval);
                 }
-            }, 1000);
+            }, 800); // Increased from 600ms to 800ms for slower countdown
         }
 
         function updateScores() {
             for (let i = 1; i <= 4; i++) {
                 const scoreEl = document.getElementById(`score${i}`);
                 if (scoreEl) {
-                    scoreEl.textContent = gameState.scores[`player${i}`];
+                    const score = gameState.scores[`player${i}`];
+                    scoreEl.textContent = score;
+                    
+                    // Add negative class for styling
+                    if (score < 0) {
+                        scoreEl.classList.add('negative');
+                    } else {
+                        scoreEl.classList.remove('negative');
+                    }
                 }
             }
         }
@@ -1046,12 +1607,11 @@
             if (gameState.isPaused) {
                 audio.pause();
                 pauseBtn.innerHTML = '▶️ Resume';
-                document.getElementById('gameStatus').textContent = '⏸️ Game Paused - Take a break! ⏸️';
+                document.getElementById('gameStatus').textContent = '⏸️ Game Paused - Click Resume to continue! ⏸️';
                 document.querySelectorAll('.bubble').forEach(bubble => {
                     bubble.classList.remove('active');
                 });
                 
-                // Clear timeout when paused
                 if (roundEndTimeout) {
                     clearTimeout(roundEndTimeout);
                     roundEndTimeout = null;
@@ -1060,6 +1620,7 @@
                 pauseBtn.innerHTML = '⏸️ Pause';
                 resumeGame();
             }
+            saveGameState();
         }
 
         function resumeGame() {
@@ -1070,7 +1631,7 @@
                 document.querySelectorAll('.bubble:not(.answered)').forEach(bubble => {
                     bubble.classList.add('active');
                 });
-                audio.play();
+                audio.play().catch(e => console.log('Resume audio error:', e));
                 document.getElementById('gameStatus').textContent = '🎧 Listen and click the correct Jyutping! 🎧';
             }
         }
@@ -1084,8 +1645,12 @@
             gameState.audioReady = false;
             gameState.roundInProgress = false;
             gameState.correctAnswers.clear();
+            gameState.gameInProgress = false;
+            gameState.currentQuestion = null;
+            gameState.bubbleStates = {};
+            gameState.roundSeed = 0;
+            gameState.needsResume = false;
 
-            // Clear timeout
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
                 roundEndTimeout = null;
@@ -1094,13 +1659,14 @@
             audio.pause();
             audio.currentTime = 0;
 
+            document.getElementById('resumeButton').style.display = 'none';
             updateScores();
             updateRoundInfo();
+            saveGameState();
             
             document.getElementById('gameStatus').textContent = '🎵 Press Start to begin! 🎵';
             document.getElementById('pauseBtn').innerHTML = '⏸️ Pause';
             
-            // Hide all countdowns
             for (let i = 1; i <= 4; i++) {
                 const countdownEl = document.getElementById(`countdown${i}`);
                 if (countdownEl) countdownEl.style.display = 'none';
@@ -1108,10 +1674,8 @@
             
             document.getElementById('winnerOverlay').style.display = 'none';
             
-            // Show instructions again when game resets
             document.getElementById('instructions').classList.remove('hidden');
 
-            // Clear options and disable all bubbles
             for (let i = 1; i <= 4; i++) {
                 const container = document.getElementById(`options${i}`);
                 if (container) container.innerHTML = '';
@@ -1122,26 +1686,34 @@
             gameState.isPlaying = false;
             gameState.roundInProgress = false;
             gameState.correctAnswers.clear();
+            gameState.gamesPlayed++;
+            gameState.gameInProgress = false;
+            gameState.currentQuestion = null;
+            gameState.bubbleStates = {};
+            gameState.needsResume = false;
             
-            // Clear timeout
+            // Calculate total game score
+            const totalGameScore = Object.values(gameState.scores).reduce((sum, score) => sum + score, 0);
+            if (totalGameScore > gameState.bestScore) {
+                gameState.bestScore = totalGameScore;
+            }
+            
             if (roundEndTimeout) {
                 clearTimeout(roundEndTimeout);
                 roundEndTimeout = null;
             }
             
-            // Show instructions again when game ends
+            document.getElementById('resumeButton').style.display = 'none';
+            saveGameState();
+            
             document.getElementById('instructions').classList.remove('hidden');
             
-            // Find winner(s)
-            let maxScore = 0;
+            let maxScore = Math.max(...Object.values(gameState.scores).slice(0, gameState.playerCount));
             let winners = [];
             
             for (let i = 1; i <= gameState.playerCount; i++) {
                 const score = gameState.scores[`player${i}`];
-                if (score > maxScore) {
-                    maxScore = score;
-                    winners = [`Player ${i}`];
-                } else if (score === maxScore) {
+                if (score === maxScore) {
                     winners.push(`Player ${i}`);
                 }
             }
@@ -1153,25 +1725,30 @@
                 winnerText = `🤝 Tie Game! 🤝<br>🎊 Winners: ${winners.join(' & ')} 🎊<br>Score: ${maxScore}`;
             }
 
-            // Show all scores
             let allScores = '<br>Final Scores:<br>';
             for (let i = 1; i <= gameState.playerCount; i++) {
                 allScores += `Player ${i}: ${gameState.scores[`player${i}`]} `;
             }
+            
+            allScores += `<br><br>🎮 Games Played: ${gameState.gamesPlayed}<br>🏆 Best Game Score: ${gameState.bestScore}`;
 
             document.getElementById('winnerText').innerHTML = winnerText + allScores;
             document.getElementById('winnerOverlay').style.display = 'flex';
         }
 
-        // Audio error handling
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
             document.getElementById('gameStatus').textContent = '❌ Audio file not found. Please check the file path.';
             gameState.audioReady = false;
         });
 
-        // Initialize game
-        resetGame();
+        // Load saved state on page load
+        loadGameState();
+        
+        // Only call resetGame if no game was in progress
+        if (!gameState.gameInProgress) {
+            resetGame();
+        }
     </script>
 </body>
 </html>
