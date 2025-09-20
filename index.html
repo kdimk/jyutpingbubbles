@@ -1678,6 +1678,9 @@ detectViewableArea();
             
             // Force clean main menu display
             document.getElementById('playerSelection').style.display = 'flex';
+
+            // FIXED: Reset body class to default layout for proper menu background
+            document.body.className = 'layout-2players'; // Reset to default state for menu
             
             updateStartPauseButton();
             saveGameState();
