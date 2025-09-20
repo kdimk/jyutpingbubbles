@@ -1349,7 +1349,7 @@
     }
 }
 
-/* 1-Player mode portrait phone optimization - smaller sizes like 2-player landscape */
+/* 1-Player mode portrait phone optimization - use more width but not 100% */
 @media (max-width: 480px) and (orientation: portrait) {
     /* Make 1-player mode use full viewport in portrait */
     .layout-1player .game-container {
@@ -1366,25 +1366,24 @@
         height: 100% !important;
     }
     
-    /* Smaller controls similar to 2-player landscape */
+    /* Smaller controls similar to 2-player landscape - but use more width */
     .layout-1player .game-controls {
         position: absolute;
         top: 5px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 4px;
-        width: 95%;
+        gap: 6px;
+        width: auto; /* Let buttons determine width */
         justify-content: center;
         z-index: 100;
     }
     
     .layout-1player .control-button {
-        flex: 1;
-        padding: clamp(4px, 1vw, 6px) clamp(6px, 1.2vw, 8px) !important;
+        padding: clamp(4px, 1vw, 6px) clamp(8px, 1.8vw, 12px) !important;
         font-size: clamp(8px, 1.3vw, 10px) !important;
         font-weight: 700;
-        min-width: 0;
+        min-width: auto;
         white-space: nowrap;
     }
     
@@ -1395,7 +1394,7 @@
         left: 50%;
         transform: translateX(-50%);
         z-index: 100;
-        width: 95%;
+        width: auto; /* Natural width */
         text-align: center;
     }
     
@@ -1404,7 +1403,7 @@
         text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
     }
     
-    /* Smaller round info like 2-player landscape */
+    /* Smaller round info like 2-player landscape - use natural width */
     .layout-1player .round-info {
         position: absolute;
         top: 70px;
@@ -1412,8 +1411,8 @@
         transform: translateX(-50%);
         font-size: clamp(8px, 1.5vw, 10px) !important;
         padding: 2px 6px !important;
-        width: 95%;
-        max-width: none !important;
+        width: auto; /* Natural width based on content */
+        max-width: 90%; /* Only limit maximum */
         text-align: center;
         white-space: nowrap;
     }
@@ -1435,7 +1434,7 @@
         padding: clamp(4px, 1vw, 8px) !important;
     }
     
-    /* Smaller instructions */
+    /* Smaller instructions - use natural width */
     .layout-1player .instructions {
         position: absolute;
         bottom: 5px;
@@ -1443,8 +1442,8 @@
         transform: translateX(-50%);
         font-size: clamp(6px, 1.2vw, 8px) !important;
         padding: 2px 4px !important;
-        width: 95%;
-        max-width: none !important;
+        width: auto; /* Natural width */
+        max-width: 90%; /* Only limit maximum */
         text-align: center;
         line-height: 1.2;
     }
@@ -1460,7 +1459,7 @@
 @media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
     .layout-1player .control-button {
         font-size: clamp(9px, 1.5vw, 11px) !important;
-        padding: clamp(5px, 1.2vw, 7px) clamp(7px, 1.4vw, 9px) !important;
+        padding: clamp(5px, 1.2vw, 7px) clamp(9px, 2vw, 13px) !important;
     }
     
     .layout-1player .round-info {
