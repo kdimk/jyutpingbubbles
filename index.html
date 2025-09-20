@@ -1349,7 +1349,7 @@
     }
 }
 
-/* 1-Player mode portrait phone optimization - fix padding and vertical shadow clipping */
+/* 1-Player mode portrait phone optimization - fix instructions width */
 @media (max-width: 480px) and (orientation: portrait) {
     /* Make 1-player mode use full viewport in portrait */
     .layout-1player .game-container {
@@ -1369,20 +1369,19 @@
     /* Fix button container - give more vertical space to prevent shadow clipping */
     .layout-1player .game-controls {
         position: absolute;
-        top: 2px; /* Moved up slightly */
+        top: 2px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
         gap: 6px;
-        width: auto; /* Let buttons determine width naturally */
+        width: auto;
         justify-content: center;
         z-index: 100;
-        padding: 8px 10px; /* More vertical padding to prevent shadow clipping */
+        padding: 8px 10px;
     }
     
     .layout-1player .control-button {
-        /* Minimal padding to fit text width, like landscape mode */
-        padding: clamp(4px, 1vw, 6px) clamp(6px, 1.2vw, 8px) !important; /* Much less internal padding */
+        padding: clamp(4px, 1vw, 6px) clamp(6px, 1.2vw, 8px) !important;
         font-family: 'Nunito', sans-serif !important;
         font-size: clamp(10px, 1.56vw, 13px) !important; /* 20% bigger than landscape */
         font-weight: 700 !important;
@@ -1395,8 +1394,8 @@
         transition: all 0.3s ease !important;
         border: 1px solid rgba(102, 126, 234, 0.3) !important;
         white-space: nowrap !important;
-        min-width: auto !important; /* Natural width based on text */
-        flex: none !important; /* Don't stretch buttons */
+        min-width: auto !important;
+        flex: none !important;
     }
     
     .layout-1player .control-button:hover {
@@ -1406,10 +1405,10 @@
         border-color: #667eea !important;
     }
     
-    /* Score display - adjusted for new button container */
+    /* Score display */
     .layout-1player .player-header {
         position: absolute;
-        top: 45px; /* Adjusted for button container padding */
+        top: 45px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 100;
@@ -1425,7 +1424,7 @@
     /* Round info 20% bigger */
     .layout-1player .round-info {
         position: absolute;
-        top: 85px; /* Adjusted for new spacing */
+        top: 85px;
         left: 50%;
         transform: translateX(-50%);
         font-size: clamp(10px, 1.8vw, 12px) !important; /* 20% bigger */
@@ -1438,7 +1437,7 @@
     
     /* Optimize play area */
     .layout-1player .options-container {
-        margin-top: 115px !important; /* Adjusted for new spacing */
+        margin-top: 115px !important;
         height: calc(100vh - 155px) !important;
         height: calc(100dvh - 155px) !important;
         width: 100% !important;
@@ -1453,18 +1452,28 @@
         padding: clamp(5px, 1.2vw, 10px) !important;
     }
     
-    /* Instructions 20% bigger */
+    /* Instructions 20% bigger - allow more width and prevent unnecessary line breaks */
     .layout-1player .instructions {
         position: absolute;
         bottom: 5px;
         left: 50%;
         transform: translateX(-50%);
         font-size: clamp(7px, 1.44vw, 10px) !important; /* 20% bigger */
-        padding: 2px 5px !important;
-        width: auto;
-        max-width: 90%;
+        padding: 2px 8px !important;
+        width: auto !important; /* Let it size naturally */
+        max-width: 98% !important; /* Use almost full width */
         text-align: center;
         line-height: 1.2;
+        white-space: nowrap !important; /* Prevent line breaks when there's space */
+        overflow: hidden !important; /* Hide any overflow */
+        text-overflow: ellipsis !important; /* Show ... if text is too long */
+    }
+    
+    /* If the text is still too long, allow wrapping but with better control */
+    .layout-1player .instructions #instructionLine1,
+    .layout-1player .instructions #instructionLine2 {
+        display: inline !important; /* Keep on same line if possible */
+        white-space: nowrap !important;
     }
     
     /* Countdown 20% bigger */
@@ -1478,17 +1487,19 @@
 @media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
     .layout-1player .control-button {
         font-size: clamp(12px, 2.4vw, 16px) !important; /* 20% bigger */
-        padding: clamp(5px, 1.2vw, 7px) clamp(7px, 1.44vw, 10px) !important; /* Less internal padding */
+        padding: clamp(5px, 1.2vw, 7px) clamp(7px, 1.44vw, 10px) !important;
     }
     
     .layout-1player .round-info {
-        font-size: clamp(12px, 2.04vw, 14px) !important; /* 20% bigger */
+        font-size: clamp(12px, 2.4vw, 16px) !important; /* 20% bigger */
         padding: 4px 8px !important;
     }
     
     .layout-1player .instructions {
-        font-size: clamp(12px, 2.04vw, 14px) !important; /* 20% bigger */
-        padding: 4px 6px !important;
+        font-size: clamp(12px, 2.4vw, 16px) !important; /* 20% bigger */
+        padding: 3px 10px !important;
+        max-width: 98% !important; /* Use almost full width */
+        white-space: nowrap !important;
     }
     
     .layout-1player .bubble {
