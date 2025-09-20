@@ -1929,7 +1929,7 @@
         border-top: 2px solid rgba(255, 255, 255, 0.4) !important;
         border-right: none !important;
         border-left: none !important;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.4) !important;
+        border-bottom: none !important;
     }
     
     .layout-2players .player-2 {
@@ -1970,7 +1970,7 @@
     .layout-4players::before {
         content: attr(data-round-top);
         position: absolute;
-        top: calc(50% - 35px); /* Above buttons */
+        top: calc(50% - 48px); /* Above buttons */
         left: 50%;
         transform: translate(-50%, -50%) rotate(180deg); /* Rotated for top players */
         font-family: 'Fredoka One', cursive;
@@ -1995,7 +1995,7 @@
     .layout-4players::after {
         content: attr(data-round-bottom);
         position: absolute;
-        top: calc(50% + 35px); /* Below buttons */
+        top: calc(50% + 48px); /* Below buttons */
         left: 50%;
         transform: translate(-50%, -50%); /* No rotation for bottom players */
         font-family: 'Fredoka One', cursive;
@@ -2033,14 +2033,14 @@
 /* For smaller landscape screens (phones) */
 @media (max-width: 896px) and (orientation: landscape) {
     .layout-4players::before {
-        top: calc(50% - 25px);
+        top: calc(50% - 32px);
         font-size: clamp(8px, 1.5vw, 10px);
         padding: 2px 6px;
         max-width: 90%;
     }
     
     .layout-4players::after {
-        top: calc(50% + 25px);
+        top: calc(50% + 32px);
         font-size: clamp(8px, 1.5vw, 10px);
         padding: 2px 6px;
         max-width: 90%;
@@ -2130,12 +2130,24 @@
 
 /* 4-Player mode - Phone-specific sizing */
 @media (orientation: portrait) and (max-width: 767px) {
-    .layout-4players::before,
+    .layout-4players::before {
+        font-size: clamp(8px, 1.4vw, 10px) !important;
+        padding: 4px 12px !important;
+        min-width: 180px;
+        max-width: 85%;
+        backdrop-filter: blur(6px);
+        background: rgba(255, 255, 255, 0.96);
+        top: calc(50% - 100px) !important; /* ADJUST THIS - top box position for iPhone */
+    }
+    
     .layout-4players::after {
         font-size: clamp(8px, 1.4vw, 10px) !important;
         padding: 4px 12px !important;
         min-width: 180px;
         max-width: 85%;
+        backdrop-filter: blur(6px);
+        background: rgba(255, 255, 255, 0.96);
+        top: calc(50% + 100px) !important; /* ADJUST THIS - bottom box position for iPhone */
     }
 }
 
@@ -2147,11 +2159,132 @@
         padding: 6px 16px !important;
         min-width: 220px;
         max-width: 80%;
-        top: calc(50% - 40px); /* Adjust for larger text */
+        top: calc(50% - 140px); /* Adjust for larger text */
     }
     
     .layout-4players::after {
-        top: calc(50% + 40px); /* Adjust for larger text */
+        top: calc(50% + 140px); /* Adjust for larger text */
+    }
+}
+
+/* HIDE ALL ROUND INFO when winner overlay is shown */
+.winner-overlay ~ .round-info,
+body:has(.winner-overlay[style*="flex"]) .round-info,
+body:has(.winner-overlay[style*="flex"])::before,
+body:has(.winner-overlay[style*="flex"])::after,
+body:has(.winner-overlay[style*="flex"]) .player-1::after,
+body:has(.winner-overlay[style*="flex"]) .player-2::after,
+body:has(.winner-overlay[style*="flex"]) .player-3::after,
+body:has(.winner-overlay[style*="flex"]) .player-4::after {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Alternative fallback for older browsers */
+.game-results-showing .round-info,
+.game-results-showing::before,
+.game-results-showing::after,
+.game-results-showing .player-1::after,
+.game-results-showing .player-2::after,
+.game-results-showing .player-3::after,
+.game-results-showing .player-4::after {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Make menu buttons smaller in landscape mode on phones */
+@media (max-width: 896px) and (orientation: landscape) {
+    .player-selection h1 {
+        font-size: clamp(16px, 3.5vw, 24px) !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .player-options {
+        gap: 12px !important;
+    }
+    
+    .player-btn {
+        padding: 8px 20px !important;
+        font-size: clamp(12px, 2.2vw, 16px) !important;
+        min-width: 140px !important;
+    }
+    
+    /* Settings panel buttons smaller too */
+    .settings-panel h2 {
+        font-size: clamp(14px, 2.8vw, 20px) !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .settings-section {
+        padding: clamp(10px, 2vw, 15px) !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .settings-section h3 {
+        font-size: clamp(11px, 2.2vw, 14px) !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .checkbox-item {
+        font-size: clamp(9px, 1.8vw, 12px) !important;
+        padding: 4px !important;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
+    .volume-label {
+        font-size: clamp(9px, 1.8vw, 12px) !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .number-input {
+        font-size: clamp(10px, 2vw, 12px) !important;
+        padding: 4px 6px !important;
+        width: 50px !important;
+    }
+    
+    .rounds-container {
+        font-size: clamp(9px, 1.8vw, 12px) !important;
+    }
+    
+    .settings-buttons .player-btn {
+        font-size: clamp(10px, 2vw, 14px) !important;
+        padding: 6px 16px !important;
+        min-width: 100px !important;
+    }
+}
+
+/* For very small phones in landscape */
+@media (max-width: 640px) and (orientation: landscape) {
+    .player-selection h1 {
+        font-size: clamp(14px, 3vw, 20px) !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .player-options {
+        gap: 8px !important;
+    }
+    
+    .player-btn {
+        padding: 6px 16px !important;
+        font-size: clamp(10px, 2vw, 14px) !important;
+        min-width: 120px !important;
+    }
+    
+    .settings-buttons {
+        flex-direction: column !important;
+        gap: 6px !important;
+    }
+    
+    .settings-buttons .player-btn {
+        font-size: clamp(9px, 1.8vw, 12px) !important;
+        padding: 5px 12px !important;
+        min-width: 90px !important;
     }
 }
 
@@ -2165,7 +2298,7 @@
         <div class="player-options">
             <button class="player-btn" onclick="selectPlayers(1)" id="player1Btn">👤 1 Player</button>
             <button class="player-btn" onclick="selectPlayers(2)" id="player2Btn">👥 2 Players</button>
-            <button class="player-btn" onclick="selectPlayers(4)" id="player4Btn">👥👥 4 Players (iPad)</button>
+            <button class="player-btn" onclick="selectPlayers(4)" id="player4Btn">👥👥 4 Players</button>
             <button class="player-btn" onclick="showSettings()" id="settingsBtn">⚙️ Settings</button>
         </div>
     </div>
@@ -2271,7 +2404,7 @@
 
         <div class="instructions" id="instructions">
             <div id="instructionLine1">🎯 Listen and click the correct Jyutping! 🎯</div>
-            <div id="instructionLine2">⚡ Faster = Higher Score! Wrong = -10000 points! ⚡</div>
+            <div id="instructionLine2">⚡ Faster = Higher Score! Wrong = -2500 points! ⚡</div>
         </div>
     </div>
 
@@ -2333,7 +2466,7 @@
             playAgainButton: "🎉 Play Again! 🎉",
             resultsMenuButton: "🏠 Main Menu",
             instructionLine1: "🎯 Listen and click the correct Jyutping! 🎯",
-            instructionLine2: "⚡ Faster = Higher Score! Wrong = -10000 points! ⚡",
+            instructionLine2: "⚡ Faster = Higher Score! Wrong = -2500 points! ⚡",
             roundCounter: "Round:",
             startMessage: "🎵 Press Start to begin! 🎵",
             getReady: "🎵 Get ready for Jyutping practice! 🎵",
@@ -2618,24 +2751,36 @@ detectViewableArea();
             }
         }
 
-        function showSettings() {
-            if (gameState.isPlaying && !gameState.isPaused) {
-                pauseGame();
-            }
-            
-            gameState.tempMaxRounds = gameState.maxRounds;
-            gameState.tempSelectedGroups = [...gameState.selectedGroups];
-            gameState.tempBgMusicVolume = gameState.bgMusicVolume;
-            
-            document.getElementById('settingsPanel').style.display = 'flex';
-            document.getElementById('gameContainer').classList.remove('active');
-            document.getElementById('playerSelection').style.display = 'none';
-            updateSettingsDisplay();
-            
-            setTimeout(() => {
-                document.getElementById('settingsPanel').scrollTop = 0;
-            }, 100);
-        }
+function showSettings() {
+    if (gameState.isPlaying && !gameState.isPaused) {
+        pauseGame();
+    }
+    
+    // CLEAR round info when going to settings - ADD THESE LINES
+    const player1 = document.querySelector('.player-1');
+    const player2 = document.querySelector('.player-2');
+    const player3 = document.querySelector('.player-3');
+    const player4 = document.querySelector('.player-4');
+    if (player1) player1.removeAttribute('data-round-info');
+    if (player2) player2.removeAttribute('data-round-info');
+    if (player3) player3.removeAttribute('data-round-info');
+    if (player4) player4.removeAttribute('data-round-info');
+    document.body.removeAttribute('data-round-top');
+    document.body.removeAttribute('data-round-bottom');
+    
+    gameState.tempMaxRounds = gameState.maxRounds;
+    gameState.tempSelectedGroups = [...gameState.selectedGroups];
+    gameState.tempBgMusicVolume = gameState.bgMusicVolume;
+    
+    document.getElementById('settingsPanel').style.display = 'flex';
+    document.getElementById('gameContainer').classList.remove('active');
+    document.getElementById('playerSelection').style.display = 'none';
+    updateSettingsDisplay();
+    
+    setTimeout(() => {
+        document.getElementById('settingsPanel').scrollTop = 0;
+    }, 100);
+}
 
         function saveSettings() {
             const roundsInput = document.getElementById('roundsInput');
@@ -3027,7 +3172,7 @@ function loadGameState() {
 
         function calculateScore(responseTime, isCorrect) {
             if (!isCorrect) {
-                return -10000;
+                return -2500;
             }
             
             const baseScore = 10000;
@@ -3364,6 +3509,11 @@ function selectPlayers(count) {
         
         document.getElementById('gameStatus').textContent = gameTexts.startMessage;
         document.getElementById('winnerOverlay').style.display = 'none';
+        document.body.classList.remove('game-results-showing');
+        const roundInfoElement = document.querySelector('.round-info');
+        if (roundInfoElement) {
+            roundInfoElement.style.display = '';  // Reset to default CSS display
+        }
         document.getElementById('instructions').classList.remove('hidden');
         
         // Update round info after everything is set
@@ -3707,11 +3857,11 @@ function selectPlayers(count) {
                 } else if (incorrectResponses.length > 0) {
                     if (incorrectResponses.length === 1) {
                         document.getElementById('gameStatus').textContent = 
-                            `💥 ${gameTexts.player} ${incorrectResponses[0].playerNumber} - ${gameTexts.wrongAnswer} -10000 ${gameTexts.points} 💥`;
+                            `💥 ${gameTexts.player} ${incorrectResponses[0].playerNumber} - ${gameTexts.wrongAnswer} -2500 ${gameTexts.points} 💥`;
                     } else {
                         const players = incorrectResponses.map(r => `${gameTexts.player} ${r.playerNumber}`).join(' & ');
                         document.getElementById('gameStatus').textContent = 
-                            `💥 ${players} - ${gameTexts.wrongAnswer} -10000 ${gameTexts.points} 💥`;
+                            `💥 ${players} - ${gameTexts.wrongAnswer} -2500 ${gameTexts.points} 💥`;
                     }
 
                     // Add this line
@@ -3979,6 +4129,11 @@ function resetGame() {
     }
     
     document.getElementById('winnerOverlay').style.display = 'none';
+    document.body.classList.remove('game-results-showing');
+    const roundInfoElement = document.querySelector('.round-info');
+    if (roundInfoElement) {
+        roundInfoElement.style.display = '';  // Reset to default CSS display
+    }
     document.getElementById('instructions').classList.remove('hidden');
 
     for (let i = 1; i <= 4; i++) {
@@ -3987,64 +4142,92 @@ function resetGame() {
     }
 }
 
-        function endGame() {
-            gameState.isPlaying = false;
-            gameState.roundInProgress = false;
-            gameState.correctAnswers.clear();
-            gameState.gamesPlayed++;
-            gameState.gameInProgress = false;
-            gameState.currentQuestion = null;
-            gameState.bubbleStates = {};
-            gameState.needsResume = false;
-            
-            pendingAnswers = [];
-            processingAnswers = false;
-            
-            document.body.classList.remove('paused');
-            
-            const totalGameScore = Object.values(gameState.scores).reduce((sum, score) => sum + score, 0);
-            if (totalGameScore > gameState.bestScore) {
-                gameState.bestScore = totalGameScore;
-            }
-            
-            if (roundEndTimeout) {
-                clearTimeout(roundEndTimeout);
-                roundEndTimeout = null;
-            }
-            
-            document.getElementById('resumeButton').style.display = 'none';
-            updateStartPauseButton();
-            saveGameState();
-            
-            document.getElementById('instructions').classList.add('hidden');
-            
-            playCongratsSound();
-            
-            let maxScore = Math.max(...Object.values(gameState.scores).slice(0, gameState.playerCount));
-            let winners = [];
-            
-            for (let i = 1; i <= gameState.playerCount; i++) {
-                const score = gameState.scores[`player${i}`];
-                if (score === maxScore) {
-                    winners.push(`${gameTexts.player} ${i}`);
-                }
-            }
-            
-            let winnerText;
-            if (winners.length === 1) {
-                winnerText = gameTexts.playerWins.replace('{player}', winners[0]) + '<br>' + gameTexts.score.replace('{score}', maxScore);
-            } else {
-                winnerText = gameTexts.tieGame + '<br>' + gameTexts.winners.replace('{players}', winners.join(' & ')) + '<br>' + gameTexts.score.replace('{score}', maxScore);
-            }
-
-            document.getElementById('winnerText').innerHTML = winnerText;
-            
-            setTimeout(() => {
-                document.getElementById('championChart').innerHTML = '';
-                createChampionChart();
-                document.getElementById('winnerOverlay').style.display = 'flex';
-            }, 1000);
+function endGame() {
+    gameState.isPlaying = false;
+    gameState.roundInProgress = false;
+    gameState.correctAnswers.clear();
+    gameState.gamesPlayed++;
+    gameState.gameInProgress = false;
+    gameState.currentQuestion = null;
+    gameState.bubbleStates = {};
+    gameState.needsResume = false;
+    
+    pendingAnswers = [];
+    processingAnswers = false;
+    
+    document.body.classList.remove('paused');
+    
+    // ADD THIS LINE - Add CSS class to hide all round info
+    document.body.classList.add('game-results-showing');
+    
+    // CLEAR all portrait mode round info attributes
+    const player1 = document.querySelector('.player-1');
+    const player2 = document.querySelector('.player-2');
+    const player3 = document.querySelector('.player-3');
+    const player4 = document.querySelector('.player-4');
+    if (player1) player1.removeAttribute('data-round-info');
+    if (player2) player2.removeAttribute('data-round-info');
+    if (player3) player3.removeAttribute('data-round-info');
+    if (player4) player4.removeAttribute('data-round-info');
+    document.body.removeAttribute('data-round-top');
+    document.body.removeAttribute('data-round-bottom');
+    
+    // Also clear the game container attributes
+    const gameContainer = document.getElementById('gameContainer');
+    if (gameContainer) {
+        gameContainer.removeAttribute('data-round-top');
+        gameContainer.removeAttribute('data-round-bottom');
+    }
+    
+    // HIDE the central round info box
+    const roundInfoElement = document.querySelector('.round-info');
+    if (roundInfoElement) {
+        roundInfoElement.style.display = 'none';
+    }
+    
+    const totalGameScore = Object.values(gameState.scores).reduce((sum, score) => sum + score, 0);
+    if (totalGameScore > gameState.bestScore) {
+        gameState.bestScore = totalGameScore;
+    }
+    
+    if (roundEndTimeout) {
+        clearTimeout(roundEndTimeout);
+        roundEndTimeout = null;
+    }
+    
+    document.getElementById('resumeButton').style.display = 'none';
+    updateStartPauseButton();
+    saveGameState();
+    
+    document.getElementById('instructions').classList.add('hidden');
+    
+    playCongratsSound();
+    
+    let maxScore = Math.max(...Object.values(gameState.scores).slice(0, gameState.playerCount));
+    let winners = [];
+    
+    for (let i = 1; i <= gameState.playerCount; i++) {
+        const score = gameState.scores[`player${i}`];
+        if (score === maxScore) {
+            winners.push(`${gameTexts.player} ${i}`);
         }
+    }
+    
+    let winnerText;
+    if (winners.length === 1) {
+        winnerText = gameTexts.playerWins.replace('{player}', winners[0]) + '<br>' + gameTexts.score.replace('{score}', maxScore);
+    } else {
+        winnerText = gameTexts.tieGame + '<br>' + gameTexts.winners.replace('{players}', winners.join(' & ')) + '<br>' + gameTexts.score.replace('{score}', maxScore);
+    }
+
+    document.getElementById('winnerText').innerHTML = winnerText;
+    
+    setTimeout(() => {
+        document.getElementById('championChart').innerHTML = '';
+        createChampionChart();
+        document.getElementById('winnerOverlay').style.display = 'flex';
+    }, 1000);
+}
 
         initializeAudio();
         initializeAudioFiles();
