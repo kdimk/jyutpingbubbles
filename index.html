@@ -1349,7 +1349,7 @@
     }
 }
 
-/* 1-Player mode portrait phone optimization */
+/* 1-Player mode portrait phone optimization - smaller sizes like 2-player landscape */
 @media (max-width: 480px) and (orientation: portrait) {
     /* Make 1-player mode use full viewport in portrait */
     .layout-1player .game-container {
@@ -1366,14 +1366,14 @@
         height: 100% !important;
     }
     
-    /* Larger, full-width controls */
+    /* Smaller controls similar to 2-player landscape */
     .layout-1player .game-controls {
         position: absolute;
-        top: 10px;
+        top: 5px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 8px;
+        gap: 4px;
         width: 95%;
         justify-content: center;
         z-index: 100;
@@ -1381,17 +1381,17 @@
     
     .layout-1player .control-button {
         flex: 1;
-        padding: 12px 8px !important;
-        font-size: 16px !important;
+        padding: clamp(4px, 1vw, 6px) clamp(6px, 1.2vw, 8px) !important;
+        font-size: clamp(8px, 1.3vw, 10px) !important;
         font-weight: 700;
         min-width: 0;
         white-space: nowrap;
     }
     
-    /* Larger score display */
+    /* Smaller score display */
     .layout-1player .player-header {
         position: absolute;
-        top: 60px;
+        top: 35px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 100;
@@ -1400,89 +1400,83 @@
     }
     
     .layout-1player .score {
-        font-size: clamp(36px, 8vw, 48px) !important;
+        font-size: clamp(24px, 5vw, 32px) !important;
         text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
     }
     
-    /* Larger round info */
+    /* Smaller round info like 2-player landscape */
     .layout-1player .round-info {
         position: absolute;
-        top: 120px;
+        top: 70px;
         left: 50%;
         transform: translateX(-50%);
-        font-size: 18px !important;
-        padding: 8px 16px !important;
+        font-size: clamp(8px, 1.5vw, 10px) !important;
+        padding: 2px 6px !important;
         width: 95%;
         max-width: none !important;
         text-align: center;
-        white-space: normal;
-    }
-    
-    /* Game status text larger */
-    .layout-1player .round-info #gameStatus {
-        font-size: 16px !important;
-        margin-top: 4px;
+        white-space: nowrap;
     }
     
     /* Optimize play area */
     .layout-1player .options-container {
-        margin-top: 180px !important;
-        height: calc(100vh - 260px) !important;
-        height: calc(100dvh - 260px) !important;
+        margin-top: 100px !important;
+        height: calc(100vh - 140px) !important;
+        height: calc(100dvh - 140px) !important;
         width: 100% !important;
-        padding: 10px !important;
+        padding: 5px !important;
     }
     
-    /* Larger bubbles for 1-player portrait */
+    /* Smaller bubbles similar to 2-player landscape */
     .layout-1player .bubble {
-        width: clamp(100px, 22vw, 140px) !important;
-        height: clamp(100px, 22vw, 140px) !important;
-        font-size: clamp(20px, 5vw, 28px) !important;
-        padding: clamp(8px, 2vw, 12px) !important;
+        width: clamp(70px, 14vw, 110px) !important;
+        height: clamp(70px, 14vw, 110px) !important;
+        font-size: clamp(16px, 3.5vw, 22px) !important;
+        padding: clamp(4px, 1vw, 8px) !important;
     }
     
-    /* Larger instructions */
+    /* Smaller instructions */
     .layout-1player .instructions {
         position: absolute;
-        bottom: 10px;
+        bottom: 5px;
         left: 50%;
         transform: translateX(-50%);
-        font-size: 14px !important;
-        padding: 8px 12px !important;
+        font-size: clamp(6px, 1.2vw, 8px) !important;
+        padding: 2px 4px !important;
         width: 95%;
         max-width: none !important;
         text-align: center;
-        line-height: 1.3;
+        line-height: 1.2;
     }
     
-    /* Larger countdown for 1-player */
+    /* Smaller countdown for 1-player */
     .layout-1player .player-countdown {
-        font-size: clamp(40px, 10vw, 60px) !important;
-        padding: 12px 20px !important;
+        font-size: clamp(28px, 6vw, 36px) !important;
+        padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2vw, 12px) !important;
     }
 }
 
-/* Slightly larger phones (iPhone Plus, etc.) in portrait */
+/* Slightly larger phones (iPhone Plus, etc.) in portrait - keep proportionally small */
 @media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
     .layout-1player .control-button {
-        font-size: 18px !important;
-        padding: 14px 10px !important;
+        font-size: clamp(9px, 1.5vw, 11px) !important;
+        padding: clamp(5px, 1.2vw, 7px) clamp(7px, 1.4vw, 9px) !important;
     }
     
     .layout-1player .round-info {
-        font-size: 20px !important;
-        padding: 10px 20px !important;
+        font-size: clamp(9px, 1.7vw, 11px) !important;
+        padding: 3px 7px !important;
     }
     
     .layout-1player .instructions {
-        font-size: 16px !important;
-        padding: 10px 16px !important;
+        font-size: clamp(7px, 1.4vw, 9px) !important;
+        padding: 3px 5px !important;
     }
     
     .layout-1player .bubble {
-        width: clamp(110px, 24vw, 150px) !important;
-        height: clamp(110px, 24vw, 150px) !important;
-        font-size: clamp(22px, 5.5vw, 32px) !important;
+        width: clamp(80px, 16vw, 120px) !important;
+        height: clamp(80px, 16vw, 120px) !important;
+        font-size: clamp(18px, 4vw, 24px) !important;
     }
 }
 
