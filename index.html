@@ -2287,6 +2287,52 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         min-width: 90px !important;
     }
 }
+/* ============================================
+   4-PLAYER PORTRAIT MODE - FORCE 2x2 GRID ON PHONES
+   ============================================ */
+
+@media (orientation: portrait) and (max-width: 767px) {
+    /* Force smaller bubbles and better spacing for 4-player mode */
+    .layout-4players .bubble {
+        width: clamp(45px, 9vw, 70px) !important;
+        height: clamp(45px, 9vw, 70px) !important;
+        font-size: clamp(12px, 2.5vw, 16px) !important;
+        padding: clamp(2px, 0.5vw, 4px) !important;
+        border: 2px solid rgba(255, 255, 255, 0.6) !important;
+    }
+    
+    /* Adjust play areas for better bubble positioning */
+    .layout-4players .options-container {
+        margin-top: 50px !important;
+        height: calc(50vh - 70px) !important;
+        height: calc(50dvh - 70px) !important;
+        width: 100% !important;
+        padding: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* Player headers positioned higher */
+    .layout-4players .player-1 .player-header,
+    .layout-4players .player-2 .player-header,
+    .layout-4players .player-3 .player-header,
+    .layout-4players .player-4 .player-header {
+        top: 8px !important;
+    }
+    
+    /* Player names smaller */
+    .layout-4players .player-name {
+        font-size: clamp(10px, 2vw, 14px) !important;
+        margin-bottom: clamp(3px, 0.5vw, 5px) !important;
+    }
+    
+    /* Scores smaller */
+    .layout-4players .score {
+        font-size: clamp(16px, 3.5vw, 24px) !important;
+    }
+}
+
 
     </style>
 </head>
@@ -3094,6 +3140,46 @@ function generateGridPositions(containerRect, bubbleSize, bubbleCount, seed) {
     return positions;
 }
 
+// NEW FUNCTION - Force 2x2 grid for 4-player portrait mode on phones
+function generatePhone4PlayerGrid(containerRect, bubbleSize, bubbleCount) {
+    const positions = [];
+    const radius = bubbleSize / 2;
+    
+    // Force 2x2 grid for 4 bubbles
+    const cols = 2;
+    const rows = 2;
+    
+    // Calculate available space with margins
+    const margin = 15; // Smaller margin for phones
+    const availableWidth = containerRect.width - (2 * margin);
+    const availableHeight = containerRect.height - (2 * margin);
+    
+    // Calculate cell dimensions
+    const cellWidth = availableWidth / cols;
+    const cellHeight = availableHeight / rows;
+    
+    // Calculate starting position to center the grid
+    const startX = margin + (cellWidth / 2);
+    const startY = margin + (cellHeight / 2);
+    
+    // Generate 4 positions in 2x2 grid
+    for (let i = 0; i < Math.min(4, bubbleCount); i++) {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        
+        const x = startX + (col * cellWidth);
+        const y = startY + (row * cellHeight);
+        
+        positions.push({
+            x: x,
+            y: y,
+            radius: radius
+        });
+    }
+    
+    return positions;
+}
+
         function setCookie(name, value, days = 365) {
             const expires = new Date();
             expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -3238,52 +3324,64 @@ function loadGameState() {
             document.addEventListener('keydown', unlockAudio, { once: true });
         }
 
-        function positionBubblesRandomly(container, bubbles, playerId) {
+function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
     const radius = bubbleSize / 2;
     const containerRect = container.getBoundingClientRect();
     
-    // Try grid-based positioning first
-    const seed = gameState.roundSeed + parseInt(playerId.replace('options', '')) * 1000;
-    let positions = generateGridPositions(containerRect, bubbleSize, bubbles.length, seed);
+    // Check if this is 4-player portrait mode on phone
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    const isPhone = window.matchMedia("(max-width: 767px)").matches;
+    const is4Player = gameState.playerCount === 4;
     
-    // Check for any overlaps and fix them
-    for (let i = 0; i < positions.length; i++) {
-        for (let j = i + 1; j < positions.length; j++) {
-            if (checkOverlap(positions[i], positions[j])) {
-                // If overlap found, try to nudge the second bubble
-                const attempts = 20;
-                for (let attempt = 0; attempt < attempts; attempt++) {
-                    const nudgeX = (seededRandom(seed + i + j + attempt * 100) - 0.5) * 60;
-                    const nudgeY = (seededRandom(seed + i + j + attempt * 200) - 0.5) * 60;
-                    
-                    const newPos = {
-                        x: positions[j].x + nudgeX,
-                        y: positions[j].y + nudgeY,
-                        radius: positions[j].radius
-                    };
-                    
-                    // Check bounds
-                    const minX = radius + 20;
-                    const maxX = containerRect.width - radius - 20;
-                    const minY = radius + 20;
-                    const maxY = containerRect.height - radius - 20;
-                    
-                    if (newPos.x >= minX && newPos.x <= maxX && 
-                        newPos.y >= minY && newPos.y <= maxY) {
+    let positions;
+    
+    if (isPortrait && isPhone && is4Player) {
+        // Use special 2x2 grid for 4-player portrait mode on phones
+        positions = generatePhone4PlayerGrid(containerRect, bubbleSize, bubbles.length);
+    } else {
+        // Use existing grid positioning for other cases
+        const seed = gameState.roundSeed + parseInt(playerId.replace('options', '')) * 1000;
+        positions = generateGridPositions(containerRect, bubbleSize, bubbles.length, seed);
+        
+        // Check for overlaps and fix them (existing code)
+        for (let i = 0; i < positions.length; i++) {
+            for (let j = i + 1; j < positions.length; j++) {
+                if (checkOverlap(positions[i], positions[j])) {
+                    // If overlap found, try to nudge the second bubble
+                    const attempts = 20;
+                    for (let attempt = 0; attempt < attempts; attempt++) {
+                        const nudgeX = (seededRandom(seed + i + j + attempt * 100) - 0.5) * 60;
+                        const nudgeY = (seededRandom(seed + i + j + attempt * 200) - 0.5) * 60;
                         
-                        // Check if new position doesn't overlap with others
-                        let hasOverlap = false;
-                        for (let k = 0; k < positions.length; k++) {
-                            if (k !== j && checkOverlap(newPos, positions[k])) {
-                                hasOverlap = true;
+                        const newPos = {
+                            x: positions[j].x + nudgeX,
+                            y: positions[j].y + nudgeY,
+                            radius: positions[j].radius
+                        };
+                        
+                        // Check bounds
+                        const minX = radius + 20;
+                        const maxX = containerRect.width - radius - 20;
+                        const minY = radius + 20;
+                        const maxY = containerRect.height - radius - 20;
+                        
+                        if (newPos.x >= minX && newPos.x <= maxX && 
+                            newPos.y >= minY && newPos.y <= maxY) {
+                            
+                            // Check if new position doesn't overlap with others
+                            let hasOverlap = false;
+                            for (let k = 0; k < positions.length; k++) {
+                                if (k !== j && checkOverlap(newPos, positions[k])) {
+                                    hasOverlap = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!hasOverlap) {
+                                positions[j] = newPos;
                                 break;
                             }
-                        }
-                        
-                        if (!hasOverlap) {
-                            positions[j] = newPos;
-                            break;
                         }
                     }
                 }
