@@ -1076,24 +1076,66 @@
         .layout-2players .player-area:not(.player-1):not(.player-2) { display: none; }
 
         @media (max-width: 896px) and (orientation: landscape) {
+            body {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            
+            .player-selection,
+            .settings-panel,
             .game-container {
-                width: 100vw;
-                max-width: none;
-                margin: 0;
-                padding: 5px;
+                padding-left: 10px;
+                padding-right: 10px;
             }
             
-            .player-area {
-                padding: clamp(5px, 1vw, 10px);
+            /* Use more horizontal space in landscape */
+            .layout-2players .game-container {
+                flex-direction: row; /* Keep side-by-side in landscape */
             }
             
-            /* Make bubbles use more horizontal space */
-            .options-container {
-                width: 100%;
+            .layout-2players .player-area {
                 height: 100%;
-                padding: 5px;
+                flex: 1;
+            }
+            
+            /* Optimize bubble sizes for landscape */
+            .layout-2players .bubble {
+                width: clamp(70px, 12vw, 120px);
+                height: clamp(70px, 12vw, 120px);
+                font-size: clamp(16px, 3vw, 24px);
+            }
+            
+            /* Better button positioning in landscape */
+            .layout-2players .game-controls {
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .layout-2players .round-info {
+                top: 45px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: clamp(8px, 1.8vw, 12px);
+            }
+            
+            /* Make instructions smaller in landscape */
+            .instructions {
+                font-size: clamp(8px, 1.5vw, 10px);
+                padding: 4px 8px;
+                bottom: 10px;
             }
         }
+
+        /* Extra wide phones in landscape (like iPhone Pro Max) */
+        @media (min-width: 700px) and (max-width: 896px) and (orientation: landscape) {
+            .layout-2players .bubble {
+                width: clamp(80px, 10vw, 140px);
+                height: clamp(80px, 10vw, 140px);
+                font-size: clamp(18px, 2.5vw, 28px);
+            }
+        }
+
 
     </style>
 </head>
