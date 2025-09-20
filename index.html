@@ -29,10 +29,10 @@
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
             /* ENHANCED: Use dynamic safe area variables */
-            padding-top: max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top)));
-            padding-bottom: max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom)));
-            padding-left: max(env(safe-area-inset-left), var(--dynamic-safe-left, env(safe-area-inset-left)));
-            padding-right: max(env(safe-area-inset-right), var(--dynamic-safe-right, env(safe-area-inset-right)));
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         body.paused .player-area {
@@ -376,10 +376,10 @@
 
         .layout-4players .round-info {
             position: absolute;
-            top: 50%;
+            top: 56%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: clamp(4px, 0.8vw, 7px);
+            font-size: clamp(10px, 2vw, 14px);
             padding: clamp(1px, 0.2vw, 2px) clamp(2px, 0.4vw, 3px);
             z-index: 200;
             background: rgba(255, 255, 255, 0.9);
@@ -690,14 +690,6 @@
             transform: translateX(-50%);
         }
 
-        .layout-4players .round-info {
-            position: absolute;
-            top: 58%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 200;
-        }
-
         @media (max-width: 480px) {
             .round-info {
                 font-size: clamp(8px, 1.8vw, 12px);
@@ -745,6 +737,11 @@
             border-radius: 25px;
             border: 3px solid #FFD700;
             display: none;
+        }
+
+        .layout-4players .player-countdown {
+            font-size: clamp(28px, 5vw, 36px);  /* Smaller than default */
+            padding: clamp(6px, 1.5vw, 10px) clamp(10px, 2vw, 15px);  /* Smaller padding */
         }
 
         @keyframes countdownPulse {
@@ -1213,46 +1210,14 @@
         
         function detectActualViewport() {
             const root = document.documentElement;
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-            const svh = window.screen.height;
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
-            if (isMobile) {
-                // Calculate browser UI space
-                const browserUIHeight = Math.max(0, svh - vh);
-                
-                // Only apply adjustments if significant browser UI is detected
-                if (browserUIHeight > 100) {
-                    const additionalTop = Math.min(browserUIHeight * 0.6, 40);
-                    const additionalBottom = Math.min(browserUIHeight * 0.4, 30);
-                    
-                    root.style.setProperty('--dynamic-safe-top', `calc(env(safe-area-inset-top) + ${additionalTop}px)`);
-                    root.style.setProperty('--dynamic-safe-bottom', `calc(env(safe-area-inset-bottom) + ${additionalBottom}px)`);
-                    root.style.setProperty('--dynamic-safe-left', 'env(safe-area-inset-left)');
-                    root.style.setProperty('--dynamic-safe-right', 'env(safe-area-inset-right)');
-                    
-                    console.log('Enhanced viewport applied:', {
-                        browserUIHeight,
-                        additionalTop,
-                        additionalBottom
-                    });
-                } else {
-                    // Use standard safe area insets
-                    root.style.setProperty('--dynamic-safe-top', 'env(safe-area-inset-top)');
-                    root.style.setProperty('--dynamic-safe-bottom', 'env(safe-area-inset-bottom)');
-                    root.style.setProperty('--dynamic-safe-left', 'env(safe-area-inset-left)');
-                    root.style.setProperty('--dynamic-safe-right', 'env(safe-area-inset-right)');
-                }
-            } else {
-                // Desktop - use standard safe areas
-                root.style.setProperty('--dynamic-safe-top', 'env(safe-area-inset-top)');
-                root.style.setProperty('--dynamic-safe-bottom', 'env(safe-area-inset-bottom)');
-                root.style.setProperty('--dynamic-safe-left', 'env(safe-area-inset-left)');
-                root.style.setProperty('--dynamic-safe-right', 'env(safe-area-inset-right)');
-            }
+            // Use standard safe area insets only - no additional padding
+            root.style.setProperty('--dynamic-safe-top', 'env(safe-area-inset-top)');
+            root.style.setProperty('--dynamic-safe-bottom', 'env(safe-area-inset-bottom)');
+            root.style.setProperty('--dynamic-safe-left', 'env(safe-area-inset-left)');
+            root.style.setProperty('--dynamic-safe-right', 'env(safe-area-inset-right)');
         }
-
+        
         // Call viewport detection
         detectActualViewport();
         window.addEventListener('resize', detectActualViewport);
@@ -1293,7 +1258,7 @@
             getReady: "🎵 Get ready for Jyutping practice! 🎵",
             listen: "🎧 Listen and click the correct Jyutping! 🎧",
             pausedMessage: "⏸️ Game Paused - Click Resume to continue! ⏸️",
-            countdownGo: "Listen! 🎧",
+            countdownGo: "Listen!",
             playerWins: "🏆 {player} Wins! 🏆",
             tieGame: "🤝 Tie Game! 🤝",
             winners: "🎊 Winners: {players} 🎊",
