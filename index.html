@@ -1829,7 +1829,102 @@
     }
 }
 
+/* 2-Player mode portrait phone optimization - move headers lower for center button space */
+@media (max-width: 480px) and (orientation: portrait) {
+    /* Move Player 1 header lower */
+    .layout-2players .player-1 .player-header {
+        position: absolute;
+        top: 60px; /* Moved down from default position */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        text-align: center;
+        z-index: 50;
+    }
+    
+    /* Move Player 2 header lower */
+    .layout-2players .player-2 .player-header {
+        position: absolute;
+        top: 60px; /* Moved down from default position */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        text-align: center;
+        z-index: 50;
+    }
+    
+    /* Keep buttons in center of screen */
+    .layout-2players .game-controls {
+        position: absolute;
+        top: 50%; /* Center of screen */
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        gap: 6px;
+        width: auto;
+        justify-content: center;
+        z-index: 200; /* Above player headers */
+        padding: 8px 10px;
+    }
+    
+    /* Move round info under Player 2's score */
+    .layout-2players .round-info {
+        position: absolute;
+        top: calc(50% + 90px); /* Below Player 2's header */
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(10px, 1.8vw, 12px) !important;
+        padding: 2px 7px !important;
+        width: auto;
+        max-width: 90%;
+        text-align: center;
+        white-space: nowrap;
+        z-index: 200;
+    }
+    
+    /* Adjust play areas to account for moved headers */
+    .layout-2players .player-1 .options-container {
+        margin-top: 100px; /* Space for moved header */
+        height: calc(50vh - 120px) !important;
+        height: calc(50dvh - 120px) !important;
+        width: 100% !important;
+        padding: 3px !important;
+    }
+    
+    .layout-2players .player-2 .options-container {
+        margin-top: 130px; /* Extra space for round info */
+        height: calc(50vh - 150px) !important;
+        height: calc(50dvh - 150px) !important;
+        width: 100% !important;
+        padding: 3px !important;
+    }
+}
 
+/* Larger phones adjustments */
+@media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
+    .layout-2players .player-1 .player-header,
+    .layout-2players .player-2 .player-header {
+        top: 70px; /* Slightly more space on larger phones */
+    }
+    
+    .layout-2players .round-info {
+        top: calc(50% + 100px);
+        font-size: clamp(12px, 2.4vw, 16px) !important;
+        padding: 4px 8px !important;
+    }
+    
+    .layout-2players .player-1 .options-container {
+        margin-top: 110px;
+        height: calc(50vh - 130px) !important;
+        height: calc(50dvh - 130px) !important;
+    }
+    
+    .layout-2players .player-2 .options-container {
+        margin-top: 140px;
+        height: calc(50vh - 160px) !important;
+        height: calc(50dvh - 160px) !important;
+    }
+}
 
     </style>
 </head>
