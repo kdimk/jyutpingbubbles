@@ -1349,7 +1349,7 @@
     }
 }
 
-/* 1-Player mode portrait phone optimization - fix instructions width */
+/* 1-Player mode portrait phone optimization - keep instruction lines intact */
 @media (max-width: 480px) and (orientation: portrait) {
     /* Make 1-player mode use full viewport in portrait */
     .layout-1player .game-container {
@@ -1438,8 +1438,8 @@
     /* Optimize play area */
     .layout-1player .options-container {
         margin-top: 115px !important;
-        height: calc(100vh - 155px) !important;
-        height: calc(100dvh - 155px) !important;
+        height: calc(100vh - 180px) !important; /* More space for instructions */
+        height: calc(100dvh - 180px) !important;
         width: 100% !important;
         padding: 5px !important;
     }
@@ -1452,28 +1452,31 @@
         padding: clamp(5px, 1.2vw, 10px) !important;
     }
     
-    /* Instructions 20% bigger - allow more width and prevent unnecessary line breaks */
+    /* Instructions 20% bigger - keep each line intact */
     .layout-1player .instructions {
         position: absolute;
         bottom: 5px;
         left: 50%;
         transform: translateX(-50%);
         font-size: clamp(7px, 1.44vw, 10px) !important; /* 20% bigger */
-        padding: 2px 8px !important;
-        width: auto !important; /* Let it size naturally */
+        padding: 4px 8px !important; /* More vertical padding for 2 lines */
+        width: auto !important;
         max-width: 98% !important; /* Use almost full width */
         text-align: center;
-        line-height: 1.2;
-        white-space: nowrap !important; /* Prevent line breaks when there's space */
-        overflow: hidden !important; /* Hide any overflow */
-        text-overflow: ellipsis !important; /* Show ... if text is too long */
+        line-height: 1.3 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2px !important;
     }
     
-    /* If the text is still too long, allow wrapping but with better control */
+    /* Make each instruction line stay intact */
     .layout-1player .instructions #instructionLine1,
     .layout-1player .instructions #instructionLine2 {
-        display: inline !important; /* Keep on same line if possible */
-        white-space: nowrap !important;
+        white-space: nowrap !important; /* Keep each line intact */
+        overflow: hidden !important;
+        text-overflow: ellipsis !important; /* Show ... if line is too long */
+        width: 100% !important;
+        display: block !important;
     }
     
     /* Countdown 20% bigger */
@@ -1497,9 +1500,13 @@
     
     .layout-1player .instructions {
         font-size: clamp(12px, 2.4vw, 16px) !important; /* 20% bigger */
-        padding: 3px 10px !important;
-        max-width: 98% !important; /* Use almost full width */
-        white-space: nowrap !important;
+        padding: 5px 10px !important;
+        max-width: 98% !important;
+    }
+    
+    .layout-1player .instructions #instructionLine1,
+    .layout-1player .instructions #instructionLine2 {
+        white-space: nowrap !important; /* Keep each line intact */
     }
     
     .layout-1player .bubble {
