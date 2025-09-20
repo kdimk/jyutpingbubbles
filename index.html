@@ -1217,8 +1217,14 @@
 /* Rotate Player 1 in 2-player mode - PORTRAIT FOR ALL DEVICES */
 @media (orientation: portrait) {
     .layout-2players .player-1 {
+        border-top: 2px solid rgba(255, 255, 255, 0.4);
         transform: rotate(180deg) !important;
     }
+
+    .layout-2players .player-2 {
+        border-top: 2px solid rgba(255, 255, 255, 0.4);
+    }
+
 }
 
 /* 2-Player mode portrait optimization - ALL DEVICES BASE */
@@ -1366,7 +1372,7 @@
     .layout-2players .player-2::after {
         content: attr(data-round-info);
         position: absolute;
-        top: 80px; /* Changed from 85px to 100px to be right under score */
+        top: 100px; /* Changed from 85px to 100px to be right under score */
         left: 50%;
         transform: translateX(-50%);
         font-family: 'Fredoka One', cursive;
@@ -1562,7 +1568,7 @@
     .layout-4players .player-4::after {
         content: attr(data-round-info);
         position: absolute;
-        top: 80px; /* Same as 2-player mode */
+        top: 100px; /* Same as 2-player mode */
         left: 50%;
         transform: translateX(-50%);
         font-family: 'Fredoka One', cursive;
@@ -1575,11 +1581,13 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
         white-space: pre-line;
-        max-width: 100%;
+        width: fit-content; /* Fit content width */
+        max-width: 95%; /* Only limit maximum width */
         text-align: center;
         z-index: 100;
         pointer-events: none;
         line-height: 1.2;
+        box-sizing: border-box; /* Include padding/border in width calculation */
     }
 }
 
@@ -1612,11 +1620,13 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
         white-space: pre-line;
-        max-width: 90%;
+        width: fit-content; /* Fit content width */
+        max-width: 95%; /* Only limit maximum width */
         text-align: center;
         z-index: 100;
         pointer-events: none;
         line-height: 1.2;
+        box-sizing: border-box;
     }
 
     
