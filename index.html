@@ -1829,12 +1829,13 @@
     }
 }
 
+
 /* 2-Player mode portrait phone optimization - minimal header adjustment for button space */
 @media (max-width: 480px) and (orientation: portrait) {
-    /* Move Player 1 header slightly lower - just enough for buttons */
+    /* Move Player 1 header minimally - just enough for buttons */
     .layout-2players .player-1 .player-header {
         position: absolute;
-        top: 35px; /* Just enough space for buttons */
+        top: 20px; /* Higher - minimal space for buttons */
         left: 50%;
         transform: translateX(-50%);
         width: 100%;
@@ -1842,10 +1843,10 @@
         z-index: 50;
     }
     
-    /* Move Player 2 header slightly lower - just enough for buttons */
+    /* Move Player 2 header minimally - just enough for buttons */
     .layout-2players .player-2 .player-header {
         position: absolute;
-        top: 35px; /* Just enough space for buttons */
+        top: 20px; /* Higher - minimal space for buttons */
         left: 50%;
         transform: translateX(-50%);
         width: 100%;
@@ -1869,10 +1870,10 @@
         border-radius: 20px; /* Rounded container for shadow space */
     }
     
-    /* Move round info under Player 2's score */
+    /* Move round info lower - below Player 2's score area */
     .layout-2players .round-info {
         position: absolute;
-        top: calc(50% + 70px); /* Below Player 2's header, closer than before */
+        top: calc(50% + 100px); /* Much lower to avoid covering Player 2's score */
         left: 50%;
         transform: translateX(-50%);
         font-size: clamp(10px, 1.8vw, 12px) !important;
@@ -1886,17 +1887,17 @@
     
     /* Adjust play areas to account for moved headers */
     .layout-2players .player-1 .options-container {
-        margin-top: 75px; /* Less margin since headers aren't as low */
-        height: calc(50vh - 95px) !important;
-        height: calc(50dvh - 95px) !important;
+        margin-top: 60px; /* Less margin since headers are higher */
+        height: calc(50vh - 80px) !important;
+        height: calc(50dvh - 80px) !important;
         width: 100% !important;
         padding: 3px !important;
     }
     
     .layout-2players .player-2 .options-container {
-        margin-top: 105px; /* Space for round info */
-        height: calc(50vh - 125px) !important;
-        height: calc(50dvh - 125px) !important;
+        margin-top: 135px; /* More space for round info below */
+        height: calc(50vh - 155px) !important;
+        height: calc(50dvh - 155px) !important;
         width: 100% !important;
         padding: 3px !important;
     }
@@ -1933,7 +1934,7 @@
 @media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
     .layout-2players .player-1 .player-header,
     .layout-2players .player-2 .player-header {
-        top: 40px; /* Slightly more space on larger phones */
+        top: 25px; /* Slightly more space on larger phones */
     }
     
     .layout-2players .game-controls {
@@ -1941,21 +1942,21 @@
     }
     
     .layout-2players .round-info {
-        top: calc(50% + 80px);
+        top: calc(50% + 110px); /* Even lower on larger phones */
         font-size: clamp(12px, 2.4vw, 16px) !important;
         padding: 4px 8px !important;
     }
     
     .layout-2players .player-1 .options-container {
-        margin-top: 80px;
-        height: calc(50vh - 100px) !important;
-        height: calc(50dvh - 100px) !important;
+        margin-top: 65px;
+        height: calc(50vh - 85px) !important;
+        height: calc(50dvh - 85px) !important;
     }
     
     .layout-2players .player-2 .options-container {
-        margin-top: 115px;
-        height: calc(50vh - 135px) !important;
-        height: calc(50dvh - 135px) !important;
+        margin-top: 145px;
+        height: calc(50vh - 165px) !important;
+        height: calc(50dvh - 165px) !important;
     }
     
     .layout-2players .control-button {
