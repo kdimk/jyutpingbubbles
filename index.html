@@ -1672,6 +1672,284 @@
     }
 }
 
+/* ============================================
+   LANDSCAPE MODE OPTIMIZATIONS - FULL VIEWPORT USAGE
+   ============================================ */
+
+/* Landscape mode optimizations for phones - FULL VIEWPORT USAGE */
+@media (max-width: 896px) and (orientation: landscape) {
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden;
+    }
+    
+    .player-selection,
+    .settings-panel {
+        padding: 5px;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+    }
+    
+    .game-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        max-width: none;
+        max-height: none;
+    }
+    
+    .player-area {
+        padding: 2px !important;
+        margin: 0 !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    /* Force 2-player layout to use full width */
+    .layout-2players .game-container {
+        flex-direction: row;
+        gap: 0;
+    }
+    
+    .layout-2players .player-area {
+        height: 100vh;
+        height: 100dvh;
+        flex: 1;
+        width: 50vw;
+    }
+    
+    /* Remove all borders and spacing */
+    .layout-2players .player-1 {
+        border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-left: none !important;
+        border-top: none !important;
+        border-bottom: none !important;
+    }
+    
+    .layout-2players .player-2 {
+        border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-right: none !important;
+        border-top: none !important;
+        border-bottom: none !important;
+    }
+    
+    /* Optimize control positioning for landscape */
+    .layout-2players .game-controls {
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 200;
+    }
+    
+    .layout-2players .round-info {
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(8px, 1.5vw, 10px);
+        padding: 2px 6px;
+        z-index: 200;
+    }
+    
+    /* Smaller bubbles for landscape */
+    .layout-2players .bubble {
+        width: clamp(60px, 8vw, 100px);
+        height: clamp(60px, 8vw, 100px);
+        font-size: clamp(14px, 2.5vw, 20px);
+        padding: clamp(4px, 1vw, 8px);
+    }
+    
+    /* Optimize instructions for landscape */
+    .instructions {
+        font-size: clamp(6px, 1.2vw, 8px);
+        padding: 2px 4px;
+        bottom: 5px;
+        max-width: 95%;
+    }
+    
+    /* Remove safe area insets in landscape on phones */
+    .layout-2players .player-header {
+        margin-bottom: clamp(5px, 1vw, 10px);
+    }
+    
+    .options-container {
+        height: calc(100% - 60px) !important;
+        width: 100% !important;
+        padding: 2px !important;
+    }
+}
+
+/* For very wide phones in landscape */
+@media (min-width: 700px) and (max-width: 896px) and (orientation: landscape) {
+    .layout-2players .bubble {
+        width: clamp(70px, 9vw, 120px);
+        height: clamp(70px, 9vw, 120px);
+        font-size: clamp(16px, 3vw, 24px);
+    }
+    
+    .layout-2players .round-info {
+        font-size: clamp(10px, 1.8vw, 12px);
+    }
+}
+
+/* iPad optimizations for 2-player and 4-player modes */
+@media (min-width: 768px) and (max-width: 1024px) {
+    /* Base iPad adjustments */
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .game-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        max-width: none;
+        max-height: none;
+    }
+    
+    /* 2-Player mode iPad optimization */
+    .layout-2players .game-container {
+        flex-direction: row;
+        gap: 0;
+    }
+    
+    .layout-2players .player-area {
+        padding: 8px !important;
+        margin: 0 !important;
+        height: 100vh;
+        height: 100dvh;
+        flex: 1;
+        width: 50vw;
+    }
+    
+    .layout-2players .player-1 {
+        border-right: 2px solid rgba(255, 255, 255, 0.4) !important;
+        border-left: none !important;
+        border-top: none !important;
+        border-bottom: none !important;
+    }
+    
+    .layout-2players .player-2 {
+        border-left: 2px solid rgba(255, 255, 255, 0.4) !important;
+        border-right: none !important;
+        border-top: none !important;
+        border-bottom: none !important;
+    }
+    
+    /* 4-Player mode iPad optimization */
+    .layout-4players .game-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+    }
+    
+    .layout-4players .player-area {
+        padding: 8px !important;
+        margin: 0 !important;
+        width: 50vw;
+        height: 50vh;
+        height: 50dvh;
+    }
+    
+    /* 4-Player borders - clean grid look */
+    .layout-4players .player-1 {
+        border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-left: none !important;
+        border-top: none !important;
+    }
+    
+    .layout-4players .player-2 {
+        border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-right: none !important;
+        border-top: none !important;
+    }
+    
+    .layout-4players .player-3 {
+        border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-left: none !important;
+        border-bottom: none !important;
+    }
+    
+    .layout-4players .player-4 {
+        border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-right: none !important;
+        border-bottom: none !important;
+    }
+    
+    /* Control positioning for iPad */
+    .layout-2players .game-controls,
+    .layout-4players .game-controls {
+        z-index: 200;
+    }
+    
+    .layout-2players .round-info,
+    .layout-4players .round-info {
+        z-index: 200;
+    }
+    
+    /* Optimize bubble sizes for iPad */
+    .layout-2players .bubble {
+        width: clamp(100px, 12vw, 180px);
+        height: clamp(100px, 12vw, 180px);
+        font-size: clamp(20px, 3vw, 36px);
+    }
+    
+    .layout-4players .bubble {
+        width: clamp(80px, 10vw, 140px);
+        height: clamp(80px, 10vw, 140px);
+        font-size: clamp(16px, 2.5vw, 28px);
+    }
+    
+    /* Options container optimization */
+    .options-container {
+        width: 100% !important;
+        height: calc(100% - 80px) !important;
+        padding: 4px !important;
+    }
+}
+
+/* iPad Pro and larger tablets */
+@media (min-width: 1025px) {
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .game-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+    }
+    
+    /* Even larger bubbles for iPad Pro */
+    .layout-2players .bubble {
+        width: clamp(120px, 14vw, 200px);
+        height: clamp(120px, 14vw, 200px);
+        font-size: clamp(24px, 4vw, 40px);
+    }
+    
+    .layout-4players .bubble {
+        width: clamp(100px, 12vw, 160px);
+        height: clamp(100px, 12vw, 160px);
+        font-size: clamp(20px, 3vw, 32px);
+    }
+}
+
     </style>
 </head>
 <body class="layout-2players">
