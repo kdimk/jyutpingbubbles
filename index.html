@@ -1349,6 +1349,143 @@
     }
 }
 
+/* 1-Player mode portrait phone optimization */
+@media (max-width: 480px) and (orientation: portrait) {
+    /* Make 1-player mode use full viewport in portrait */
+    .layout-1player .game-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+    }
+    
+    .layout-1player .player-area {
+        padding: 5px !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    /* Larger, full-width controls */
+    .layout-1player .game-controls {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        width: 95%;
+        justify-content: center;
+        z-index: 100;
+    }
+    
+    .layout-1player .control-button {
+        flex: 1;
+        padding: 12px 8px !important;
+        font-size: 16px !important;
+        font-weight: 700;
+        min-width: 0;
+        white-space: nowrap;
+    }
+    
+    /* Larger score display */
+    .layout-1player .player-header {
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        width: 95%;
+        text-align: center;
+    }
+    
+    .layout-1player .score {
+        font-size: clamp(36px, 8vw, 48px) !important;
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+    }
+    
+    /* Larger round info */
+    .layout-1player .round-info {
+        position: absolute;
+        top: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 18px !important;
+        padding: 8px 16px !important;
+        width: 95%;
+        max-width: none !important;
+        text-align: center;
+        white-space: normal;
+    }
+    
+    /* Game status text larger */
+    .layout-1player .round-info #gameStatus {
+        font-size: 16px !important;
+        margin-top: 4px;
+    }
+    
+    /* Optimize play area */
+    .layout-1player .options-container {
+        margin-top: 180px !important;
+        height: calc(100vh - 260px) !important;
+        height: calc(100dvh - 260px) !important;
+        width: 100% !important;
+        padding: 10px !important;
+    }
+    
+    /* Larger bubbles for 1-player portrait */
+    .layout-1player .bubble {
+        width: clamp(100px, 22vw, 140px) !important;
+        height: clamp(100px, 22vw, 140px) !important;
+        font-size: clamp(20px, 5vw, 28px) !important;
+        padding: clamp(8px, 2vw, 12px) !important;
+    }
+    
+    /* Larger instructions */
+    .layout-1player .instructions {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 14px !important;
+        padding: 8px 12px !important;
+        width: 95%;
+        max-width: none !important;
+        text-align: center;
+        line-height: 1.3;
+    }
+    
+    /* Larger countdown for 1-player */
+    .layout-1player .player-countdown {
+        font-size: clamp(40px, 10vw, 60px) !important;
+        padding: 12px 20px !important;
+    }
+}
+
+/* Slightly larger phones (iPhone Plus, etc.) in portrait */
+@media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
+    .layout-1player .control-button {
+        font-size: 18px !important;
+        padding: 14px 10px !important;
+    }
+    
+    .layout-1player .round-info {
+        font-size: 20px !important;
+        padding: 10px 20px !important;
+    }
+    
+    .layout-1player .instructions {
+        font-size: 16px !important;
+        padding: 10px 16px !important;
+    }
+    
+    .layout-1player .bubble {
+        width: clamp(110px, 24vw, 150px) !important;
+        height: clamp(110px, 24vw, 150px) !important;
+        font-size: clamp(22px, 5.5vw, 32px) !important;
+    }
+}
+
     </style>
 </head>
 <body class="layout-2players">
