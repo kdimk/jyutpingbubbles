@@ -361,46 +361,35 @@
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
         }
-.layout-4players .game-controls {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: row;
-    gap: clamp(4px, 1vw, 6px);
-    z-index: 200;
-    flex-wrap: nowrap;
-}
 
-.layout-4players .round-info {
-    position: absolute;
-    top: 58%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: clamp(4px, 0.8vw, 7px);
-    padding: clamp(1px, 0.2vw, 2px) clamp(2px, 0.4vw, 3px);
-    z-index: 200;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(102, 126, 234, 0.3);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    white-space: nowrap;
-    max-width: 99%;
-}
+        .layout-4players .game-controls {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: row;
+            gap: clamp(4px, 1vw, 6px);
+            z-index: 200;
+            flex-wrap: nowrap;
+        }
 
-/* iPad/Mobile-specific positioning adjustments */
-@media (max-width: 1024px) and (orientation: landscape), 
-       (max-width: 820px) {
-    .layout-4players .game-controls {
-        top: 45%;
-    }
-    
-    .layout-4players .round-info {
-        top: 53%;
-    }
-}
+        .layout-4players .round-info {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(4px, 0.8vw, 7px);
+            padding: clamp(1px, 0.2vw, 2px) clamp(2px, 0.4vw, 3px);
+            z-index: 200;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            max-width: 99%;
+        }
 
         /* RESTORED: Exact Game3 player-area styling */
         .player-area {
@@ -1923,41 +1912,43 @@ function generateGridPositions(containerRect, bubbleSize, bubbleCount, seed) {
             });
         }
 
-        function loadGameState() {
-            const saved = getCookie('jyutpingGameState');
-            if (saved) {
-                gameState.scores = saved.scores || { player1: 0, player2: 0, player3: 0, player4: 0 };
-                gameState.currentRound = saved.currentRound || 1;
-                gameState.totalScore = saved.totalScore || 0;
-                gameState.gamesPlayed = saved.gamesPlayed || 0;
-                gameState.bestScore = saved.bestScore || 0;
-                gameState.playerCount = saved.playerCount || 2;
-                gameState.maxRounds = saved.maxRounds || 10;
-                gameState.selectedGroups = saved.selectedGroups || getAvailableGroups();
-                gameState.bgMusicVolume = saved.bgMusicVolume || 30;
-                gameState.playerAnswers = saved.playerAnswers || {};
-                
-                gameState.tempMaxRounds = gameState.maxRounds;
-                gameState.tempSelectedGroups = [...gameState.selectedGroups];
-                gameState.tempBgMusicVolume = gameState.bgMusicVolume;
-                
-                updateScores();
-                updateRoundInfo();
-                document.body.className = `layout-${gameState.playerCount}player${gameState.playerCount > 1 ? 's' : ''}`;
-            }
-            
-            gameState.gameInProgress = false;
-            gameState.isPlaying = false;
-            gameState.isPaused = false;
-            gameState.roundInProgress = false;
-            gameState.currentQuestion = null;
-            gameState.bubbleStates = {};
-            gameState.needsResume = false;
-            
-            document.getElementById('playerSelection').style.display = 'flex';
-            document.getElementById('gameContainer').classList.remove('active');
-            document.getElementById('settingsPanel').style.display = 'none';
-        }
+function loadGameState() {
+    const saved = getCookie('jyutpingGameState');
+    if (saved) {
+        gameState.scores = saved.scores || { player1: 0, player2: 0, player3: 0, player4: 0 };
+        gameState.currentRound = saved.currentRound || 1;
+        gameState.totalScore = saved.totalScore || 0;
+        gameState.gamesPlayed = saved.gamesPlayed || 0;
+        gameState.bestScore = saved.bestScore || 0;
+        gameState.playerCount = saved.playerCount || 2;
+        gameState.maxRounds = saved.maxRounds || 10;
+        gameState.selectedGroups = saved.selectedGroups || getAvailableGroups();
+        gameState.bgMusicVolume = saved.bgMusicVolume || 30;
+        gameState.playerAnswers = saved.playerAnswers || {};
+        
+        gameState.tempMaxRounds = gameState.maxRounds;
+        gameState.tempSelectedGroups = [...gameState.selectedGroups];
+        gameState.tempBgMusicVolume = gameState.bgMusicVolume;
+        
+        updateScores();
+        updateRoundInfo();
+        // REMOVED: Don't set layout class on page load
+    }
+    
+    gameState.gameInProgress = false;
+    gameState.isPlaying = false;
+    gameState.isPaused = false;
+    gameState.roundInProgress = false;
+    gameState.currentQuestion = null;
+    gameState.bubbleStates = {};
+    gameState.needsResume = false;
+    
+    // FIXED: Always reset to clean menu state on page load
+    document.body.className = '';
+    document.getElementById('playerSelection').style.display = 'flex';
+    document.getElementById('gameContainer').classList.remove('active');
+    document.getElementById('settingsPanel').style.display = 'none';
+}
 
         function calculateScore(responseTime, isCorrect) {
             if (!isCorrect) {
