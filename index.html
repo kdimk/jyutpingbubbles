@@ -2215,12 +2215,12 @@
         display: none !important;
     }
     
-    /* Round info for top half (Player 1 & 2) - centered horizontally on screen */
+    /* Round info for top half (Player 1 & 2) - positioned like 2-player mode */
     .layout-4players .player-1::after {
         content: attr(data-round-info);
-        position: fixed; /* Use fixed to position relative to viewport */
-        top: calc(25vh - 30px); /* Under top half headers, centered on screen */
-        left: 50vw; /* Center of screen horizontally */
+        position: absolute;
+        top: 70px; /* Under Player 1's score area, like 2-player mode */
+        left: 50%;
         transform: translateX(-50%);
         font-family: 'Fredoka One', cursive;
         font-size: clamp(7px, 1.2vw, 9px) !important;
@@ -2232,20 +2232,19 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
         white-space: pre-line; /* Allow line breaks */
-        max-width: 80vw;
+        max-width: 90%;
         text-align: center;
-        z-index: 150;
+        z-index: 100;
         pointer-events: none;
         line-height: 1.1;
-        width: max-content;
     }
     
-    /* Round info for bottom half (Player 3 & 4) - centered horizontally on screen */
+    /* Round info for bottom half (Player 3 & 4) - positioned like 2-player mode */
     .layout-4players .player-3::after {
         content: attr(data-round-info);
-        position: fixed; /* Use fixed to position relative to viewport */
-        top: calc(75vh - 30px); /* Under bottom half headers, centered on screen */
-        left: 50vw; /* Center of screen horizontally */
+        position: absolute;
+        top: 70px; /* Under Player 3's score area, like 2-player mode */
+        left: 50%;
         transform: translateX(-50%);
         font-family: 'Fredoka One', cursive;
         font-size: clamp(7px, 1.2vw, 9px) !important;
@@ -2257,12 +2256,11 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
         white-space: pre-line; /* Allow line breaks */
-        max-width: 80vw;
+        max-width: 90%;
         text-align: center;
-        z-index: 150;
+        z-index: 100;
         pointer-events: none;
         line-height: 1.1;
-        width: max-content;
     }
     
     .layout-4players .control-button {
@@ -2329,9 +2327,9 @@
     
     /* Optimize play areas - account for higher headers and round info */
     .layout-4players .options-container {
-        margin-top: 80px; /* Less margin since headers are higher */
-        height: calc(50vh - 100px) !important;
-        height: calc(50dvh - 100px) !important;
+        margin-top: 100px; /* Space for header + score + round info */
+        height: calc(50vh - 110px) !important;
+        height: calc(50dvh - 110px) !important;
         width: 100% !important;
         padding: 2px !important;
     }
@@ -2353,16 +2351,11 @@
         margin: 5px; /* More margin for larger phones */
     }
     
-    .layout-4players .player-1::after {
-        font-size: clamp(8px, 1.4vw, 10px) !important;
-        padding: 3px 6px !important;
-        top: calc(25vh - 25px); /* Adjust for larger header spacing */
-    }
-    
+    .layout-4players .player-1::after,
     .layout-4players .player-3::after {
         font-size: clamp(8px, 1.4vw, 10px) !important;
         padding: 3px 6px !important;
-        top: calc(75vh - 25px); /* Adjust for larger header spacing */
+        top: 80px; /* Adjust for larger header spacing */
     }
     
     .layout-4players .instructions {
@@ -2377,9 +2370,9 @@
     }
     
     .layout-4players .options-container {
-        margin-top: 85px;
-        height: calc(50vh - 105px) !important;
-        height: calc(50dvh - 105px) !important;
+        margin-top: 110px;
+        height: calc(50vh - 120px) !important;
+        height: calc(50dvh - 120px) !important;
     }
 }
 
