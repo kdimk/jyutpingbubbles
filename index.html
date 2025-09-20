@@ -1144,7 +1144,7 @@
     }
     
     .layout-2players .round-info {
-        top: 38px;
+        top: 40px;
         left: 50%;
         transform: translateX(-50%);
         font-size: clamp(8px, 1.5vw, 10px);
@@ -1190,6 +1190,38 @@
     
     .layout-2players .round-info {
         font-size: clamp(10px, 1.8vw, 12px);
+    }
+}
+
+/* Portrait mode optimizations for phones - match 2-player round info size */
+@media (max-width: 480px) and (orientation: portrait) {
+    .round-info {
+        font-size: clamp(8px, 1.8vw, 12px) !important;
+        padding: clamp(3px, 0.8vw, 5px) clamp(6px, 1.2vw, 8px) !important;
+        max-width: 95% !important;
+    }
+    
+    /* Ensure all layouts use the same small size in portrait */
+    .layout-1player .round-info,
+    .layout-2players .round-info,
+    .layout-4players .round-info {
+        font-size: clamp(8px, 1.8vw, 12px) !important;
+        padding: clamp(3px, 0.8vw, 5px) clamp(6px, 1.2vw, 8px) !important;
+    }
+}
+
+/* Slightly larger phones in portrait */
+@media (min-width: 481px) and (max-width: 768px) and (orientation: portrait) {
+    .round-info {
+        font-size: clamp(10px, 2vw, 14px) !important;
+        padding: clamp(4px, 1vw, 6px) clamp(8px, 1.5vw, 12px) !important;
+    }
+    
+    .layout-1player .round-info,
+    .layout-2players .round-info,
+    .layout-4players .round-info {
+        font-size: clamp(10px, 2vw, 14px) !important;
+        padding: clamp(4px, 1vw, 6px) clamp(8px, 1.5vw, 12px) !important;
     }
 }
 
