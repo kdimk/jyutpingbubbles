@@ -2215,13 +2215,13 @@
         display: none !important;
     }
     
-    /* Round info for top half (Player 1 & 2) - positioned like 2-player mode */
+    /* Round info for top half - positioned between Player 1 and Player 2 */
     .layout-4players .player-1::after {
         content: attr(data-round-info);
         position: absolute;
-        top: 70px; /* Under Player 1's score area, like 2-player mode */
-        left: 50%;
-        transform: translateX(-50%);
+        top: 70px; /* Under scores */
+        left: 100%; /* Position at right edge of Player 1's area */
+        transform: translateX(-50%); /* Center it between Player 1 and Player 2 */
         font-family: 'Fredoka One', cursive;
         font-size: clamp(7px, 1.2vw, 9px) !important;
         color: #333333;
@@ -2232,20 +2232,20 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
         white-space: pre-line; /* Allow line breaks */
-        max-width: 90%;
+        max-width: 40vw; /* Limit width so it fits between players */
         text-align: center;
         z-index: 100;
         pointer-events: none;
         line-height: 1.1;
     }
     
-    /* Round info for bottom half (Player 3 & 4) - positioned like 2-player mode */
+    /* Round info for bottom half - positioned between Player 3 and Player 4 */
     .layout-4players .player-3::after {
         content: attr(data-round-info);
         position: absolute;
-        top: 70px; /* Under Player 3's score area, like 2-player mode */
-        left: 50%;
-        transform: translateX(-50%);
+        top: 70px; /* Under scores */
+        left: 100%; /* Position at right edge of Player 3's area */
+        transform: translateX(-50%); /* Center it between Player 3 and Player 4 */
         font-family: 'Fredoka One', cursive;
         font-size: clamp(7px, 1.2vw, 9px) !important;
         color: #333333;
@@ -2256,7 +2256,7 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
         white-space: pre-line; /* Allow line breaks */
-        max-width: 90%;
+        max-width: 40vw; /* Limit width so it fits between players */
         text-align: center;
         z-index: 100;
         pointer-events: none;
@@ -2356,6 +2356,7 @@
         font-size: clamp(8px, 1.4vw, 10px) !important;
         padding: 3px 6px !important;
         top: 80px; /* Adjust for larger header spacing */
+        max-width: 45vw; /* Slightly wider on larger phones */
     }
     
     .layout-4players .instructions {
