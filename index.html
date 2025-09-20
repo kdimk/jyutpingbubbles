@@ -179,14 +179,14 @@
             font-size: clamp(12px, 2.5vw, 16px);
             color: #333;
             padding: 8px;
-            background: rgba(255, 255, 255, 0.5);
+            background: none;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .checkbox-item:hover {
-            background: rgba(255, 255, 255, 0.8);
+            background: none;
         }
 
         .checkbox-item input[type="checkbox"] {
@@ -2531,7 +2531,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             title: "🎵 Jyutping Bubbles 🎵",
             player1: "👤 1 Player",
             player2: "👥 2 Players", 
-            player4: "👥👥 4 Players (iPad)",
+            player4: "👥👥 4 Players",
             settings: "⚙️ Settings",
             settingsTitle: "⚙️ Game Settings",
             roundsTitle: "🎯 Number of Rounds",
@@ -2580,9 +2580,16 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         };
 
         const groupNames = {
-            1: "Finals: Basic Vowels",
-            2: "Finals: Ending with -i", 
-            3: "Finals: Ending with -u"
+            1: "Initials",
+            2: "Finals: Simple Vowels", 
+            3: "Finals: Ending with -i",
+            4: "Finals: Ending with -u",
+            5: "Finals: Ending with -m",
+            6: "Finals: Ending with -n",
+            7: "Finals: Ending with -ng",
+            8: "Finals: Ending with -p",
+            9: "Finals: Ending with -t",
+            10: "Finals: Ending with -k",
         };
 
         const audioFiles = {
@@ -2595,26 +2602,94 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         };
 
         const gameData = [
-            { text: "aa", audio: "audio/final-01-aa.mp3", group: 1 },
-            { text: "a", audio: "audio/final-02-a.mp3", group: 1 },
-            { text: "e", audio: "audio/final-03-e.mp3", group: 1 },
-            { text: "i", audio: "audio/final-04-i.mp3", group: 1 },
-            { text: "o", audio: "audio/final-05-o.mp3", group: 1 },
-            { text: "u", audio: "audio/final-06-u.mp3", group: 1 },
-            { text: "eo", audio: "audio/final-07-eo.mp3", group: 1 },
-            { text: "oe", audio: "audio/final-08-oe.mp3", group: 1 },
-            { text: "yu", audio: "audio/final-09-yu.mp3", group: 1 },
-            { text: "aai", audio: "audio/final-10-aai.mp3", group: 2 },
-            { text: "ai", audio: "audio/final-11-ai.mp3", group: 2 },
-            { text: "ei", audio: "audio/final-12-ei.mp3", group: 2 },
-            { text: "oi", audio: "audio/final-13-oi.mp3", group: 2 },
-            { text: "ui", audio: "audio/final-14-ui.mp3", group: 2 },
-            { text: "eoi", audio: "audio/final-15-eoi.mp3", group: 2 },
-            { text: "aau", audio: "audio/final-16-aau.mp3", group: 3 },
-            { text: "au", audio: "audio/final-17-au.mp3", group: 3 },
-            { text: "eu", audio: "audio/final-18-eu.mp3", group: 3 },
-            { text: "iu", audio: "audio/final-19-iu.mp3", group: 3 },
-            { text: "ou", audio: "audio/final-20-ou.mp3", group: 3 }
+            { sound: "audio/initial-01-b.mp3", text: "b", group: 1 },
+            { sound: "audio/initial-02-p.mp3", text: "p", group: 1 },
+            { sound: "audio/initial-03-m.mp3", text: "m", group: 1 },
+            { sound: "audio/initial-04-f.mp3", text: "f", group: 1 },
+            { sound: "audio/initial-05-d.mp3", text: "d", group: 1 },
+            { sound: "audio/initial-06-t.mp3", text: "t", group: 1 },
+            { sound: "audio/initial-07-n.mp3", text: "n", group: 1 },
+            { sound: "audio/initial-08-l.mp3", text: "l", group: 1 },
+            { sound: "audio/initial-09-g.mp3", text: "g", group: 1 },
+            { sound: "audio/initial-10-k.mp3", text: "k", group: 1 },
+            { sound: "audio/initial-11-ng.mp3", text: "ng", group: 1 },
+            { sound: "audio/initial-12-h.mp3", text: "h", group: 1 },
+            { sound: "audio/initial-13-gw.mp3", text: "gw", group: 1 },
+            { sound: "audio/initial-14-kw.mp3", text: "kw", group: 1 },
+            { sound: "audio/initial-15-w.mp3", text: "w", group: 1 },
+            { sound: "audio/initial-16-z.mp3", text: "z", group: 1 },
+            { sound: "audio/initial-17-c.mp3", text: "c", group: 1 },
+            { sound: "audio/initial-18-s.mp3", text: "s", group: 1 },
+            { sound: "audio/initial-19-j.mp3", text: "j", group: 1 },
+
+            { text: "aa", audio: "audio/final-01-aa.mp3", group: 2 },
+            { text: "a", audio: "audio/final-02-a.mp3", group: 2 },
+            { text: "e", audio: "audio/final-03-e.mp3", group: 2 },
+            { text: "i", audio: "audio/final-04-i.mp3", group: 2 },
+            { text: "o", audio: "audio/final-05-o.mp3", group: 2 },
+            { text: "u", audio: "audio/final-06-u.mp3", group: 2 },
+            { text: "eo", audio: "audio/final-07-eo.mp3", group: 2 },
+            { text: "oe", audio: "audio/final-08-oe.mp3", group: 2 },
+            { text: "yu", audio: "audio/final-09-yu.mp3", group: 2 },
+
+            { text: "aai", audio: "audio/final-10-aai.mp3", group: 3 },
+            { text: "ai", audio: "audio/final-11-ai.mp3", group: 3 },
+            { text: "ei", audio: "audio/final-12-ei.mp3", group: 3 },
+            { text: "oi", audio: "audio/final-13-oi.mp3", group: 3 },
+            { text: "ui", audio: "audio/final-14-ui.mp3", group: 3 },
+            { text: "eoi", audio: "audio/final-15-eoi.mp3", group: 3 },
+
+            { text: "aau", audio: "audio/final-16-aau.mp3", group: 4 },
+            { text: "au", audio: "audio/final-17-au.mp3", group: 4 },
+            { text: "eu", audio: "audio/final-18-eu.mp3", group: 4 },
+            { text: "iu", audio: "audio/final-19-iu.mp3", group: 4 },
+            { text: "ou", audio: "audio/final-20-ou.mp3", group: 4 },
+
+            { sound: "audio/final-21-aam.mp3", text: "aam", group: 5 },
+            { sound: "audio/final-22-am.mp3", text: "am", group: 5 },
+            { sound: "audio/final-23-em.mp3", text: "em", group: 5 },
+            { sound: "audio/final-24-im.mp3", text: "im", group: 5 },
+            { sound: "audio/final-25-m.mp3", text: "m", group: 5 },
+
+            { sound: "audio/final-26-aan.mp3", text: "aan", group: 6 },
+            { sound: "audio/final-27-an.mp3", text: "an", group: 6 },
+            { sound: "audio/final-28-in.mp3", text: "in", group: 6 },
+            { sound: "audio/final-29-on.mp3", text: "on", group: 6 },
+            { sound: "audio/final-30-un.mp3", text: "un", group: 6 },
+            { sound: "audio/final-31-eon.mp3", text: "eon", group: 6 },
+            { sound: "audio/final-32-yun.mp3", text: "yun", group: 6 },
+
+            { sound: "audio/final-33-aang.mp3", text: "aang", group: 7 },
+            { sound: "audio/final-34-ang.mp3", text: "ang", group: 7 },
+            { sound: "audio/final-35-eng.mp3", text: "eng", group: 7 },
+            { sound: "audio/final-36-ing.mp3", text: "ing", group: 7 },
+            { sound: "audio/final-37-ong.mp3", text: "ong", group: 7 },
+            { sound: "audio/final-38-ung.mp3", text: "ung", group: 7 },
+            { sound: "audio/final-39-oeng.mp3", text: "oeng", group: 7 },
+            { sound: "audio/final-40-ng.mp3", text: "ng", group: 7 },
+
+            { sound: "audio/final-41-aap.mp3", text: "aap", group: 8 },
+            { sound: "audio/final-42-ap.mp3", text: "ap", group: 8 },
+            { sound: "audio/final-43-ep.mp3", text: "ep", group: 8 },
+            { sound: "audio/final-44-ip.mp3", text: "ip", group: 8 },
+
+            { sound: "audio/final-45-aat.mp3", text: "aat", group: 9 },
+            { sound: "audio/final-46-at.mp3", text: "at", group: 9 },
+            { sound: "audio/final-47-et.mp3", text: "et", group: 9 },
+            { sound: "audio/final-48-it.mp3", text: "it", group: 9 },
+            { sound: "audio/final-49-ot.mp3", text: "ot", group: 9 },
+            { sound: "audio/final-50-ut.mp3", text: "ut", group: 9 },
+            { sound: "audio/final-51-eot.mp3", text: "eot", group: 9 },
+            { sound: "audio/final-52-oet.mp3", text: "oet", group: 9 },
+            { sound: "audio/final-53-yut.mp3", text: "yut", group: 9 },
+
+            { sound: "audio/final-54-aak.mp3", text: "aak", group: 10 },
+            { sound: "audio/final-55-ak.mp3", text: "ak", group: 10 },
+            { sound: "audio/final-56-ek.mp3", text: "ek", group: 10 },
+            { sound: "audio/final-57-ik.mp3", text: "ik", group: 10 },
+            { sound: "audio/final-58-ok.mp3", text: "ok", group: 10 },
+            { sound: "audio/final-59-uk.mp3", text: "uk", group: 10 },
+            { sound: "audio/final-60-oek.mp3", text: "oek", group: 10 },
         ];
 
         function getAvailableGroups() {
