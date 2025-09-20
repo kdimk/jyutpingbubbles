@@ -1349,7 +1349,7 @@
     }
 }
 
-/* 1-Player mode portrait phone optimization - fix container clipping and make 20% bigger */
+/* 1-Player mode portrait phone optimization - fix padding and vertical shadow clipping */
 @media (max-width: 480px) and (orientation: portrait) {
     /* Make 1-player mode use full viewport in portrait */
     .layout-1player .game-container {
@@ -1366,24 +1366,23 @@
         height: 100% !important;
     }
     
-    /* Fix button container - give it proper space like phone portrait modes */
+    /* Fix button container - give more vertical space to prevent shadow clipping */
     .layout-1player .game-controls {
         position: absolute;
-        top: 5px;
+        top: 2px; /* Moved up slightly */
         left: 50%;
         transform: translateX(-50%);
         display: flex;
         gap: 6px;
-        width: 95%; /* Give container proper width like phone portrait modes */
+        width: auto; /* Let buttons determine width naturally */
         justify-content: center;
         z-index: 100;
-        padding: 5px; /* Add padding so shadows aren't clipped */
+        padding: 8px 10px; /* More vertical padding to prevent shadow clipping */
     }
     
     .layout-1player .control-button {
-        /* Use phone portrait button sizing but 20% bigger fonts */
-        flex: 1;
-        padding: clamp(5px, 1.2vw, 7px) clamp(10px, 2.4vw, 14px) !important;
+        /* Minimal padding to fit text width, like landscape mode */
+        padding: clamp(4px, 1vw, 6px) clamp(6px, 1.2vw, 8px) !important; /* Much less internal padding */
         font-family: 'Nunito', sans-serif !important;
         font-size: clamp(10px, 1.56vw, 13px) !important; /* 20% bigger than landscape */
         font-weight: 700 !important;
@@ -1396,7 +1395,8 @@
         transition: all 0.3s ease !important;
         border: 1px solid rgba(102, 126, 234, 0.3) !important;
         white-space: nowrap !important;
-        min-width: 0 !important;
+        min-width: auto !important; /* Natural width based on text */
+        flex: none !important; /* Don't stretch buttons */
     }
     
     .layout-1player .control-button:hover {
@@ -1406,14 +1406,14 @@
         border-color: #667eea !important;
     }
     
-    /* Score display */
+    /* Score display - adjusted for new button container */
     .layout-1player .player-header {
         position: absolute;
-        top: 50px; /* Moved down to account for button container padding */
+        top: 45px; /* Adjusted for button container padding */
         left: 50%;
         transform: translateX(-50%);
         z-index: 100;
-        width: 95%;
+        width: auto;
         text-align: center;
     }
     
@@ -1425,7 +1425,7 @@
     /* Round info 20% bigger */
     .layout-1player .round-info {
         position: absolute;
-        top: 90px; /* Adjusted for new spacing */
+        top: 85px; /* Adjusted for new spacing */
         left: 50%;
         transform: translateX(-50%);
         font-size: clamp(10px, 1.8vw, 12px) !important; /* 20% bigger */
@@ -1438,9 +1438,9 @@
     
     /* Optimize play area */
     .layout-1player .options-container {
-        margin-top: 120px !important; /* Adjusted for new spacing */
-        height: calc(100vh - 160px) !important;
-        height: calc(100dvh - 160px) !important;
+        margin-top: 115px !important; /* Adjusted for new spacing */
+        height: calc(100vh - 155px) !important;
+        height: calc(100dvh - 155px) !important;
         width: 100% !important;
         padding: 5px !important;
     }
@@ -1478,7 +1478,7 @@
 @media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
     .layout-1player .control-button {
         font-size: clamp(12px, 2.4vw, 16px) !important; /* 20% bigger */
-        padding: clamp(8px, 2.16vw, 11px) clamp(14px, 3.6vw, 19px) !important;
+        padding: clamp(5px, 1.2vw, 7px) clamp(7px, 1.44vw, 10px) !important; /* Less internal padding */
     }
     
     .layout-1player .round-info {
