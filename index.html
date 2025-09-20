@@ -1950,6 +1950,66 @@
     }
 }
 
+/* ANTI-FLICKER: Apply portrait styles immediately without transitions */
+@media (orientation: portrait) {
+    /* Disable all transitions during layout changes */
+    .layout-2players .game-container,
+    .layout-2players .player-area,
+    .layout-2players .player-header,
+    .layout-2players .game-controls,
+    .layout-2players .options-container {
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    /* Force immediate layout application */
+    .layout-2players .game-container {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .layout-2players .player-area {
+        width: 100% !important;
+        height: 50vh !important;
+        height: 50dvh !important;
+        flex: none !important;
+        padding: 3px !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    /* Apply transform immediately */
+    .layout-2players .player-1 {
+        transform: rotate(180deg) !important;
+        border-top: 2px solid rgba(255, 255, 255, 0.4) !important;
+        border-right: none !important;
+        border-left: none !important;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.4) !important;
+    }
+    
+    .layout-2players .player-2 {
+        transform: none !important;
+        border-top: 2px solid rgba(255, 255, 255, 0.4) !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+    }
+}
+
+/* Re-enable transitions after layout is stable */
+@media (orientation: portrait) {
+    .layout-2players .bubble,
+    .layout-2players .control-button {
+        transition: all 0.3s ease !important;
+    }
+}
+
     </style>
 </head>
 <body class="layout-2players">
@@ -3082,7 +3142,10 @@ function loadGameState() {
             `;
         }
 
- function selectPlayers(count) {
+function selectPlayers(count) {
+    // Apply layout class FIRST to prevent flicker
+    document.body.className = `layout-${count}player${count > 1 ? 's' : ''}`;
+    
     gameState.isPlaying = false;
     gameState.isPaused = false;
     gameState.roundInProgress = false;
@@ -3114,37 +3177,40 @@ function loadGameState() {
     
     gameState.playerCount = count;
     gameState.gameInProgress = true;
-    document.body.className = `layout-${count}player${count > 1 ? 's' : ''}`;
     
     document.body.classList.remove('paused');
     
+    // Hide menu and show game immediately
     document.getElementById('playerSelection').style.display = 'none';
     document.getElementById('settingsPanel').style.display = 'none';
     document.getElementById('gameContainer').classList.add('active');
     
-    gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
-    gameState.currentRound = 1;
-    updateScores();
-    updateRoundInfo();
-    updateStartPauseButton();
-    saveGameState();
-    
-    for (let i = 1; i <= 4; i++) {
-        const container = document.getElementById(`options${i}`);
-        if (container) container.innerHTML = '';
-    }
-    
-    document.getElementById('gameStatus').textContent = gameTexts.startMessage;
-    document.getElementById('winnerOverlay').style.display = 'none';
-    document.getElementById('instructions').classList.remove('hidden');
-    
-    // Update round info after resetting game status
-    updateRoundInfoForBothPlayers();
-    
-    setTimeout(() => {
-        playBgMusic();
-    }, 300);
-}       
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+        gameState.scores = { player1: 0, player2: 0, player3: 0, player4: 0 };
+        gameState.currentRound = 1;
+        updateScores();
+        updateRoundInfo();
+        updateStartPauseButton();
+        saveGameState();
+        
+        for (let i = 1; i <= 4; i++) {
+            const container = document.getElementById(`options${i}`);
+            if (container) container.innerHTML = '';
+        }
+        
+        document.getElementById('gameStatus').textContent = gameTexts.startMessage;
+        document.getElementById('winnerOverlay').style.display = 'none';
+        document.getElementById('instructions').classList.remove('hidden');
+        
+        // Update round info after everything is set
+        updateRoundInfoForBothPlayers();
+        
+        setTimeout(() => {
+            playBgMusic();
+        }, 100);
+    });
+}
 
         function createSparkles(element) {
             for (let i = 0; i < 15; i++) {
