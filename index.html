@@ -1964,7 +1964,170 @@
     }
 }
 
+/* 2-Player mode portrait phone optimization - show round info for both players */
+@media (max-width: 480px) and (orientation: portrait) {
+    /* Move Player 1 header minimally - just enough for buttons */
+    .layout-2players .player-1 .player-header {
+        position: absolute;
+        top: 20px; /* Higher - minimal space for buttons */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        text-align: center;
+        z-index: 50;
+    }
+    
+    /* Move Player 2 header minimally - just enough for buttons */
+    .layout-2players .player-2 .player-header {
+        position: absolute;
+        top: 20px; /* Higher - minimal space for buttons */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        text-align: center;
+        z-index: 50;
+    }
+    
+    /* Keep buttons in center of screen with proper padding to prevent shadow clipping */
+    .layout-2players .game-controls {
+        position: absolute;
+        top: 50%; /* Center of screen */
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        gap: 6px;
+        width: auto;
+        justify-content: center;
+        z-index: 200; /* Above player headers */
+        padding: 12px 15px; /* More padding to prevent shadow clipping */
+        background: transparent;
+        border-radius: 20px; /* Rounded container for shadow space */
+    }
+    
+    /* Hide the original centered round info */
+    .layout-2players .round-info {
+        display: none !important;
+    }
+    
+    /* Create round info for Player 1 (rotated) */
+    .layout-2players .player-1::after {
+        content: attr(data-round-info);
+        position: absolute;
+        top: calc(50% - 100px); /* Above center, visible to rotated Player 1 */
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'Fredoka One', cursive;
+        font-size: clamp(10px, 1.8vw, 12px) !important;
+        color: #333333;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2px 7px !important;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        white-space: nowrap;
+        max-width: 90%;
+        text-align: center;
+        z-index: 100;
+        pointer-events: none;
+    }
+    
+    /* Create round info for Player 2 */
+    .layout-2players .player-2::after {
+        content: attr(data-round-info);
+        position: absolute;
+        top: calc(50% + 100px); /* Below center, visible to Player 2 */
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'Fredoka One', cursive;
+        font-size: clamp(10px, 1.8vw, 12px) !important;
+        color: #333333;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2px 7px !important;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        white-space: nowrap;
+        max-width: 90%;
+        text-align: center;
+        z-index: 100;
+        pointer-events: none;
+    }
+    
+    /* Adjust play areas to account for round info */
+    .layout-2players .player-1 .options-container {
+        margin-top: 60px;
+        height: calc(50vh - 120px) !important; /* Space for round info above center */
+        height: calc(50dvh - 120px) !important;
+        width: 100% !important;
+        padding: 3px !important;
+    }
+    
+    .layout-2players .player-2 .options-container {
+        margin-top: 60px;
+        height: calc(50vh - 120px) !important; /* Space for round info below center */
+        height: calc(50dvh - 120px) !important;
+        width: 100% !important;
+        padding: 3px !important;
+    }
+    
+    /* Fix button shadow clipping */
+    .layout-2players .control-button {
+        padding: clamp(4px, 1vw, 6px) clamp(6px, 1.2vw, 8px) !important;
+        font-family: 'Nunito', sans-serif !important;
+        font-size: clamp(10px, 1.56vw, 13px) !important;
+        font-weight: 700 !important;
+        border: none !important;
+        border-radius: 15px !important;
+        cursor: pointer !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        color: #667eea !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        transition: all 0.3s ease !important;
+        border: 1px solid rgba(102, 126, 234, 0.3) !important;
+        white-space: nowrap !important;
+        min-width: auto !important;
+        flex: none !important;
+        margin: 4px; /* Extra margin around each button for shadow space */
+    }
+    
+    .layout-2players .control-button:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+        background: rgba(255, 255, 255, 1) !important;
+        border-color: #667eea !important;
+    }
+}
 
+/* Larger phones adjustments */
+@media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
+    .layout-2players .player-1 .player-header,
+    .layout-2players .player-2 .player-header {
+        top: 25px; /* Slightly more space on larger phones */
+    }
+    
+    .layout-2players .game-controls {
+        padding: 15px 18px; /* More padding for larger phones */
+    }
+    
+    .layout-2players .player-1::after,
+    .layout-2players .player-2::after {
+        font-size: clamp(12px, 2.4vw, 16px) !important;
+        padding: 4px 8px !important;
+    }
+    
+    .layout-2players .player-1 .options-container,
+    .layout-2players .player-2 .options-container {
+        margin-top: 65px;
+        height: calc(50vh - 125px) !important;
+        height: calc(50dvh - 125px) !important;
+    }
+    
+    .layout-2players .control-button {
+        margin: 5px; /* More margin for larger phones */
+    }
+}
 
     </style>
 </head>
@@ -3568,10 +3731,29 @@ function loadGameState() {
             }
         }
 
-        function updateRoundInfo() {
-            document.getElementById('roundCounter').textContent = 
-                `${gameTexts.roundCounter} ${gameState.currentRound}/${gameState.maxRounds}`;
-        }
+// Add this function to update round info for both players in 2-player portrait mode
+function updateRoundInfoForBothPlayers() {
+    if (gameState.playerCount === 2 && window.innerWidth <= 480 && window.matchMedia("(orientation: portrait)").matches) {
+        const roundText = `${gameTexts.roundCounter} ${gameState.currentRound}/${gameState.maxRounds}`;
+        const statusText = document.getElementById('gameStatus').textContent;
+        const combinedText = `${roundText} • ${statusText}`;
+        
+        const player1 = document.querySelector('.layout-2players .player-1');
+        const player2 = document.querySelector('.layout-2players .player-2');
+        
+        if (player1) player1.setAttribute('data-round-info', combinedText);
+        if (player2) player2.setAttribute('data-round-info', combinedText);
+    }
+}
+
+
+function updateRoundInfo() {
+    document.getElementById('roundCounter').textContent = 
+        `${gameTexts.roundCounter} ${gameState.currentRound}/${gameState.maxRounds}`;
+    
+    // Add this line to update both players
+    updateRoundInfoForBothPlayers();
+}
 
         function pauseGame() {
             gameState.isPaused = true;
