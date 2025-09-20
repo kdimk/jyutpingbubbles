@@ -1516,6 +1516,27 @@
     }
 }
 
+/* Rotate Player 1 in 2-player mode - PORTRAIT ONLY */
+@media (orientation: portrait) {
+    .layout-2players .player-1 {
+        transform: rotate(180deg) !important;
+    }
+}
+
+/* Specifically for phone portrait mode */
+@media (max-width: 480px) and (orientation: portrait) {
+    .layout-2players .player-1 {
+        transform: rotate(180deg) !important;
+    }
+}
+
+/* For larger screens in portrait (tablets, etc.) */
+@media (min-width: 481px) and (orientation: portrait) {
+    .layout-2players .player-1 {
+        transform: rotate(180deg) !important;
+    }
+}
+
 /* 2-Player mode portrait phone optimization */
 @media (max-width: 480px) and (orientation: portrait) {
     /* 2-Player specific layout */
@@ -1807,6 +1828,8 @@
         font-size: clamp(18px, 4.2vw, 26px) !important;
     }
 }
+
+
 
     </style>
 </head>
