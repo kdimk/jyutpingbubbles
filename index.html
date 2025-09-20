@@ -1075,7 +1075,7 @@
         .layout-1player .player-area:not(.player-1) { display: none; }
         .layout-2players .player-area:not(.player-1):not(.player-2) { display: none; }
 
-        /* ============================================
+/* ============================================
    PORTRAIT MODE FOR ALL DEVICES (Phones, Tablets, iPads)
    ============================================ */
 
@@ -1221,7 +1221,7 @@
     }
 }
 
-/* 2-Player mode portrait optimization - ALL DEVICES */
+/* 2-Player mode portrait optimization - ALL DEVICES BASE */
 @media (orientation: portrait) {
     /* 2-Player specific layout */
     .layout-2players .game-container {
@@ -1241,7 +1241,7 @@
         flex: none !important;
     }
     
-    /* Move Player 1 header minimally - just enough for buttons */
+    /* Move Player headers */
     .layout-2players .player-1 .player-header {
         position: absolute;
         top: 20px;
@@ -1252,7 +1252,6 @@
         z-index: 50;
     }
     
-    /* Move Player 2 header minimally - just enough for buttons */
     .layout-2players .player-2 .player-header {
         position: absolute;
         top: 20px;
@@ -1282,7 +1281,7 @@
     .layout-2players .control-button {
         padding: clamp(4px, 1vw, 6px) clamp(6px, 1.2vw, 8px) !important;
         font-family: 'Nunito', sans-serif !important;
-        font-size: clamp(10px, 1.56vw, 13px) !important; /* 20% bigger */
+        font-size: clamp(10px, 1.56vw, 13px) !important;
         font-weight: 700 !important;
         border-radius: 15px !important;
         background: rgba(255, 255, 255, 0.9) !important;
@@ -1308,31 +1307,62 @@
         display: none !important;
     }
     
-    /* Create round info for Player 1 (rotated) - positioned under score */
-    .layout-2players .player-1::after {
-        content: attr(data-round-info);
-        position: absolute;
-        top: 85px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-family: 'Fredoka One', cursive;
-        font-size: clamp(8px, 1.4vw, 10px) !important;
-        color: #333333;
-        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        background: rgba(255, 255, 255, 0.9);
-        padding: 3px 6px !important;
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(102, 126, 234, 0.3);
-        white-space: pre-line;
-        max-width: 90%;
-        text-align: center;
-        z-index: 100;
-        pointer-events: none;
-        line-height: 1.2;
+    /* Adjust play areas */
+    .layout-2players .player-1 .options-container {
+        margin-top: 120px;
+        height: calc(50vh - 140px) !important;
+        height: calc(50dvh - 140px) !important;
+        width: 100% !important;
+        padding: 3px !important;
     }
     
-    /* Create round info for Player 2 - positioned under score */
+    .layout-2players .player-2 .options-container {
+        margin-top: 120px;
+        height: calc(50vh - 140px) !important;
+        height: calc(50dvh - 140px) !important;
+        width: 100% !important;
+        padding: 3px !important;
+    }
+    
+    /* Bubbles 20% bigger */
+    .layout-2players .bubble {
+        width: clamp(84px, 16.8vw, 132px) !important;
+        height: clamp(84px, 16.8vw, 132px) !important;
+        font-size: clamp(19px, 4.2vw, 26px) !important;
+        padding: clamp(5px, 1.2vw, 10px) !important;
+    }
+    
+    /* Instructions 20% bigger */
+    .layout-2players .instructions {
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(7px, 1.44vw, 10px) !important;
+        padding: 4px 8px !important;
+        width: auto !important;
+        max-width: 98% !important;
+        text-align: center;
+        line-height: 1.3 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+    }
+    
+    /* Keep instruction lines intact */
+    .layout-2players .instructions #instructionLine1,
+    .layout-2players .instructions #instructionLine2 {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        width: 100% !important;
+        display: block !important;
+    }
+}
+
+/* 2-Player mode - Phone-specific round info */
+@media (orientation: portrait) and (max-width: 767px) {
+    .layout-2players .player-1::after,
     .layout-2players .player-2::after {
         content: attr(data-round-info);
         position: absolute;
@@ -1355,61 +1385,48 @@
         pointer-events: none;
         line-height: 1.2;
     }
-    
-    /* Adjust play areas to account for round info under scores */
-    .layout-2players .player-1 .options-container {
-        margin-top: 120px;
-        height: calc(50vh - 140px) !important;
-        height: calc(50dvh - 140px) !important;
-        width: 100% !important;
-        padding: 3px !important;
+}
+
+/* 2-Player mode - iPad/Tablet-specific round info */
+@media (orientation: portrait) and (min-width: 768px) {
+    .layout-2players .player-1 .player-header,
+    .layout-2players .player-2 .player-header {
+        top: 30px !important;
     }
     
-    .layout-2players .player-2 .options-container {
-        margin-top: 120px;
-        height: calc(50vh - 140px) !important;
-        height: calc(50dvh - 140px) !important;
-        width: 100% !important;
-        padding: 3px !important;
-    }
-    
-    /* Bubbles 20% bigger */
-    .layout-2players .bubble {
-        width: clamp(84px, 16.8vw, 132px) !important; /* 20% bigger */
-        height: clamp(84px, 16.8vw, 132px) !important;
-        font-size: clamp(19px, 4.2vw, 26px) !important;
-        padding: clamp(5px, 1.2vw, 10px) !important;
-    }
-    
-    /* Instructions 20% bigger */
-    .layout-2players .instructions {
+    .layout-2players .player-1::after,
+    .layout-2players .player-2::after {
+        content: attr(data-round-info);
         position: absolute;
-        bottom: 5px;
+        top: 120px;
         left: 50%;
         transform: translateX(-50%);
-        font-size: clamp(7px, 1.44vw, 10px) !important; /* 20% bigger */
-        padding: 4px 8px !important;
-        width: auto !important;
-        max-width: 98% !important;
+        font-family: 'Fredoka One', cursive;
+        font-size: clamp(12px, 1.8vw, 16px) !important;
+        color: #333333;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 6px 12px !important;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        white-space: pre-line;
+        max-width: 90%;
         text-align: center;
-        line-height: 1.3 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 2px !important;
+        z-index: 100;
+        pointer-events: none;
+        line-height: 1.2;
     }
     
-    /* Keep instruction lines intact */
-    .layout-2players .instructions #instructionLine1,
-    .layout-2players .instructions #instructionLine2 {
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        width: 100% !important;
-        display: block !important;
+    .layout-2players .player-1 .options-container,
+    .layout-2players .player-2 .options-container {
+        margin-top: 160px !important;
+        height: calc(50vh - 180px) !important;
+        height: calc(50dvh - 180px) !important;
     }
 }
 
-/* 4-Player mode portrait optimization - ALL DEVICES */
+/* 4-Player mode portrait optimization - ALL DEVICES BASE */
 @media (orientation: portrait) {
     /* 4-Player specific layout */
     .layout-4players .game-container {
@@ -1464,62 +1481,6 @@
     .layout-4players .round-info {
         display: none !important;
     }
-    
-    /* Create round info for top half (rotated for Players 1 & 2) */
-    .layout-4players::before {
-        content: attr(data-round-top);
-        position: fixed;
-        top: 38vh;
-        left: 50vw;
-        transform: translateX(-50%) rotate(180deg);
-        font-family: 'Fredoka One', cursive;
-        font-size: clamp(8px, 1.4vw, 10px) !important;
-        color: #333333;
-        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 4px 12px !important;
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(102, 126, 234, 0.3);
-        white-space: pre-line;
-        width: auto;
-        max-width: 85vw;
-        min-width: 200px;
-        text-align: center;
-        z-index: 150;
-        pointer-events: none;
-        line-height: 1.3;
-        box-sizing: border-box;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    /* Create round info for bottom half (normal orientation for Players 3 & 4) */
-    .layout-4players::after {
-        content: attr(data-round-bottom);
-        position: fixed;
-        top: 62vh;
-        left: 50vw;
-        transform: translateX(-50%);
-        font-family: 'Fredoka One', cursive;
-        font-size: clamp(8px, 1.4vw, 10px) !important;
-        color: #333333;
-        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 4px 12px !important;
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(102, 126, 234, 0.3);
-        white-space: pre-line;
-        width: auto;
-        max-width: 85vw;
-        min-width: 200px;
-        text-align: center;
-        z-index: 150;
-        pointer-events: none;
-        line-height: 1.3;
-        box-sizing: border-box;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
         
     /* Adjust play areas to account for round info */
     .layout-4players .options-container {
@@ -1556,7 +1517,7 @@
     
     /* Bubbles 20% bigger */
     .layout-4players .bubble {
-        width: clamp(67px, 13.4vw, 106px) !important; /* 20% bigger */
+        width: clamp(67px, 13.4vw, 106px) !important;
         height: clamp(67px, 13.4vw, 106px) !important;
         font-size: clamp(16px, 3.6vw, 22px) !important;
         padding: clamp(4px, 1vw, 8px) !important;
@@ -1591,7 +1552,132 @@
     }
 }
 
-/* iPad-specific portrait adjustments */
+/* 4-Player mode - Phone-specific round info */
+@media (orientation: portrait) and (max-width: 767px) {
+    .layout-4players::before {
+        content: attr(data-round-top);
+        position: fixed;
+        top: 40vh;
+        left: 50vw;
+        transform: translateX(-50%) rotate(180deg);
+        font-family: 'Fredoka One', cursive;
+        font-size: clamp(8px, 1.4vw, 10px) !important;
+        color: #333333;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 4px 12px !important;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        white-space: pre-line;
+        width: auto;
+        max-width: 85vw;
+        min-width: 200px;
+        text-align: center;
+        z-index: 150;
+        pointer-events: none;
+        line-height: 1.3;
+        box-sizing: border-box;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .layout-4players::after {
+        content: attr(data-round-bottom);
+        position: fixed;
+        top: 60vh;
+        left: 50vw;
+        transform: translateX(-50%);
+        font-family: 'Fredoka One', cursive;
+        font-size: clamp(8px, 1.4vw, 10px) !important;
+        color: #333333;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 4px 12px !important;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        white-space: pre-line;
+        width: auto;
+        max-width: 85vw;
+        min-width: 200px;
+        text-align: center;
+        z-index: 150;
+        pointer-events: none;
+        line-height: 1.3;
+        box-sizing: border-box;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+}
+
+/* 4-Player mode - iPad/Tablet-specific round info */
+@media (orientation: portrait) and (min-width: 768px) {
+    .layout-4players .player-1 .player-header,
+    .layout-4players .player-2 .player-header,
+    .layout-4players .player-3 .player-header,
+    .layout-4players .player-4 .player-header {
+        top: 20px !important;
+    }
+    
+    .layout-4players::before {
+        content: attr(data-round-top);
+        position: fixed;
+        top: 42vh;
+        left: 50vw;
+        transform: translateX(-50%) rotate(180deg);
+        font-family: 'Fredoka One', cursive;
+        font-size: clamp(11px, 1.6vw, 15px) !important;
+        color: #333333;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 6px 15px !important;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        white-space: pre-line;
+        width: auto;
+        max-width: 85vw;
+        min-width: 250px;
+        text-align: center;
+        z-index: 150;
+        pointer-events: none;
+        line-height: 1.3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .layout-4players::after {
+        content: attr(data-round-bottom);
+        position: fixed;
+        top: 58vh;
+        left: 50vw;
+        transform: translateX(-50%);
+        font-family: 'Fredoka One', cursive;
+        font-size: clamp(11px, 1.6vw, 15px) !important;
+        color: #333333;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 6px 15px !important;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        white-space: pre-line;
+        width: auto;
+        max-width: 85vw;
+        min-width: 250px;
+        text-align: center;
+        z-index: 150;
+        pointer-events: none;
+        line-height: 1.3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .layout-4players .options-container {
+        margin-top: 80px !important;
+        height: calc(50vh - 100px) !important;
+        height: calc(50dvh - 100px) !important;
+    }
+}
+
+/* iPad-specific portrait adjustments for all modes */
 @media (min-width: 768px) and (orientation: portrait) {
     /* Larger bubbles for iPad */
     .layout-1player .bubble {
@@ -1622,19 +1708,6 @@
     .layout-4players .control-button {
         font-size: clamp(11px, 1.6vw, 14px) !important;
         padding: clamp(5px, 1vw, 7px) clamp(8px, 1.2vw, 10px) !important;
-    }
-    
-    .layout-2players .player-1::after,
-    .layout-2players .player-2::after {
-        font-size: clamp(10px, 1.6vw, 14px) !important;
-        padding: 5px 10px !important;
-    }
-    
-    .layout-4players::before,
-    .layout-4players::after {
-        font-size: clamp(10px, 1.6vw, 14px) !important;
-        padding: 6px 15px !important;
-        min-width: 250px;
     }
 }
 
