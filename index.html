@@ -22,18 +22,17 @@
             background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #ff9a9e 75%, #fad0c4 100%);
             background-size: 400% 400%;
             animation: gradientShift 8s ease infinite;
-            /* ENHANCED: Dynamic viewport with browser UI detection */
             height: 100vh;
-            height: 100dvh; /* Dynamic viewport height */
+            height: 100dvh;
             overflow: hidden;
             position: relative;
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
-            /* ENHANCED: Smart safe area detection */
-            padding-top: max(env(safe-area-inset-top), var(--browser-top, 60px));
-            padding-bottom: max(env(safe-area-inset-bottom), var(--browser-bottom, 40px));
-            padding-left: max(env(safe-area-inset-left), var(--browser-left, 15px));
-            padding-right: max(env(safe-area-inset-right), var(--browser-right, 15px));
+            /* ENHANCED: Use dynamic safe area variables */
+            padding-top: max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top)));
+            padding-bottom: max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom)));
+            padding-left: max(env(safe-area-inset-left), var(--dynamic-safe-left, env(safe-area-inset-left)));
+            padding-right: max(env(safe-area-inset-right), var(--dynamic-safe-right, env(safe-area-inset-right)));
         }
 
         body.paused .player-area {
@@ -69,13 +68,8 @@
             z-index: 1000;
             color: white;
             text-align: center;
-            /* ENHANCED: Smart safe area */
-            padding-top: max(env(safe-area-inset-top), var(--browser-top, 60px));
-            padding-bottom: max(env(safe-area-inset-bottom), var(--browser-bottom, 40px));
-            padding-left: max(env(safe-area-inset-left), var(--browser-left, 15px));
-            padding-right: max(env(safe-area-inset-right), var(--browser-right, 15px));
-            /* Container query support */
-            container-type: size;
+            /* ENHANCED: Use dynamic safe area variables */
+            padding: max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))) max(env(safe-area-inset-right), var(--dynamic-safe-right, env(safe-area-inset-right))) max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))) max(env(safe-area-inset-left), var(--dynamic-safe-left, env(safe-area-inset-left)));
         }
 
         .player-selection h1 {
@@ -137,16 +131,12 @@
             z-index: 1000;
             color: white;
             text-align: center;
+            padding: clamp(20px, 4vw, 40px);
+            /* ENHANCED: Use dynamic safe area variables */
+            padding-top: calc(clamp(20px, 4vw, 40px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
+            padding-bottom: calc(clamp(20px, 4vw, 40px) + max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))));
             overflow-y: auto;
             scroll-behavior: smooth;
-            /* ENHANCED: Smart safe area */
-            padding: clamp(15px, 3vw, 30px);
-            padding-top: calc(clamp(15px, 3vw, 30px) + max(env(safe-area-inset-top), var(--browser-top, 60px)));
-            padding-bottom: calc(clamp(15px, 3vw, 30px) + max(env(safe-area-inset-bottom), var(--browser-bottom, 40px)));
-            padding-left: calc(clamp(15px, 3vw, 30px) + max(env(safe-area-inset-left), var(--browser-left, 15px)));
-            padding-right: calc(clamp(15px, 3vw, 30px) + max(env(safe-area-inset-right), var(--browser-right, 15px)));
-            /* Container query support */
-            container-type: size;
         }
 
         .settings-panel h2 {
@@ -274,16 +264,15 @@
             50% { opacity: 1; transform: scale(1.1); }
         }
 
-        /* FIXED: Remove separate background and padding from game-container */
+        /* RESTORED: Exact Game3 game-container approach */
         .game-container {
             display: none;
             height: 100vh;
             height: 100dvh;
             position: relative;
             z-index: 10;
-            /* Container query support */
-            container-type: size;
-            /* NO EXTRA PADDING - use full screen like Game3 */
+            /* ENHANCED: Only use dynamic safe area variables, no extra padding */
+            padding: max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))) max(env(safe-area-inset-right), var(--dynamic-safe-right, env(safe-area-inset-right))) max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))) max(env(safe-area-inset-left), var(--dynamic-safe-left, env(safe-area-inset-left)));
         }
 
         .game-container.active {
@@ -302,10 +291,10 @@
             margin: 0;
         }
 
-        /* FIXED: Game controls positioning to match Game3 */
+        /* RESTORED: Exact Game3 positioning calculations */
         .layout-1player .game-controls {
             position: absolute;
-            top: calc(10px + max(env(safe-area-inset-top), var(--browser-top, 60px)));
+            top: calc(10px + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
@@ -317,7 +306,7 @@
 
         .layout-1player .player-header {
             position: absolute;
-            top: calc(clamp(35px, 7vw, 50px) + max(env(safe-area-inset-top), var(--browser-top, 60px)));
+            top: calc(clamp(35px, 7vw, 50px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
@@ -326,14 +315,14 @@
 
         .layout-1player .round-info {
             position: absolute;
-            top: calc(clamp(80px, 14vw, 110px) + max(env(safe-area-inset-top), var(--browser-top, 60px)));
+            top: calc(clamp(80px, 14vw, 110px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
             left: 50%;
             transform: translateX(-50%);
         }
 
         .layout-1player .options-container {
-            margin-top: calc(clamp(140px, 25vw, 180px) + max(env(safe-area-inset-top), var(--browser-top, 60px)));
-            height: calc(100% - clamp(180px, 30vw, 220px) - max(env(safe-area-inset-top), var(--browser-top, 60px)) - max(env(safe-area-inset-bottom), var(--browser-bottom, 40px)));
+            margin-top: calc(clamp(140px, 25vw, 180px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
+            height: calc(100% - clamp(180px, 30vw, 220px) - max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))) - max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))));
         }
 
         .layout-2players .game-container {
@@ -346,7 +335,7 @@
 
         .layout-2players .game-controls {
             position: absolute;
-            top: calc(10px + max(env(safe-area-inset-top), var(--browser-top, 60px)));
+            top: calc(10px + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -358,7 +347,7 @@
 
         .layout-2players .round-info {
             position: absolute;
-            top: calc(clamp(45px, 8vw, 60px) + max(env(safe-area-inset-top), var(--browser-top, 60px)));
+            top: calc(clamp(45px, 8vw, 60px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
             left: 50%;
             transform: translateX(-50%);
             font-size: clamp(10px, 2vw, 14px);
@@ -406,44 +395,50 @@
             max-width: 99%;
         }
 
-        /* FIXED: Remove individual backgrounds from player areas to avoid "box in box" */
+        /* RESTORED: Exact Game3 player-area styling */
         .player-area {
             padding: clamp(10px, 2vw, 20px);
             display: flex;
             flex-direction: column;
             position: relative;
-            /* REMOVED individual backgrounds and backdrop-filter */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
 
-        /* FIXED: Keep subtle borders but remove backgrounds for seamless look */
         .layout-2players .player-1 {
-            border-right: 2px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 218, 185, 0.3));
+            border-right: 2px solid rgba(255, 255, 255, 0.4);
         }
 
         .layout-2players .player-2 {
-            border-left: 2px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.3), rgba(221, 160, 221, 0.3));
+            border-left: 2px solid rgba(255, 255, 255, 0.4);
         }
 
         .layout-4players .player-1 {
-            border-right: 2px solid rgba(255, 255, 255, 0.2);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 218, 185, 0.3));
+            border-right: 2px solid rgba(255, 255, 255, 0.4);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
             transform: rotate(180deg);
         }
 
         .layout-4players .player-2 {
-            border-left: 2px solid rgba(255, 255, 255, 0.2);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(173, 216, 230, 0.3), rgba(221, 160, 221, 0.3));
+            border-left: 2px solid rgba(255, 255, 255, 0.4);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
             transform: rotate(180deg);
         }
 
         .layout-4players .player-3 {
-            border-right: 2px solid rgba(255, 255, 255, 0.2);
-            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(144, 238, 144, 0.3), rgba(255, 255, 224, 0.3));
+            border-right: 2px solid rgba(255, 255, 255, 0.4);
+            border-top: 2px solid rgba(255, 255, 255, 0.4);
         }
 
         .layout-4players .player-4 {
-            border-left: 2px solid rgba(255, 255, 255, 0.2);
-            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 192, 203, 0.3), rgba(238, 130, 238, 0.3));
+            border-left: 2px solid rgba(255, 255, 255, 0.4);
+            border-top: 2px solid rgba(255, 255, 255, 0.4);
         }
 
         .player-header {
@@ -689,14 +684,14 @@
 
         .layout-1player .round-info {
             position: absolute;
-            top: calc(clamp(80px, 14vw, 110px) + max(env(safe-area-inset-top), var(--browser-top, 60px)));
+            top: calc(clamp(80px, 14vw, 110px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
             left: 50%;
             transform: translateX(-50%);
         }
 
         .layout-2players .round-info {
             position: absolute;
-            top: calc(clamp(45px, 8vw, 60px) + max(env(safe-area-inset-top), var(--browser-top, 60px)));
+            top: calc(clamp(45px, 8vw, 60px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
             left: 50%;
             transform: translateX(-50%);
         }
@@ -789,17 +784,13 @@
             text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
             backdrop-filter: blur(10px);
             text-align: center;
+            padding: clamp(20px, 4vw, 40px);
+            /* ENHANCED: Use dynamic safe area variables */
+            padding-top: calc(clamp(20px, 4vw, 40px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
+            padding-bottom: calc(clamp(20px, 4vw, 40px) + max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))));
             overflow-y: auto;
             max-height: 100vh;
             max-height: 100dvh;
-            /* ENHANCED: Smart safe area */
-            padding: clamp(15px, 3vw, 30px);
-            padding-top: calc(clamp(15px, 3vw, 30px) + max(env(safe-area-inset-top), var(--browser-top, 60px)));
-            padding-bottom: calc(clamp(15px, 3vw, 30px) + max(env(safe-area-inset-bottom), var(--browser-bottom, 40px)));
-            padding-left: calc(clamp(15px, 3vw, 30px) + max(env(safe-area-inset-left), var(--browser-left, 15px)));
-            padding-right: calc(clamp(15px, 3vw, 30px) + max(env(safe-area-inset-right), var(--browser-right, 15px)));
-            /* Container query support */
-            container-type: size;
         }
 
         .champion-chart {
@@ -978,10 +969,10 @@
             color: white;
         }
 
-        /* FIXED: Instructions positioning to match Game3 */
+        /* RESTORED: Exact Game3 instructions positioning */
         .instructions {
             position: absolute;
-            bottom: calc(clamp(10px, 2vw, 20px) + max(env(safe-area-inset-bottom), var(--browser-bottom, 40px)));
+            bottom: calc(clamp(10px, 2vw, 20px) + max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))));
             left: 50%;
             transform: translateX(-50%);
             color: #333333;
@@ -1045,111 +1036,6 @@
             100% { opacity: 0; transform: scale(3) rotate(360deg); }
         }
 
-        /* Container queries for adaptive layouts based on actual container size */
-        @container (height < 700px) {
-            .bubble {
-                transform: scale(0.95);
-            }
-            
-            .player-header {
-                margin-bottom: clamp(8px, 2vw, 15px);
-            }
-            
-            .control-button {
-                padding: clamp(3px, 0.8vw, 5px) clamp(5px, 1vw, 8px);
-                font-size: clamp(7px, 1.2vw, 10px);
-            }
-            
-            .round-info {
-                font-size: clamp(10px, 2vw, 14px);
-                padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 12px);
-            }
-        }
-
-        @container (height < 600px) {
-            .bubble {
-                transform: scale(0.9);
-            }
-            
-            .layout-1player .bubble {
-                width: clamp(80px, 18vw, 140px);
-                height: clamp(80px, 18vw, 140px);
-                font-size: clamp(20px, 5vw, 32px);
-            }
-            
-            .layout-2players .bubble {
-                width: clamp(70px, 15vw, 120px);
-                height: clamp(70px, 15vw, 120px);
-                font-size: clamp(16px, 4vw, 24px);
-            }
-            
-            .layout-4players .bubble {
-                width: clamp(50px, 10vw, 80px);
-                height: clamp(50px, 10vw, 80px);
-                font-size: clamp(14px, 3vw, 18px);
-            }
-            
-            .control-button {
-                padding: 2px 4px;
-                font-size: clamp(6px, 1vw, 8px);
-            }
-            
-            .round-info {
-                font-size: clamp(8px, 1.5vw, 11px);
-                padding: clamp(2px, 0.5vw, 4px) clamp(4px, 1vw, 6px);
-            }
-        }
-
-        @container (height < 500px) {
-            .bubble {
-                transform: scale(0.85);
-            }
-            
-            .player-name {
-                font-size: clamp(12px, 2.5vw, 18px);
-                margin-bottom: clamp(4px, 1vw, 8px);
-            }
-            
-            .score {
-                font-size: clamp(18px, 4vw, 28px);
-            }
-            
-            .control-button {
-                padding: 1px 3px;
-                font-size: clamp(5px, 0.8vw, 7px);
-            }
-            
-            .round-info {
-                font-size: clamp(6px, 1.2vw, 9px);
-                padding: clamp(1px, 0.3vw, 2px) clamp(2px, 0.6vw, 4px);
-            }
-        }
-
-        @container (width < 400px) {
-            .layout-2players .game-container {
-                flex-direction: column;
-            }
-            
-            .layout-2players .player-area {
-                height: 50%;
-            }
-            
-            .bubble {
-                transform: scale(0.9);
-            }
-        }
-
-        @container (width < 350px) {
-            .bubble {
-                transform: scale(0.85);
-            }
-            
-            .control-button {
-                font-size: clamp(5px, 1vw, 7px);
-                padding: 1px 2px;
-            }
-        }
-
         @media (max-width: 480px) {
             .layout-2players .game-container {
                 flex-direction: column;
@@ -1200,6 +1086,7 @@
     </style>
 </head>
 <body class="layout-2players">
+    <!-- Keep all your existing HTML exactly the same -->
     <!-- Main Menu -->
     <div class="player-selection" id="playerSelection">
         <h1 id="gameTitle">🎵 Jyutping Bubbles 🎵</h1>
@@ -1327,7 +1214,60 @@
 
     <script>
         // ===========================================
-        // DEVELOPER CONFIGURATION SECTION
+        // ENHANCED VIEWPORT DETECTION - ADD THIS ONLY
+        // ===========================================
+        
+        function detectActualViewport() {
+            const root = document.documentElement;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const svh = window.screen.height;
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Calculate browser UI space
+                const browserUIHeight = Math.max(0, svh - vh);
+                
+                // Only apply adjustments if significant browser UI is detected
+                if (browserUIHeight > 100) {
+                    const additionalTop = Math.min(browserUIHeight * 0.6, 40);
+                    const additionalBottom = Math.min(browserUIHeight * 0.4, 30);
+                    
+                    root.style.setProperty('--dynamic-safe-top', `calc(env(safe-area-inset-top) + ${additionalTop}px)`);
+                    root.style.setProperty('--dynamic-safe-bottom', `calc(env(safe-area-inset-bottom) + ${additionalBottom}px)`);
+                    root.style.setProperty('--dynamic-safe-left', 'env(safe-area-inset-left)');
+                    root.style.setProperty('--dynamic-safe-right', 'env(safe-area-inset-right)');
+                    
+                    console.log('Enhanced viewport applied:', {
+                        browserUIHeight,
+                        additionalTop,
+                        additionalBottom
+                    });
+                } else {
+                    // Use standard safe area insets
+                    root.style.setProperty('--dynamic-safe-top', 'env(safe-area-inset-top)');
+                    root.style.setProperty('--dynamic-safe-bottom', 'env(safe-area-inset-bottom)');
+                    root.style.setProperty('--dynamic-safe-left', 'env(safe-area-inset-left)');
+                    root.style.setProperty('--dynamic-safe-right', 'env(safe-area-inset-right)');
+                }
+            } else {
+                // Desktop - use standard safe areas
+                root.style.setProperty('--dynamic-safe-top', 'env(safe-area-inset-top)');
+                root.style.setProperty('--dynamic-safe-bottom', 'env(safe-area-inset-bottom)');
+                root.style.setProperty('--dynamic-safe-left', 'env(safe-area-inset-left)');
+                root.style.setProperty('--dynamic-safe-right', 'env(safe-area-inset-right)');
+            }
+        }
+
+        // Call viewport detection
+        detectActualViewport();
+        window.addEventListener('resize', detectActualViewport);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(detectActualViewport, 300);
+        });
+
+        // ===========================================
+        // KEEP ALL YOUR EXISTING JAVASCRIPT EXACTLY THE SAME
         // ===========================================
         
         const gameTexts = {
