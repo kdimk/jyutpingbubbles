@@ -1366,7 +1366,7 @@
     .layout-2players .player-2::after {
         content: attr(data-round-info);
         position: absolute;
-        top: 100px; /* Changed from 85px to 100px to be right under score */
+        top: 80px; /* Changed from 85px to 100px to be right under score */
         left: 50%;
         transform: translateX(-50%);
         font-family: 'Fredoka One', cursive;
@@ -1556,61 +1556,33 @@
 
 /* 4-Player mode - Phone-specific round info */
 @media (orientation: portrait) and (max-width: 767px) {
-    .layout-4players::before {
-        content: attr(data-round-top);
-        position: fixed;
-        top: 45vh; /* Changed from 40vh to 45vh to be right under scores */
-        left: 50vw;
-        transform: translateX(-50%) rotate(180deg);
-        font-family: 'Fredoka One', cursive;
-        font-size: clamp(8px, 1.4vw, 10px) !important;
-        color: #333333;
-        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 4px 12px !important;
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(102, 126, 234, 0.3);
-        white-space: pre-line;
-        width: auto;
-        max-width: 85vw;
-        min-width: 200px;
-        text-align: center;
-        z-index: 150;
-        pointer-events: none;
-        line-height: 1.3;
-        box-sizing: border-box;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .layout-4players::after {
-        content: attr(data-round-bottom);
-        position: fixed;
-        top: 55vh; /* Changed from 60vh to 55vh to be right under scores */
-        left: 50vw;
+    .layout-4players .player-1::after,
+    .layout-4players .player-2::after,
+    .layout-4players .player-3::after,
+    .layout-4players .player-4::after {
+        content: attr(data-round-info);
+        position: absolute;
+        top: 80px; /* Same as 2-player mode */
+        left: 50%;
         transform: translateX(-50%);
         font-family: 'Fredoka One', cursive;
         font-size: clamp(8px, 1.4vw, 10px) !important;
         color: #333333;
         text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 4px 12px !important;
-        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 3px 6px !important;
+        border-radius: 12px;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
         white-space: pre-line;
-        width: auto;
-        max-width: 85vw;
-        min-width: 200px;
+        max-width: 100%;
         text-align: center;
-        z-index: 150;
+        z-index: 100;
         pointer-events: none;
-        line-height: 1.3;
-        box-sizing: border-box;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        line-height: 1.2;
     }
-
 }
+
 
 /* 4-Player mode - iPad/Tablet-specific round info */
 @media (orientation: portrait) and (min-width: 768px) {
@@ -1621,57 +1593,32 @@
         top: 20px !important;
     }
     
-    .layout-4players::before {
-        content: attr(data-round-top);
-        position: fixed;
-        top: 47vh; /* Changed from 42vh to 47vh to be right under scores */
-        left: 50vw;
-        transform: translateX(-50%) rotate(180deg);
-        font-family: 'Fredoka One', cursive;
-        font-size: clamp(11px, 1.6vw, 15px) !important;
-        color: #333333;
-        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 6px 15px !important;
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(102, 126, 234, 0.3);
-        white-space: pre-line;
-        width: auto;
-        max-width: 85vw;
-        min-width: 250px;
-        text-align: center;
-        z-index: 150;
-        pointer-events: none;
-        line-height: 1.3;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .layout-4players::after {
-        content: attr(data-round-bottom);
-        position: fixed;
-        top: 53vh; /* Changed from 58vh to 53vh to be right under scores */
-        left: 50vw;
+    .layout-4players .player-1::after,
+    .layout-4players .player-2::after,
+    .layout-4players .player-3::after,
+    .layout-4players .player-4::after {
+        content: attr(data-round-info);
+        position: absolute;
+        top: 140px; /* Same as 2-player mode */
+        left: 50%;
         transform: translateX(-50%);
         font-family: 'Fredoka One', cursive;
-        font-size: clamp(11px, 1.6vw, 15px) !important;
+        font-size: clamp(12px, 1.8vw, 16px) !important;
         color: #333333;
         text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 6px 15px !important;
-        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 6px 12px !important;
+        border-radius: 12px;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
         white-space: pre-line;
-        width: auto;
-        max-width: 85vw;
-        min-width: 250px;
+        max-width: 90%;
         text-align: center;
-        z-index: 150;
+        z-index: 100;
         pointer-events: none;
-        line-height: 1.3;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        line-height: 1.2;
     }
+
     
     .layout-4players .options-container {
         margin-top: 80px !important;
@@ -3359,7 +3306,6 @@ function loadGameState() {
 // Update this function to handle both 2-player and 4-player portrait modes
 // Update this function to handle both 2-player and 4-player portrait modes
 function updateRoundInfoForBothPlayers() {
-    // Changed from window.innerWidth <= 480 to just orientation check
     if (window.matchMedia("(orientation: portrait)").matches) {
         const roundText = `${gameTexts.roundCounter} ${gameState.currentRound}/${gameState.maxRounds}`;
         const statusText = document.getElementById('gameStatus').textContent;
@@ -3375,16 +3321,27 @@ function updateRoundInfoForBothPlayers() {
             if (player1) player1.setAttribute('data-round-info', combinedText);
             if (player2) player2.setAttribute('data-round-info', combinedText);
         } else if (gameState.playerCount === 4) {
-            // 4-player mode: set attributes on body element instead
-            document.body.setAttribute('data-round-top', combinedText);
-            document.body.setAttribute('data-round-bottom', combinedText);
+            // 4-player mode: show for all four players (same as 2-player approach)
+            const player1 = document.querySelector('.layout-4players .player-1');
+            const player2 = document.querySelector('.layout-4players .player-2');
+            const player3 = document.querySelector('.layout-4players .player-3');
+            const player4 = document.querySelector('.layout-4players .player-4');
+            
+            if (player1) player1.setAttribute('data-round-info', combinedText);
+            if (player2) player2.setAttribute('data-round-info', combinedText);
+            if (player3) player3.setAttribute('data-round-info', combinedText);
+            if (player4) player4.setAttribute('data-round-info', combinedText);
         }
     } else {
         // Clear attributes when not in portrait mode
         const player1 = document.querySelector('.player-1');
         const player2 = document.querySelector('.player-2');
+        const player3 = document.querySelector('.player-3');
+        const player4 = document.querySelector('.player-4');
         if (player1) player1.removeAttribute('data-round-info');
         if (player2) player2.removeAttribute('data-round-info');
+        if (player3) player3.removeAttribute('data-round-info');
+        if (player4) player4.removeAttribute('data-round-info');
         document.body.removeAttribute('data-round-top');
         document.body.removeAttribute('data-round-bottom');
     }
