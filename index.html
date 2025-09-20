@@ -1075,67 +1075,123 @@
         .layout-1player .player-area:not(.player-1) { display: none; }
         .layout-2players .player-area:not(.player-1):not(.player-2) { display: none; }
 
-        @media (max-width: 896px) and (orientation: landscape) {
-            body {
-                padding-left: 0;
-                padding-right: 0;
-            }
-            
-            .player-selection,
-            .settings-panel,
-            .game-container {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-            
-            /* Use more horizontal space in landscape */
-            .layout-2players .game-container {
-                flex-direction: row; /* Keep side-by-side in landscape */
-            }
-            
-            .layout-2players .player-area {
-                height: 100%;
-                flex: 1;
-            }
-            
-            /* Optimize bubble sizes for landscape */
-            .layout-2players .bubble {
-                width: clamp(70px, 12vw, 120px);
-                height: clamp(70px, 12vw, 120px);
-                font-size: clamp(16px, 3vw, 24px);
-            }
-            
-            /* Better button positioning in landscape */
-            .layout-2players .game-controls {
-                top: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-            }
-            
-            .layout-2players .round-info {
-                top: 45px;
-                left: 50%;
-                transform: translateX(-50%);
-                font-size: clamp(8px, 1.8vw, 12px);
-            }
-            
-            /* Make instructions smaller in landscape */
-            .instructions {
-                font-size: clamp(8px, 1.5vw, 10px);
-                padding: 4px 8px;
-                bottom: 10px;
-            }
-        }
+/* Landscape mode optimizations for phones - FULL VIEWPORT USAGE */
+@media (max-width: 896px) and (orientation: landscape) {
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden;
+    }
+    
+    .player-selection,
+    .settings-panel {
+        padding: 5px;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+    }
+    
+    .game-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        max-width: none;
+        max-height: none;
+    }
+    
+    .player-area {
+        padding: 2px !important;
+        margin: 0 !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    /* Force 2-player layout to use full width */
+    .layout-2players .game-container {
+        flex-direction: row;
+        gap: 0;
+    }
+    
+    .layout-2players .player-area {
+        height: 100vh;
+        height: 100dvh;
+        flex: 1;
+        width: 50vw;
+    }
+    
+    /* Remove all borders and spacing */
+    .layout-2players .player-1 {
+        border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-left: none !important;
+        border-top: none !important;
+        border-bottom: none !important;
+    }
+    
+    .layout-2players .player-2 {
+        border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
+        border-right: none !important;
+        border-top: none !important;
+        border-bottom: none !important;
+    }
+    
+    /* Optimize control positioning for landscape */
+    .layout-2players .game-controls {
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 200;
+    }
+    
+    .layout-2players .round-info {
+        top: 35px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(8px, 1.5vw, 10px);
+        padding: 2px 6px;
+        z-index: 200;
+    }
+    
+    /* Smaller bubbles for landscape */
+    .layout-2players .bubble {
+        width: clamp(60px, 8vw, 100px);
+        height: clamp(60px, 8vw, 100px);
+        font-size: clamp(14px, 2.5vw, 20px);
+        padding: clamp(4px, 1vw, 8px);
+    }
+    
+    /* Optimize instructions for landscape */
+    .instructions {
+        font-size: clamp(6px, 1.2vw, 8px);
+        padding: 2px 4px;
+        bottom: 5px;
+        max-width: 95%;
+    }
+    
+    /* Remove safe area insets in landscape on phones */
+    .layout-2players .player-header {
+        margin-bottom: clamp(5px, 1vw, 10px);
+    }
+    
+    .options-container {
+        height: calc(100% - 60px) !important;
+        width: 100% !important;
+        padding: 2px !important;
+    }
+}
 
-        /* Extra wide phones in landscape (like iPhone Pro Max) */
-        @media (min-width: 700px) and (max-width: 896px) and (orientation: landscape) {
-            .layout-2players .bubble {
-                width: clamp(80px, 10vw, 140px);
-                height: clamp(80px, 10vw, 140px);
-                font-size: clamp(18px, 2.5vw, 28px);
-            }
-        }
-
+/* For very wide phones in landscape */
+@media (min-width: 700px) and (max-width: 896px) and (orientation: landscape) {
+    .layout-2players .bubble {
+        width: clamp(70px, 9vw, 120px);
+        height: clamp(70px, 9vw, 120px);
+        font-size: clamp(16px, 3vw, 24px);
+    }
+    
+    .layout-2players .round-info {
+        font-size: clamp(10px, 1.8vw, 12px);
+    }
+}
 
     </style>
 </head>
