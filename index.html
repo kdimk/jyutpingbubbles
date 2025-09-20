@@ -3365,6 +3365,8 @@ function loadGameState() {
             updateStartPauseButton();
             saveGameState();
             document.getElementById('gameStatus').textContent = gameTexts.getReady;
+
+            updateRoundInfoForBothPlayers();
             
             setTimeout(() => {
                 playRound();
@@ -3431,9 +3433,13 @@ function loadGameState() {
                             
                             audio.play().then(() => {
                                 document.getElementById('gameStatus').textContent = gameTexts.listen;
+                                // Add this line
+                                updateRoundInfoForBothPlayers();                                
                             }).catch(e => {
                                 console.error('Error playing audio:', e);
                                 document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
+                                // Add this line
+                                updateRoundInfoForBothPlayers();                                
                             });
                         } else {
                             setTimeout(audioReadyCheck, 50);
@@ -3452,9 +3458,13 @@ function loadGameState() {
                     
                     audio.play().then(() => {
                         document.getElementById('gameStatus').textContent = gameTexts.listen;
+                        // Add this line
+                        updateRoundInfoForBothPlayers();                        
                     }).catch(e => {
                         console.error('Error playing audio:', e);
                         document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
+                        // Add this line
+                        updateRoundInfoForBothPlayers();
                     });
                 }
             });
@@ -3613,7 +3623,10 @@ function loadGameState() {
                         document.getElementById('gameStatus').textContent = 
                             `🎉 ${players} ${gameTexts.gotItRight} 🎉`;
                     }
-                    
+
+                    // Add this line
+                    updateRoundInfoForBothPlayers();
+
                     if (!roundEndTimeout) {
                         roundEndTimeout = setTimeout(() => {
                             endRound();
@@ -3628,6 +3641,9 @@ function loadGameState() {
                         document.getElementById('gameStatus').textContent = 
                             `💥 ${players} - ${gameTexts.wrongAnswer} -10000 ${gameTexts.points} 💥`;
                     }
+
+                    // Add this line
+                    updateRoundInfoForBothPlayers();
                 }
             }
             
@@ -3774,6 +3790,9 @@ function updateRoundInfo() {
             
             updateStartPauseButton();
             saveGameState();
+
+            // Add this line
+            updateRoundInfoForBothPlayers();
         }
 
         function resumeGame() {
@@ -3792,6 +3811,9 @@ function updateRoundInfo() {
             
             updateStartPauseButton();
             saveGameState();
+
+            // Add this line
+            updateRoundInfoForBothPlayers();
         }
 
         function resetGame() {
@@ -3829,6 +3851,9 @@ function updateRoundInfo() {
             saveGameState();
             
             document.getElementById('gameStatus').textContent = gameTexts.startMessage;
+
+            // Add this line
+            updateRoundInfoForBothPlayers();
             
             for (let i = 1; i <= 4; i++) {
                 const countdownEl = document.getElementById(`countdown${i}`);
