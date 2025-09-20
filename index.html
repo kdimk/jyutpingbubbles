@@ -1349,7 +1349,7 @@
     }
 }
 
-/* 1-Player mode portrait phone optimization - use more width but not 100% */
+/* 1-Player mode portrait phone optimization - fix button styling */
 @media (max-width: 480px) and (orientation: portrait) {
     /* Make 1-player mode use full viewport in portrait */
     .layout-1player .game-container {
@@ -1366,7 +1366,7 @@
         height: 100% !important;
     }
     
-    /* Smaller controls similar to 2-player landscape - but use more width */
+    /* Clean button styling - remove shallow/weird effects */
     .layout-1player .game-controls {
         position: absolute;
         top: 5px;
@@ -1374,27 +1374,50 @@
         transform: translateX(-50%);
         display: flex;
         gap: 6px;
-        width: auto; /* Let buttons determine width */
+        width: auto;
         justify-content: center;
         z-index: 100;
     }
     
     .layout-1player .control-button {
-        padding: clamp(4px, 1vw, 6px) clamp(8px, 1.8vw, 12px) !important;
-        font-size: clamp(8px, 1.3vw, 10px) !important;
-        font-weight: 700;
+        padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 14px) !important;
+        font-size: clamp(9px, 1.8vw, 12px) !important;
+        font-weight: 700 !important;
+        border: 1px solid rgba(102, 126, 234, 0.3) !important;
+        border-radius: 15px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        color: #667eea !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
         min-width: auto;
         white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.3s ease !important;
+        /* Remove any weird visual effects */
+        outline: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+    }
+    
+    .layout-1player .control-button:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+        background: rgba(255, 255, 255, 1) !important;
+        border-color: #667eea !important;
+    }
+    
+    .layout-1player .control-button:active {
+        transform: translateY(0) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
     }
     
     /* Smaller score display */
     .layout-1player .player-header {
         position: absolute;
-        top: 35px;
+        top: 40px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 100;
-        width: auto; /* Natural width */
+        width: auto;
         text-align: center;
     }
     
@@ -1403,25 +1426,25 @@
         text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
     }
     
-    /* Smaller round info like 2-player landscape - use natural width */
+    /* Smaller round info like 2-player landscape */
     .layout-1player .round-info {
         position: absolute;
-        top: 70px;
+        top: 80px;
         left: 50%;
         transform: translateX(-50%);
         font-size: clamp(8px, 1.5vw, 10px) !important;
         padding: 2px 6px !important;
-        width: auto; /* Natural width based on content */
-        max-width: 90%; /* Only limit maximum */
+        width: auto;
+        max-width: 90%;
         text-align: center;
         white-space: nowrap;
     }
     
     /* Optimize play area */
     .layout-1player .options-container {
-        margin-top: 100px !important;
-        height: calc(100vh - 140px) !important;
-        height: calc(100dvh - 140px) !important;
+        margin-top: 110px !important;
+        height: calc(100vh - 150px) !important;
+        height: calc(100dvh - 150px) !important;
         width: 100% !important;
         padding: 5px !important;
     }
@@ -1434,7 +1457,7 @@
         padding: clamp(4px, 1vw, 8px) !important;
     }
     
-    /* Smaller instructions - use natural width */
+    /* Smaller instructions */
     .layout-1player .instructions {
         position: absolute;
         bottom: 5px;
@@ -1442,8 +1465,8 @@
         transform: translateX(-50%);
         font-size: clamp(6px, 1.2vw, 8px) !important;
         padding: 2px 4px !important;
-        width: auto; /* Natural width */
-        max-width: 90%; /* Only limit maximum */
+        width: auto;
+        max-width: 90%;
         text-align: center;
         line-height: 1.2;
     }
@@ -1455,11 +1478,11 @@
     }
 }
 
-/* Slightly larger phones (iPhone Plus, etc.) in portrait - keep proportionally small */
+/* Slightly larger phones (iPhone Plus, etc.) in portrait */
 @media (min-width: 414px) and (max-width: 480px) and (orientation: portrait) {
     .layout-1player .control-button {
-        font-size: clamp(9px, 1.5vw, 11px) !important;
-        padding: clamp(5px, 1.2vw, 7px) clamp(9px, 2vw, 13px) !important;
+        font-size: clamp(10px, 2vw, 13px) !important;
+        padding: clamp(7px, 1.8vw, 9px) clamp(12px, 3vw, 16px) !important;
     }
     
     .layout-1player .round-info {
