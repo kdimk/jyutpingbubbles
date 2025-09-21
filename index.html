@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🫧 Jyutping Bubbles 🫧</title>
+    <title>Jyutping Bubbles</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@600;700;800&display=swap');
 
@@ -195,12 +195,64 @@
             cursor: pointer;
         }
 
-        .rounds-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-        }
+.rounds-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    gap: 8px;
+}
+
+.rounds-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.rounds-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rounds-btn:active {
+    transform: translateY(0);
+}
+
+.rounds-display {
+    padding: 8px 12px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 10px;
+    font-size: clamp(14px, 3vw, 18px);
+    font-weight: 700;
+    width: 80px;
+    text-align: center;
+    color: #333;
+    background: rgba(255, 255, 255, 0.95);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+}
 
         .number-input {
             padding: 8px 12px;
@@ -2371,6 +2423,163 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     }
 }
 
+.volume-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.volume-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.volume-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.volume-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.volume-btn:active {
+    transform: translateY(0);
+}
+
+.volume-display {
+    padding: 8px 12px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 10px;
+    font-size: clamp(14px, 3vw, 18px);
+    font-weight: 700;
+    width: 80px;
+    text-align: center;
+    color: #333;
+    background: rgba(255, 255, 255, 0.95);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+}
+
+.volume-label {
+    font-size: clamp(12px, 2.5vw, 16px);
+    color: #333;
+    text-align: center;
+}
+
+.rounds-btn, .volume-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+    position: relative;
+    overflow: hidden;
+}
+
+.rounds-btn:hover, .volume-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rounds-btn:active, .volume-btn:active {
+    transform: translateY(0);
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Faster, more intense hold feedback */
+.rounds-btn:active, .volume-btn:active {
+    animation: holdPulseFast 0.2s ease-in-out infinite alternate;
+}
+
+@keyframes holdPulseFast {
+    0% { 
+        background: #667eea;
+        transform: translateY(0) scale(1);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    100% { 
+        background: #4c5ed4;
+        transform: translateY(0) scale(0.94);
+        box-shadow: 0 3px 12px rgba(102, 126, 234, 0.6);
+    }
+}
+
+/* More intense glow effect for fast holds */
+.rounds-btn:active::after, 
+.volume-btn:active::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(45deg, 
+        rgba(102, 126, 234, 0.2), 
+        rgba(102, 126, 234, 0.4), 
+        rgba(102, 126, 234, 0.2));
+    border-radius: 12px;
+    animation: holdGlowFast 0.3s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes holdGlowFast {
+    0% { 
+        opacity: 0.3;
+        transform: scale(0.98);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
 
     </style>
 </head>
@@ -2378,7 +2587,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     <!-- Keep all your existing HTML exactly the same -->
     <!-- Main Menu -->
     <div class="player-selection" id="playerSelection">
-        <h1 id="gameTitle">🫧 Jyutping Bubbles 🫧</h1>
+        <h1 id="gameTitle">Jyutping Bubbles</h1>
         <div class="player-options">
             <button class="player-btn" onclick="selectPlayers(1)" id="player1Btn">👤 1 Player</button>
             <button class="player-btn" onclick="selectPlayers(2)" id="player2Btn">👥 2 Players</button>
@@ -2394,27 +2603,59 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         <div class="settings-section">
             <h3 id="roundsTitle">🎯 Number of Rounds</h3>
             <div class="rounds-container">
-                <span id="roundsLabel">Rounds per game:</span>
-                <input type="number" id="roundsInput" class="number-input" min="1" max="50" value="10">
+                <!-- <span id="roundsLabel">Rounds per game:</span> -->
+                <button type="button" class="rounds-btn" 
+                        onmousedown="startHold(changeRounds, -1)" 
+                        onmouseup="stopHold()" 
+                        onmouseleave="stopHold()"
+                        ontouchstart="startHold(changeRounds, -1)" 
+                        ontouchend="stopHold()" 
+                        ontouchcancel="stopHold()">−</button>
+                <span id="roundsDisplay" class="rounds-display">10</span>
+                <button type="button" class="rounds-btn" 
+                        onmousedown="startHold(changeRounds, 1)" 
+                        onmouseup="stopHold()" 
+                        onmouseleave="stopHold()"
+                        ontouchstart="startHold(changeRounds, 1)" 
+                        ontouchend="stopHold()" 
+                        ontouchcancel="stopHold()">+</button>
             </div>
         </div>
-
+        
         <div class="settings-section">
-            <h3 id="soundGroupsTitle">🎵 Sound Groups</h3>
+            <h3 id="soundGroupsTitle">💬 Sound Groups</h3>
             <div class="group-checkboxes" id="groupCheckboxes">
                 <!-- Dynamic group checkboxes will be generated here -->
             </div>
         </div>
 
         <div class="settings-section">
-            <h3 id="musicVolumeTitle">🎶 Background Music Volume</h3>
-            <div class="volume-label" id="volumeLabel">Volume: <span id="volumeValue">30</span>%</div>
-            <input type="range" class="volume-slider" id="bgMusicVolume" min="0" max="100" value="30" oninput="updateVolumeDisplay()">
+            <h3 id="musicVolumeTitle">🎵 Background Music Volume</h3>
+            <div class="volume-container">
+                <!-- <div class="volume-label" id="volumeLabel">Volume: <span id="volumeValue">30</span>%</div> -->
+                <div class="volume-controls">
+                    <button type="button" class="volume-btn" 
+                            onmousedown="startHold(changeVolume, -5)" 
+                            onmouseup="stopHold()" 
+                            onmouseleave="stopHold()"
+                            ontouchstart="startHold(changeVolume, -5)" 
+                            ontouchend="stopHold()" 
+                            ontouchcancel="stopHold()">−</button>
+                    <span id="volumeDisplay" class="volume-display">30%</span>
+                    <button type="button" class="volume-btn" 
+                            onmousedown="startHold(changeVolume, 5)" 
+                            onmouseup="stopHold()" 
+                            onmouseleave="stopHold()"
+                            ontouchstart="startHold(changeVolume, 5)" 
+                            ontouchend="stopHold()" 
+                            ontouchcancel="stopHold()">+</button>
+                </div>
+            </div>
         </div>
 
         <div class="settings-buttons">
-            <button class="player-btn" onclick="saveSettings()" id="saveSettingsBtn">✅ Save Settings</button>
-            <button class="player-btn" onclick="backToGame()" id="backToGameBtn">🔙 Back</button>
+            <button class="player-btn" onclick="saveSettings()" id="saveSettingsBtn">Save Settings</button>
+            <button class="player-btn" onclick="backToGame()" id="backToGameBtn">Back</button>
         </div>
     </div>
 
@@ -2482,8 +2723,8 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             <div id="winnerText"></div>
             <div class="champion-chart" id="championChart"></div>
             <div class="stats-section" id="statsSection"></div>
-            <button class="control-button" onclick="resetGame()" style="margin-top: 30px; font-size: 20px;" id="playAgainBtn">🎉 Play Again! 🎉</button>
-            <button class="control-button" onclick="backToMainMenu()" style="margin-top: 10px; font-size: 20px;" id="resultsMenuBtn">🏠 Main Menu</button>
+            <button class="control-button" onclick="resetGame()" style="margin-top: 30px; font-size: 20px;" id="playAgainBtn">🔄 Play Again!</button>
+            <button class="control-button" onclick="backToMainMenu()" style="margin-top: 10px; font-size: 20px;" id="resultsMenuBtn">🏠 Menu</button>
         </div>
 
         <div class="instructions" id="instructions">
@@ -2528,34 +2769,34 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         // ===========================================
         
         const gameTexts = {
-            title: "🫧 Jyutping Bubbles 🫧",
+            title: "Jyutping Bubbles",
             player1: "👤 1 Player",
             player2: "👥 2 Players", 
             player4: "👥👥 4 Players",
             settings: "⚙️ Settings",
-            settingsTitle: "⚙️ Game Settings",
+            settingsTitle: "⚙️ Settings",
             roundsTitle: "🎯 Number of Rounds",
             roundsLabel: "Rounds per game:",
-            soundGroupsTitle: "🎵 Sound Groups",
-            musicVolumeTitle: "🎶 Background Music Volume",
+            soundGroupsTitle: "💬 Sound Groups",
+            musicVolumeTitle: "🎵 Background Music Volume",
             volumeLabel: "Volume:",
-            saveSettings: "✅ Save Settings",
-            backButton: "🔙 Back",
-            startButton: "🎮 Start",
+            saveSettings: "Save Settings",
+            backButton: "Back",
+            startButton: "▶️ Start",
             pauseButton: "⏸️ Pause",
             resumeButton: "▶️ Resume",
             resetButton: "🔄 Reset",
             mainMenuButton: "🏠 Menu",
             continueButton: "🎮 Continue Game 🎮",
-            playAgainButton: "🎉 Play Again! 🎉",
-            resultsMenuButton: "🏠 Main Menu",
+            playAgainButton: "🔄 Play Again!",
+            resultsMenuButton: "🏠 Menu",
             instructionLine1: "🎯 Listen and click the correct Jyutping! 🎯",
             instructionLine2: "⚡ Faster = Higher Score! Wrong = -2500 points! ⚡",
             roundCounter: "Round:",
-            startMessage: "🎵 Press Start to begin! 🎵",
-            getReady: "🎵 Get ready for Jyutping practice! 🎵",
+            startMessage: "Press ▶️ Start to begin!",
+            getReady: "🎮 Get ready! 🎮",
             listen: "🎧 Listen and click the correct Jyutping! 🎧",
-            pausedMessage: "⏸️ Game Paused - Click Resume to continue! ⏸️",
+            pausedMessage: "Game Paused - Click ▶️ Resume to continue!",
             countdownGo: "Listen!",
             playerWins: "🏆 {player} Wins! 🏆",
             tieGame: "🤝 Tie Game! 🤝",
@@ -2872,15 +3113,15 @@ detectViewableArea();
             });
         }
 
-        function updateTempGroups() {
-            gameState.tempSelectedGroups = [];
-            getAvailableGroups().forEach(groupId => {
-                const checkbox = document.getElementById(`group${groupId}`);
-                if (checkbox && checkbox.checked) {
-                    gameState.tempSelectedGroups.push(groupId);
-                }
-            });
+function updateTempGroups() {
+    gameState.tempSelectedGroups = [];
+    getAvailableGroups().forEach(groupId => {
+        const checkbox = document.getElementById(`group${groupId}`);
+        if (checkbox && checkbox.checked) {
+            gameState.tempSelectedGroups.push(groupId);
         }
+    });
+}
 
         function updateVolumeDisplay() {
             const volumeSlider = document.getElementById('bgMusicVolume');
@@ -2893,29 +3134,190 @@ detectViewableArea();
             }
         }
 
-        function updateSettingsDisplay() {
-            generateGroupCheckboxes();
-            
-            const volumeSlider = document.getElementById('bgMusicVolume');
-            const volumeValue = document.getElementById('volumeValue');
-            const roundsInput = document.getElementById('roundsInput');
-            
-            if (volumeSlider && volumeValue) {
-                volumeSlider.value = gameState.tempBgMusicVolume;
-                volumeValue.textContent = gameState.tempBgMusicVolume;
-            }
-            
-            if (roundsInput) {
-                roundsInput.value = gameState.tempMaxRounds;
-            }
+// Hold button functionality with aggressive acceleration
+let holdTimer = null;
+let holdInterval = null;
+let isHolding = false;
+let holdDuration = 0;
+let currentAction = null;
+let currentDelta = 0;
+
+function startHold(action, delta) {
+    if (isHolding) return;
+    
+    isHolding = true;
+    holdDuration = 0;
+    currentAction = action;
+    currentDelta = delta;
+    
+    // Execute immediately
+    action(delta);
+    
+    // Start hold timer (reduced from 500ms to 300ms)
+    holdTimer = setTimeout(() => {
+        if (isHolding) {
+            startProgressiveHold();
         }
+    }, 300);
+}
+
+function startProgressiveHold() {
+    if (!isHolding) return;
+    
+    // Calculate speed based on hold duration
+    let interval = getIntervalForDuration(holdDuration);
+    let multiplier = getMultiplierForDuration(holdDuration);
+    
+    // Execute action with current multiplier
+    currentAction(currentDelta * multiplier);
+    
+    holdDuration += interval;
+    
+    // Schedule next execution
+    holdInterval = setTimeout(() => {
+        if (isHolding) {
+            startProgressiveHold();
+        }
+    }, interval);
+}
+
+function getIntervalForDuration(duration) {
+    // Much faster acceleration
+    if (duration < 500) return 120;       // First 0.5 seconds: 120ms intervals
+    if (duration < 1000) return 80;       // 0.5-1 second: 80ms intervals
+    if (duration < 1500) return 50;       // 1-1.5 seconds: 50ms intervals
+    if (duration < 2000) return 30;       // 1.5-2 seconds: 30ms intervals
+    if (duration < 3000) return 20;       // 2-3 seconds: 20ms intervals
+    return 15;                            // After 3 seconds: 15ms intervals (super fast)
+}
+
+function getMultiplierForDuration(duration) {
+    // Much more aggressive multiplier increase
+    if (duration < 400) return 1;         // First 0.4 seconds: normal steps
+    if (duration < 800) return 2;         // 0.4-0.8 seconds: 2x steps
+    if (duration < 1200) return 5;        // 0.8-1.2 seconds: 5x steps
+    if (duration < 1600) return 10;       // 1.2-1.6 seconds: 10x steps
+    if (duration < 2000) return 20;       // 1.6-2 seconds: 20x steps
+    if (duration < 2500) return 30;       // 2-2.5 seconds: 30x steps
+    if (duration < 3000) return 50;       // 2.5-3 seconds: 50x steps
+    return 100;                           // After 3 seconds: 100x steps (ultra fast)
+}
+
+function stopHold() {
+    isHolding = false;
+    holdDuration = 0;
+    currentAction = null;
+    currentDelta = 0;
+    
+    if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+    }
+    if (holdInterval) {
+        clearTimeout(holdInterval);
+        holdInterval = null;
+    }
+}
+
+function changeRounds(delta) {
+    const roundsDisplay = document.getElementById('roundsDisplay');
+    let currentValue = parseInt(roundsDisplay.textContent) || 10;
+    let newValue = currentValue + delta;
+    
+    // Updated max value to 100
+    if (newValue < 1) newValue = 1;
+    if (newValue > 100) newValue = 100;
+    
+    // Only update if value actually changed
+    if (newValue !== currentValue) {
+        roundsDisplay.textContent = newValue;
+        gameState.tempMaxRounds = newValue;
+    }
+}
+
+function changeVolume(delta) {
+    const volumeDisplay = document.getElementById('volumeDisplay');
+    let currentValue = parseInt(volumeDisplay.textContent.replace('%', '')) || 30;
+    let newValue = currentValue + delta;
+    
+    // Ensure value stays within bounds
+    if (newValue < 0) newValue = 0;
+    if (newValue > 100) newValue = 100;
+    
+    // Only update if value actually changed
+    if (newValue !== currentValue) {
+        volumeDisplay.textContent = newValue + '%';
+        gameState.tempBgMusicVolume = newValue;
+        
+        // Update background music volume immediately
+        if (bgMusic.src) {
+            bgMusic.volume = newValue / 100;
+        }
+    }
+}
+
+// Prevent context menu on long press for mobile
+document.addEventListener('contextmenu', function(e) {
+    if (e.target.classList.contains('rounds-btn') || e.target.classList.contains('volume-btn')) {
+        e.preventDefault();
+    }
+});
+
+// Clean up on page unload or visibility change
+window.addEventListener('beforeunload', stopHold);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        stopHold();
+    }
+});
+
+// Stop holding if user switches tabs or loses focus
+window.addEventListener('blur', stopHold);
+
+function updateSettingsDisplay() {
+    // Regenerate group checkboxes with current temp values
+    const container = document.getElementById('groupCheckboxes');
+    container.innerHTML = '';
+    
+    getAvailableGroups().forEach(groupId => {
+        const checkboxItem = document.createElement('div');
+        checkboxItem.className = 'checkbox-item';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `group${groupId}`;
+        checkbox.checked = gameState.tempSelectedGroups.includes(groupId);
+        checkbox.onchange = () => updateTempGroups();
+        
+        const label = document.createElement('label');
+        label.htmlFor = `group${groupId}`;
+        label.textContent = groupNames[groupId];
+        
+        checkboxItem.appendChild(checkbox);
+        checkboxItem.appendChild(label);
+        container.appendChild(checkboxItem);
+    });
+    
+    // Update rounds display
+    const roundsDisplay = document.getElementById('roundsDisplay');
+    if (roundsDisplay) {
+        roundsDisplay.textContent = gameState.tempMaxRounds;
+    }
+    
+    // Update volume display
+    const volumeDisplay = document.getElementById('volumeDisplay');
+    if (volumeDisplay) {
+        volumeDisplay.textContent = gameState.tempBgMusicVolume + '%';
+    }
+}
+
 
 function showSettings() {
     if (gameState.isPlaying && !gameState.isPaused) {
         pauseGame();
     }
     
-    // CLEAR round info when going to settings - ADD THESE LINES
+    // CLEAR round info when going to settings
     const player1 = document.querySelector('.player-1');
     const player2 = document.querySelector('.player-2');
     const player3 = document.querySelector('.player-3');
@@ -2927,13 +3329,17 @@ function showSettings() {
     document.body.removeAttribute('data-round-top');
     document.body.removeAttribute('data-round-bottom');
     
+    // Copy current values to temp values
     gameState.tempMaxRounds = gameState.maxRounds;
     gameState.tempSelectedGroups = [...gameState.selectedGroups];
     gameState.tempBgMusicVolume = gameState.bgMusicVolume;
     
+    // Show settings panel
     document.getElementById('settingsPanel').style.display = 'flex';
     document.getElementById('gameContainer').classList.remove('active');
     document.getElementById('playerSelection').style.display = 'none';
+    
+    // Update UI elements
     updateSettingsDisplay();
     
     setTimeout(() => {
@@ -2941,31 +3347,45 @@ function showSettings() {
     }, 100);
 }
 
-        function saveSettings() {
-            const roundsInput = document.getElementById('roundsInput');
-            const rounds = parseInt(roundsInput.value);
-            
-            if (rounds < 1 || rounds > 50) {
-                alert('Number of rounds must be between 1 and 50!');
-                return;
-            }
-            
-            if (gameState.tempSelectedGroups.length === 0) {
-                alert('At least one sound group must be selected!');
-                return;
-            }
-            
-            gameState.maxRounds = rounds;
-            gameState.selectedGroups = [...gameState.tempSelectedGroups];
-            gameState.bgMusicVolume = gameState.tempBgMusicVolume;
-            
-            if (bgMusic.src) {
-                bgMusic.volume = gameState.bgMusicVolume / 100;
-            }
-            
-            saveGameState();
-            backToGame();
-        }
+function saveSettings() {
+    const roundsDisplay = document.getElementById('roundsDisplay');
+    const volumeDisplay = document.getElementById('volumeDisplay');
+    
+    const rounds = parseInt(roundsDisplay.textContent);
+    const volume = parseInt(volumeDisplay.textContent.replace('%', ''));
+    
+    // Updated validation range
+    if (rounds < 1 || rounds > 100) {
+        alert('Number of rounds must be between 1 and 100!');
+        return;
+    }
+    
+    if (volume < 0 || volume > 100) {
+        alert('Volume must be between 0 and 100!');
+        return;
+    }
+    
+    if (gameState.tempSelectedGroups.length === 0) {
+        alert('At least one sound group must be selected!');
+        return;
+    }
+    
+    // Apply temp values to actual game state
+    gameState.maxRounds = rounds;
+    gameState.selectedGroups = [...gameState.tempSelectedGroups];
+    gameState.bgMusicVolume = volume;
+    
+    // Update background music volume
+    if (bgMusic.src) {
+        bgMusic.volume = gameState.bgMusicVolume / 100;
+    }
+    
+    // Save to cookies
+    saveGameState();
+    
+    // Go back to game
+    backToGame();
+}
 
         function backToGame() {
             document.getElementById('settingsPanel').style.display = 'none';
@@ -3345,13 +3765,13 @@ function loadGameState() {
         gameState.bgMusicVolume = saved.bgMusicVolume || 30;
         gameState.playerAnswers = saved.playerAnswers || {};
         
+        // IMPORTANT: Update temp values to match loaded values
         gameState.tempMaxRounds = gameState.maxRounds;
         gameState.tempSelectedGroups = [...gameState.selectedGroups];
         gameState.tempBgMusicVolume = gameState.bgMusicVolume;
         
         updateScores();
         updateRoundInfo();
-        // REMOVED: Don't set layout class on page load
     }
     
     gameState.gameInProgress = false;
@@ -4442,8 +4862,9 @@ function endGame() {
 
         initializeAudio();
         initializeAudioFiles();
-        initializeUI();
         loadGameState();
+        initializeUI();
+
         
         setTimeout(() => {
             playBgMusic();
