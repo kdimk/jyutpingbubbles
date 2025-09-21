@@ -2582,6 +2582,110 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     }
 }
 
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #ff9a9e 75%, #fad0c4 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.loading-content {
+    max-width: 500px;
+    width: 100%;
+}
+
+.loading-title {
+    font-family: 'Fredoka One', 'Chiron GoRound TC', cursive;
+    font-size: clamp(24px, 6vw, 48px);
+    margin-bottom: 40px;
+    color: #fff;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+    animation: titlePulse 2s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.loading-progress-container {
+    margin-bottom: 30px;
+}
+
+.loading-progress {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.loading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #00C851, #2ECC71, #00C851);
+    background-size: 200% 100%;
+    border-radius: 20px;
+    width: 0%;
+    transition: width 0.3s ease;
+    animation: progressShimmer 2s ease-in-out infinite;
+}
+
+@keyframes progressShimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.loading-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(14px, 3vw, 18px);
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-screen.loaded {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-out;
+}
+
+/* Hide main content while loading */
+.loading .player-selection,
+.loading .game-container,
+.loading .settings-panel {
+    display: none !important;
+}
+
     </style>
 </head>
 <body class="layout-2players">
@@ -3055,12 +3159,6 @@ detectViewableArea();
             if (audioFiles.bgMusic) {
                 bgMusic.src = audioFiles.bgMusic;
                 bgMusic.volume = gameState.bgMusicVolume / 100;
-                // Create separate audio context for background music
-                bgMusic.addEventListener('canplaythrough', () => {
-                    setTimeout(() => {
-                        playBgMusic();
-                    }, 100);
-                });
             }
             if (audioFiles.correctSound) {
                 correctSound.src = audioFiles.correctSound;
@@ -3491,12 +3589,16 @@ function backToMainMenu() {
 }
 
         // FIXED: Background music lag prevention
-        function playBgMusic() {
-            if (audioFiles.bgMusic && bgMusic.src && bgMusic.paused) {
-                bgMusic.volume = gameState.bgMusicVolume / 100;
-                bgMusic.play().catch(e => console.log('Background music play failed:', e));
-            }
-        }
+function playBgMusic() {
+    if (audioFiles.bgMusic && bgMusic.src && bgMusic.paused) {
+        bgMusic.volume = gameState.bgMusicVolume / 100;
+        bgMusic.play().catch(e => {
+            console.log('Background music play failed:', e);
+            // Retry after a short delay if it fails
+            setTimeout(() => playBgMusic(), 1000);
+        });
+    }
+}
 
         function stopBgMusic() {
             if (bgMusic.src && !bgMusic.paused) {
@@ -3835,28 +3937,44 @@ function loadGameState() {
             lastTouchEnd = now;
         }, false);
 
-        function initializeAudio() {
-            const unlockAudio = () => {
-                audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }).catch(e => {
-                    console.log('Audio unlock failed:', e);
-                });
-                
+function initializeAudio() {
+    const unlockAudio = () => {
+        // Unlock main audio element
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(e => {
+            console.log('Main audio unlock failed:', e);
+        });
+        
+        // Also unlock background music element specifically
+        if (bgMusic.src && bgMusic.paused) {
+            bgMusic.volume = 0; // Start muted to avoid audible pop
+            bgMusic.play().then(() => {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
                 setTimeout(() => {
-                    playBgMusic();
-                }, 500);
-                
-                document.removeEventListener('touchstart', unlockAudio);
-                document.removeEventListener('click', unlockAudio);
-                document.removeEventListener('keydown', unlockAudio);
-            };
-
-            document.addEventListener('touchstart', unlockAudio, { once: true });
-            document.addEventListener('click', unlockAudio, { once: true });
-            document.addEventListener('keydown', unlockAudio, { once: true });
+                    playBgMusic(); // Now play with proper volume after unlock
+                }, 100);
+            }).catch(e => {
+                console.log('Background music unlock failed:', e);
+            });
+        } else {
+            setTimeout(() => {
+                playBgMusic();
+            }, 100);
         }
+        
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+    };
+
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('keydown', unlockAudio, { once: true });
+}
+
 
 function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
@@ -4668,6 +4786,7 @@ function updateRoundInfo() {
         function pauseGame() {
             gameState.isPaused = true;
             audio.pause();
+            audio.currentTime = 0;
             document.getElementById('gameStatus').textContent = gameTexts.pausedMessage;
             
             document.body.classList.add('paused');
@@ -4868,16 +4987,12 @@ function endGame() {
         loadGameState();
         initializeUI();
 
-        
-        setTimeout(() => {
-            playBgMusic();
-        }, 1000);
-
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
             document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
             gameState.audioReady = false;
         });
+
     </script>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
