@@ -3093,6 +3093,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             tempBgMusicVolume: 30
         };
 
+window.bgMusicStarted = false;        
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 // Function to ensure audio context is running
@@ -3526,7 +3527,7 @@ function saveSettings() {
         }
 
 function backToMainMenu() {
-    // FIXED: Complete game state reset and cleanup
+    // Reset game state
     gameState.isPlaying = false;
     gameState.isPaused = false;
     gameState.roundInProgress = false;
@@ -3550,24 +3551,23 @@ function backToMainMenu() {
         roundEndTimeout = null;
     }
 
-    // Stop all audio
+    // Stop only the game audio, NOT background music
     audio.pause();
     audio.currentTime = 0;
     audio.src = '';
 
-    // CLEAR all visual elements completely
+    // Clear all visual elements
     for (let i = 1; i <= 4; i++) {
         const container = document.getElementById(`options${i}`);
         if (container) {
             container.innerHTML = '';
-            container.style.display = 'block'; // Reset any display changes
         }
         
         const countdownEl = document.getElementById(`countdown${i}`);
         if (countdownEl) countdownEl.style.display = 'none';
     }
 
-    // CLEAR any portrait mode round info attributes
+    // Clear round info
     const player1 = document.querySelector('.player-1');
     const player2 = document.querySelector('.player-2');
     const player3 = document.querySelector('.player-3');
@@ -3579,75 +3579,60 @@ function backToMainMenu() {
     document.body.removeAttribute('data-round-top');
     document.body.removeAttribute('data-round-bottom');
 
-    // Remove ALL visual states
     document.body.classList.remove('paused');
     document.getElementById('resumeButton').style.display = 'none';
     document.getElementById('winnerOverlay').style.display = 'none';
     
-    // FORCE HIDE game container completely
     const gameContainer = document.getElementById('gameContainer');
     gameContainer.classList.remove('active');
-    gameContainer.style.display = 'none'; // Force hide
+    gameContainer.style.display = 'none';
     
     document.getElementById('settingsPanel').style.display = 'none';
     
-    // Reset body class to clean state BEFORE showing menu
     document.body.className = '';
     
-    // Use requestAnimationFrame to ensure layout is clean before showing menu
     requestAnimationFrame(() => {
-        // Force show main menu
         const playerSelection = document.getElementById('playerSelection');
         playerSelection.style.display = 'flex';
         
-        // Reset game container display after menu is shown
         setTimeout(() => {
-            gameContainer.style.display = ''; // Reset to CSS default
+            gameContainer.style.display = '';
         }, 100);
     });
     
-    // Reset game status to default
     document.getElementById('gameStatus').textContent = gameTexts.startMessage;
     
     updateStartPauseButton();
     saveGameState();
     
-    setTimeout(() => {
-        playBgMusic();
-    }, 200);
-}
+    // DON'T restart music - keep it playing
+    // Remove this:
+    // setTimeout(() => {
+    //     playBgMusic();
+    // }, 200);
+}        
 
-        // FIXED: Background music lag prevention
 function playBgMusic() {
-    ensureAudioContext(); // Ensure context is active
+    // Check if already playing or if we've already started
+    if (window.bgMusicStarted || (bgMusic.src && !bgMusic.paused)) {
+        bgMusic.volume = gameState.bgMusicVolume / 100;
+        return;
+    }
     
     if (audioFiles.bgMusic && bgMusic.src) {
-        // If already playing, just adjust volume
-        if (!bgMusic.paused) {
-            bgMusic.volume = gameState.bgMusicVolume / 100;
-            return;
-        }
-        
-        // Set volume and play
+        window.bgMusicStarted = true;
         bgMusic.volume = gameState.bgMusicVolume / 100;
         bgMusic.loop = true;
-        
-        // Use play() promise properly
-        const playPromise = bgMusic.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                // Audio started successfully
-            }).catch(e => {
-                console.log('Background music play failed:', e);
-                // Retry after user interaction
-                setTimeout(() => {
-                    if (bgMusic.paused) {
-                        bgMusic.play().catch(() => {});
-                    }
-                }, 500);
-            });
-        }
+        bgMusic.play().catch(e => {
+            window.bgMusicStarted = false;
+            console.log('Background music play failed:', e);
+            // Retry after a short delay if it fails
+            setTimeout(() => {
+                if (bgMusic.paused && !window.bgMusicStarted) {
+                    playBgMusic();
+                }
+            }, 1000);
+        });
     }
 }
 
@@ -3993,24 +3978,9 @@ function initializeAudio() {
         // Resume audio context first
         ensureAudioContext();
         
-        // Start background music immediately with fade-in
-        if (bgMusic.src && bgMusic.paused) {
-            bgMusic.volume = 0;
-            bgMusic.loop = true;
-            bgMusic.play().then(() => {
-                // Fade in volume
-                let fadeVolume = 0;
-                const targetVolume = gameState.bgMusicVolume / 100;
-                const fadeInterval = setInterval(() => {
-                    fadeVolume += 0.05;
-                    if (fadeVolume >= targetVolume) {
-                        bgMusic.volume = targetVolume;
-                        clearInterval(fadeInterval);
-                    } else {
-                        bgMusic.volume = fadeVolume;
-                    }
-                }, 50);
-            }).catch(() => {});
+        // DON'T start music if it's already playing
+        if (bgMusic.paused && !window.bgMusicStarted) {
+            playBgMusic();
         }
         
         // Unlock all other audio elements
@@ -4036,16 +4006,13 @@ function initializeAudio() {
         document.removeEventListener('keydown', unlockAudio);
     };
 
-    // Only add listeners if audio context is suspended
-    if (audioContext.state === 'suspended') {
+    // Only add listeners if needed
+    if (audioContext.state === 'suspended' || bgMusic.paused) {
         document.addEventListener('touchstart', unlockAudio, { once: true });
         document.addEventListener('click', unlockAudio, { once: true });
         document.addEventListener('keydown', unlockAudio, { once: true });
-    } else {
-        // If context is already running, just start music
-        playBgMusic();
     }
-}
+}        
 
 function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
@@ -4274,17 +4241,10 @@ function positionBubblesRandomly(container, bubbles, playerId) {
         // <div><strong>${gameTexts.currentRound}</strong>&nbsp;${gameState.currentRound}</div>
 
 function selectPlayers(count) {
-    // Resume audio context IMMEDIATELY on user interaction
-    ensureAudioContext();
-    
-    // Pre-start background music with volume 0 to warm it up
-    if (bgMusic.src && bgMusic.paused) {
-        bgMusic.volume = 0;
-        bgMusic.play().then(() => {
-            // Fade in to proper volume
-            bgMusic.volume = gameState.bgMusicVolume / 100;
-        }).catch(() => {});
-    }
+    // DON'T stop the music - keep it playing continuously
+    // Remove these lines:
+    // audio.pause();
+    // audio.currentTime = 0;
     
     // Apply layout class FIRST to prevent flicker
     document.body.className = `layout-${count}player${count > 1 ? 's' : ''}`;
@@ -4300,9 +4260,6 @@ function selectPlayers(count) {
     gameState.roundSeed = 0;
     gameState.needsResume = false;
     
-    audio.pause();
-    audio.currentTime = 0;
-    
     if (roundEndTimeout) {
         clearTimeout(roundEndTimeout);
         roundEndTimeout = null;
@@ -4310,7 +4267,7 @@ function selectPlayers(count) {
     
     document.getElementById('resumeButton').style.display = 'none';
     
-    // CLEAR any previous round info attributes from portrait mode
+    // Clear any previous round info attributes from portrait mode
     const player1 = document.querySelector('.player-1');
     const player2 = document.querySelector('.player-2');
     if (player1) player1.removeAttribute('data-round-info');
@@ -4347,16 +4304,17 @@ function selectPlayers(count) {
         document.body.classList.remove('game-results-showing');
         const roundInfoElement = document.querySelector('.round-info');
         if (roundInfoElement) {
-            roundInfoElement.style.display = '';  // Reset to default CSS display
+            roundInfoElement.style.display = '';
         }
         document.getElementById('instructions').classList.remove('hidden');
         
-        // Update round info after everything is set
         updateRoundInfoForBothPlayers();
         
-        setTimeout(() => {
-            playBgMusic();
-        }, 100);
+        // DON'T restart music - it's already playing
+        // Remove this:
+        // setTimeout(() => {
+        //     playBgMusic();
+        // }, 100);
     });
 }
 
@@ -5112,14 +5070,22 @@ async function preloadAllAudio() {
     // Resume audio context early
     ensureAudioContext();
     
-    // Pre-warm the background music
-    if (window.preloadedSounds) {
+// In preloadAllAudio function, update the completion section:
+if (loadedCount === totalFiles) {
+    // All files loaded, store preloaded sounds and hide loading screen
+    window.preloadedSounds = preloadedSounds;
+    
+    // Start background music ONLY if not already started
+    if (window.preloadedSounds && !window.bgMusicStarted) {
+        window.bgMusicStarted = true; // Flag to prevent multiple starts
         const bgMusicAudio = window.preloadedSounds.get('bgMusic');
         if (bgMusicAudio && bgMusic) {
             bgMusic.src = bgMusicAudio.src;
-            bgMusic.load();
-            bgMusic.volume = 0;
             bgMusic.loop = true;
+            bgMusic.volume = gameState.bgMusicVolume / 100;
+            bgMusic.play().catch(() => {
+                window.bgMusicStarted = false; // Reset flag if play fails
+            });
         }
     }
     
@@ -5127,12 +5093,15 @@ async function preloadAllAudio() {
         loadingScreen.classList.add('loaded');
         document.body.classList.remove('loading');
         
+        // Initialize the game after loading
         setTimeout(() => {
             loadingScreen.style.display = 'none';
             initializeAfterLoading();
-            initializeAudio();
+            // DON'T call initializeAudio here - it tries to play music again
         }, 500);
     }, 500);
+}
+
 }
     }
     
