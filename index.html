@@ -2616,7 +2616,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
                         onmousedown="startHold(changeRounds, 1)" 
                         onmouseup="stopHold()" 
                         onmouseleave="stopHold()"
-                        ontouchstart="changeRounds(1)" 
+                        ontouchstart="startHold(changeRounds, 1)" 
                         ontouchend="stopHold()" 
                         ontouchcancel="stopHold()">+</button>
             </div>
@@ -3183,19 +3183,17 @@ function startProgressiveHold() {
 
 function getIntervalForDuration(duration) {
     // Much faster acceleration
-    if (duration < 1500) return 120;       // 1-1.5 seconds: 50ms intervals
-    if (duration < 2000) return 80;       // 1.5-2 seconds: 30ms intervals
-    if (duration < 3000) return 30;       // 2-3 seconds: 20ms intervals
-    return 15;                            // After 3 seconds: 15ms intervals (super fast)
+    if (duration < 2000) return 240;       // 1.5-2 seconds: 30ms intervals
+    if (duration < 3000) return 120;       // 2-3 seconds: 20ms intervals
+    return 80;                            // After 3 seconds: 15ms intervals (super fast)
 }
 
 function getMultiplierForDuration(duration) {
     // Much more aggressive multiplier increase
-    if (duration < 1600) return 1;       // 1.2-1.6 seconds: 10x steps
-    if (duration < 2000) return 2;       // 1.6-2 seconds: 20x steps
-    if (duration < 2500) return 5;       // 2-2.5 seconds: 30x steps
-    if (duration < 3000) return 10;       // 2.5-3 seconds: 50x steps
-    return 100;                           // After 3 seconds: 100x steps (ultra fast)
+    if (duration < 2000) return 1;       // 1.6-2 seconds: 20x steps
+    if (duration < 2500) return 2;       // 2-2.5 seconds: 30x steps
+    if (duration < 3000) return 5;       // 2.5-3 seconds: 50x steps
+    return 10;                           // After 3 seconds: 100x steps (ultra fast)
 }
 
 function stopHold() {
