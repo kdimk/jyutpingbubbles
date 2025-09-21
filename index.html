@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jyutping Bubbles</title>
+    <meta name="description" content="A mini game for learning Jyutping 一個學粵拼嘅小遊戲">
+    <title>Jyutping Bubbles 粵拼泡泡</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@900&family=Fredoka+One:wght@400&family=Nunito:wght@600;700;800&display=swap');
 
         * {
             margin: 0;
@@ -73,7 +74,7 @@
         }
 
         .player-selection h1 {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka One', 'Chiron GoRound TC', cursive;
             font-size: clamp(24px, 5vw, 48px);
             margin-bottom: 30px;
             color: #fff;
@@ -2587,7 +2588,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     <!-- Keep all your existing HTML exactly the same -->
     <!-- Main Menu -->
     <div class="player-selection" id="playerSelection">
-        <h1 id="gameTitle">Jyutping Bubbles</h1>
+        <h1 id="gameTitle">Jyutping Bubbles 粵拼泡泡</h1>
         <div class="player-options">
             <button class="player-btn" onclick="selectPlayers(1)" id="player1Btn">👤 1 Player</button>
             <button class="player-btn" onclick="selectPlayers(2)" id="player2Btn">👥 2 Players</button>
@@ -2769,7 +2770,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         // ===========================================
         
         const gameTexts = {
-            title: "Jyutping Bubbles",
+            title: "Jyutping Bubbles 粵拼泡泡",
             player1: "👤 1 Player",
             player2: "👥 2 Players", 
             player4: "👥👥 4 Players",
