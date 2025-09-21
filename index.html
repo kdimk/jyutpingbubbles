@@ -2621,19 +2621,21 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     transition: all 0.3s ease;
     min-width: 200px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.4);
     margin-top: 30px;
+    backdrop-filter: blur(10px);
 }
 
 .start-btn:hover {
     transform: translateY(-3px) scale(1.05);
     box-shadow: 0 8px 25px rgba(0,0,0,0.4);
     background: linear-gradient(135deg, #764ba2, #667eea);
-    border-color: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.6);
 }
 
 .start-btn:active {
     transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .loading-page {
@@ -2689,20 +2691,23 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 }
 
 .loading-progress {
-    width: 200px;
-    height: 8px;
+    width: 280px;
+    height: 12px;
     background: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
+    border-radius: 12px;
     margin: 20px auto;
     overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .loading-bar {
     height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     border-radius: 10px;
     width: 0%;
     transition: width 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
 }
 
     </style>
@@ -4028,28 +4033,56 @@ function showGameModes() {
             lastTouchEnd = now;
         }, false);
 
-        function initializeAudio() {
-            const unlockAudio = () => {
-                audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }).catch(e => {
-                    console.log('Audio unlock failed:', e);
-                });
-                
-                setTimeout(() => {
-                    playBgMusic();
-                }, 500);
-                
-                document.removeEventListener('touchstart', unlockAudio);
-                document.removeEventListener('click', unlockAudio);
-                document.removeEventListener('keydown', unlockAudio);
-            };
-
-            document.addEventListener('touchstart', unlockAudio, { once: true });
-            document.addEventListener('click', unlockAudio, { once: true });
-            document.addEventListener('keydown', unlockAudio, { once: true });
+function initializeAudio() {
+    const unlockAudio = async () => {
+        try {
+            // Unlock main game audio
+            if (audio.src) {
+                await audio.play();
+                audio.pause();
+                audio.currentTime = 0;
+            }
+            
+            // Unlock background music with iPad fix
+            if (bgMusic.src) {
+                bgMusic.volume = gameState.bgMusicVolume / 100;
+                if (bgMusic.readyState < 2) {
+                    bgMusic.load();
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                await bgMusic.play();
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            }
+            
+            // Unlock all sound effects for iPad
+            const soundEffects = [correctSound, incorrectSound, countdownBeep, countdownGo, congratsSound];
+            for (const sound of soundEffects) {
+                if (sound.src) {
+                    await sound.play().then(() => sound.pause()).catch(() => {});
+                }
+            }
+            
+            console.log('All audio unlocked successfully');
+            
+            // Start background music after unlock
+            setTimeout(() => {
+                playBgMusic();
+            }, 500);
+            
+        } catch (error) {
+            console.log('Audio unlock failed:', error);
         }
+        
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+    };
+
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('keydown', unlockAudio, { once: true });
+}
 
 function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
