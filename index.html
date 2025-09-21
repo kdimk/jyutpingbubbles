@@ -2589,7 +2589,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     <!-- Main Menu -->
     <div class="player-selection" id="playerSelection">
         <h1 id="gameTitle">Jyutping Bubbles</h1>
-        <h1 id="gameTitle">粵拼泡泡</h1>
+        <h1 id="gameTitleChinese">粵拼泡泡</h1>
         <div class="player-options">
             <button class="player-btn" onclick="selectPlayers(1)" id="player1Btn">👤 1 Player</button>
             <button class="player-btn" onclick="selectPlayers(2)" id="player2Btn">👥 2 Players</button>
@@ -2771,7 +2771,9 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         // ===========================================
         
         const gameTexts = {
+            pageTitle: "Jyutping Bubbles 粵拼泡泡",
             title: "Jyutping Bubbles",
+            titleChinese: "粵拼泡泡",
             player1: "👤 1 Player",
             player2: "👥 2 Players", 
             player4: "👥👥 4 Players",
@@ -3021,8 +3023,9 @@ detectViewableArea();
         let audioCache = new Map();
 
         function initializeUI() {
-            document.title = gameTexts.title;
+            document.title = gameTexts.pageTitle;
             document.getElementById('gameTitle').textContent = gameTexts.title;
+            document.getElementById('gameTitleChinese').textContent = gameTexts.titleChinese;
             document.getElementById('player1Btn').textContent = gameTexts.player1;
             document.getElementById('player2Btn').textContent = gameTexts.player2;
             document.getElementById('player4Btn').textContent = gameTexts.player4;
