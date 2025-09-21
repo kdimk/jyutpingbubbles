@@ -3182,19 +3182,19 @@ function startProgressiveHold() {
 }
 
 function getIntervalForDuration(duration) {
-    // Gradual acceleration
-    if (duration < 500) return 200;       // First 0.5 seconds: 200ms intervals
-    if (duration < 1000) return 150;      // 0.5-1 second: 150ms intervals
-    if (duration < 1500) return 100;      // 1-1.5 seconds: 100ms intervals
-    if (duration < 2000) return 80;       // 1.5-2 seconds: 80ms intervals
-    if (duration < 3000) return 60;       // 2-3 seconds: 60ms intervals
-    return 50;                            // After 3 seconds: 50ms intervals
+    // Very gradual acceleration
+    if (duration < 500) return 300;       // First 0.5 seconds: 300ms intervals
+    if (duration < 1000) return 250;      // 0.5-1 second: 250ms intervals
+    if (duration < 1500) return 200;      // 1-1.5 seconds: 200ms intervals
+    if (duration < 2000) return 150;      // 1.5-2 seconds: 150ms intervals
+    if (duration < 3000) return 100;      // 2-3 seconds: 100ms intervals
+    return 80;                            // After 3 seconds: 80ms intervals
 }
 
 function getMultiplierForDuration(duration) {
-    // Smoother multiplier progression
+    // Gentle multiplier ramp-up with whole numbers
     if (duration < 400) return 1;         // First 0.4 seconds: normal steps
-    if (duration < 800) return 1.5;       // 0.4-0.8 seconds: 1.5x steps
+    if (duration < 800) return 1;         // 0.4-0.8 seconds: still normal
     if (duration < 1200) return 2;        // 0.8-1.2 seconds: 2x steps
     if (duration < 1600) return 3;        // 1.2-1.6 seconds: 3x steps
     if (duration < 2000) return 4;        // 1.6-2 seconds: 4x steps
