@@ -2737,12 +2737,6 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 
     <!-- Audio Elements -->
     <audio id="gameAudio" preload="auto"></audio>
-    <audio id="bgMusic" loop preload="auto"></audio>
-    <audio id="correctSound" preload="auto"></audio>
-    <audio id="incorrectSound" preload="auto"></audio>
-    <audio id="countdownBeep" preload="auto"></audio>
-    <audio id="countdownGo" preload="auto"></audio>
-    <audio id="congratsSound" preload="auto"></audio>
 
     <script>
         // ===========================================
@@ -2971,32 +2965,38 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             tempBgMusicVolume: 30
         };
 
-// Replace the existing audio declarations with Web Audio API
+// Web Audio API Context and Setup
 let audioContext = null;
 let audioBuffers = new Map();
-let currentSources = new Set();
+let bgMusicSource = null;
+let bgMusicGainNode = null;
 
 // Initialize Web Audio API
-function initializeWebAudio() {
-    try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        console.log('Web Audio API initialized');
-    } catch (e) {
-        console.error('Web Audio API not supported:', e);
-        // Fallback to HTML5 audio if needed
-    }
+function initWebAudio() {
+    // Create audio context on first user interaction
+    const createContext = () => {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create gain node for background music volume control
+            bgMusicGainNode = audioContext.createGain();
+            bgMusicGainNode.connect(audioContext.destination);
+            bgMusicGainNode.gain.value = gameState.bgMusicVolume / 100;
+        }
+        
+        // Resume context if suspended (iOS requirement)
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+    };
+    
+    // Attach to multiple events for better mobile support
+    ['touchstart', 'touchend', 'mousedown', 'click'].forEach(event => {
+        document.addEventListener(event, createContext, { once: true });
+    });
 }
 
-// Unlock audio context on user interaction (required for iOS)
-function unlockAudioContext() {
-    if (audioContext && audioContext.state === 'suspended') {
-        audioContext.resume().then(() => {
-            console.log('Audio context resumed');
-        });
-    }
-}
-
-// Load audio file as buffer
+// Load audio file into buffer
 async function loadAudioBuffer(url) {
     if (audioBuffers.has(url)) {
         return audioBuffers.get(url);
@@ -3014,34 +3014,15 @@ async function loadAudioBuffer(url) {
     }
 }
 
-// Preload all game audio files
-async function preloadGameAudio() {
-    const audioPromises = [];
-    
-    // Load sound effects
-    if (audioFiles.correctSound) audioPromises.push(loadAudioBuffer(audioFiles.correctSound));
-    if (audioFiles.incorrectSound) audioPromises.push(loadAudioBuffer(audioFiles.incorrectSound));
-    if (audioFiles.countdownBeep) audioPromises.push(loadAudioBuffer(audioFiles.countdownBeep));
-    if (audioFiles.congratsSound) audioPromises.push(loadAudioBuffer(audioFiles.congratsSound));
-    
-    // Load game data audio files
-    gameData.forEach(item => {
-        audioPromises.push(loadAudioBuffer(item.audio));
-    });
-    
-    await Promise.all(audioPromises);
-    console.log('All audio preloaded');
-}
-
-// Play audio buffer
-function playAudioBuffer(url, volume = 1, loop = false) {
-    if (!audioContext) return null;
-    
-    const buffer = audioBuffers.get(url);
-    if (!buffer) {
-        console.error('Audio buffer not found:', url);
-        return null;
+// Play sound effect using Web Audio API
+async function playWebAudioSound(url, volume = 1.0, loop = false) {
+    if (!audioContext) {
+        initWebAudio();
+        return;
     }
+    
+    const buffer = await loadAudioBuffer(url);
+    if (!buffer) return null;
     
     const source = audioContext.createBufferSource();
     const gainNode = audioContext.createGain();
@@ -3054,55 +3035,28 @@ function playAudioBuffer(url, volume = 1, loop = false) {
     gainNode.connect(audioContext.destination);
     
     source.start(0);
-    currentSources.add(source);
-    
-    source.onended = () => {
-        currentSources.delete(source);
-    };
-    
     return source;
 }
 
-// Background music with volume control
-let bgMusicSource = null;
-let bgMusicGainNode = null;
-
-function playBgMusic() {
-    if (!audioFiles.bgMusic || bgMusicSource) return;
-    
-    const buffer = audioBuffers.get(audioFiles.bgMusic);
-    if (!buffer) return;
-    
-    bgMusicSource = audioContext.createBufferSource();
-    bgMusicGainNode = audioContext.createGain();
-    
-    bgMusicSource.buffer = buffer;
-    bgMusicSource.loop = true;
-    bgMusicGainNode.gain.value = gameState.bgMusicVolume / 100;
-    
-    bgMusicSource.connect(bgMusicGainNode);
-    bgMusicGainNode.connect(audioContext.destination);
-    
-    bgMusicSource.start(0);
-    
-    bgMusicSource.onended = () => {
-        bgMusicSource = null;
-        bgMusicGainNode = null;
-    };
-}
-
-function stopBgMusic() {
-    if (bgMusicSource) {
-        bgMusicSource.stop();
-        bgMusicSource = null;
-        bgMusicGainNode = null;
+// Preload all audio files
+async function preloadAllAudio() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
-}
-
-function setBgMusicVolume(volume) {
-    if (bgMusicGainNode) {
-        bgMusicGainNode.gain.value = volume / 100;
-    }
+    
+    const audioUrls = [
+        audioFiles.bgMusic,
+        audioFiles.correctSound,
+        audioFiles.incorrectSound,
+        audioFiles.countdownBeep,
+        audioFiles.countdownGo,
+        audioFiles.congratsSound,
+        ...gameData.map(item => item.audio)
+    ].filter(url => url); // Filter out empty strings
+    
+    const loadPromises = audioUrls.map(url => loadAudioBuffer(url));
+    await Promise.all(loadPromises);
+    console.log('All audio files preloaded');
 }
 
         // Add this function right after your gameState declaration
@@ -3152,9 +3106,6 @@ detectViewableArea();
         const countdownGo = document.getElementById('countdownGo');
         const congratsSound = document.getElementById('congratsSound');
         let roundEndTimeout = null;
-        
-        // FIXED: Preload audio cache for first round
-        let audioCache = new Map();
 
         function initializeUI() {
             document.title = gameTexts.pageTitle;
@@ -3185,48 +3136,17 @@ detectViewableArea();
         }
 
         // FIXED: Preload audio with separate channels to prevent lag
-        function initializeAudioFiles() {
-            if (audioFiles.bgMusic) {
-                bgMusic.src = audioFiles.bgMusic;
-                bgMusic.volume = gameState.bgMusicVolume / 100;
-                // Create separate audio context for background music
-                bgMusic.addEventListener('canplaythrough', () => {
-                    setTimeout(() => {
-                        playBgMusic();
-                    }, 100);
-                });
-            }
-            if (audioFiles.correctSound) {
-                correctSound.src = audioFiles.correctSound;
-                correctSound.preload = 'auto';
-                correctSound.volume = 0.8; // Lower volume to prevent lag
-            }
-            if (audioFiles.incorrectSound) {
-                incorrectSound.src = audioFiles.incorrectSound;
-                incorrectSound.preload = 'auto';
-                incorrectSound.volume = 0.8; // Lower volume to prevent lag
-            }
-            if (audioFiles.countdownBeep) {
-                countdownBeep.src = audioFiles.countdownBeep;
-                countdownBeep.preload = 'auto';
-            }
-            if (audioFiles.countdownGo) {
-                countdownGo.src = audioFiles.countdownGo;
-                countdownGo.preload = 'auto';
-            }
-            if (audioFiles.congratsSound) {
-                congratsSound.src = audioFiles.congratsSound;
-                congratsSound.preload = 'auto';
-            }
-            
-            // FIXED: Preload game audio files
-            gameData.forEach(item => {
-                const preloadAudio = new Audio();
-                preloadAudio.src = item.audio;
-                preloadAudio.preload = 'auto';
-                audioCache.set(item.audio, preloadAudio);
-            });
-        }
+function initializeAudioFiles() {
+    // Initialize Web Audio on first interaction
+    initWebAudio();
+    
+    // Preload all audio files after a short delay
+    setTimeout(() => {
+        preloadAllAudio().catch(e => console.log('Preload error:', e));
+    }, 100);
+}
+
+
 
         function generateGroupCheckboxes() {
             const container = document.getElementById('groupCheckboxes');
@@ -3375,15 +3295,19 @@ function changeVolume(delta) {
     let currentValue = parseInt(volumeDisplay.textContent.replace('%', '')) || 30;
     let newValue = currentValue + delta;
     
+    // Ensure value stays within bounds
     if (newValue < 0) newValue = 0;
     if (newValue > 100) newValue = 100;
     
+    // Only update if value actually changed
     if (newValue !== currentValue) {
         volumeDisplay.textContent = newValue + '%';
         gameState.tempBgMusicVolume = newValue;
         
-        // Update background music volume immediately
-        setBgMusicVolume(newValue);
+        // Update Web Audio background music volume
+        if (bgMusicGainNode) {
+            bgMusicGainNode.gain.value = newValue / 100;
+        }
     }
 }
 
@@ -3506,9 +3430,9 @@ function saveSettings() {
     gameState.selectedGroups = [...gameState.tempSelectedGroups];
     gameState.bgMusicVolume = volume;
     
-    // Update background music volume
-    if (bgMusic.src) {
-        bgMusic.volume = gameState.bgMusicVolume / 100;
+    // Update Web Audio background music volume
+    if (bgMusicGainNode) {
+        bgMusicGainNode.gain.value = gameState.bgMusicVolume / 100;
     }
     
     // Save to cookies
@@ -3620,57 +3544,74 @@ function backToMainMenu() {
     }, 200);
 }
 
-        // FIXED: Background music lag prevention
-        function playBgMusic() {
-            if (audioFiles.bgMusic && bgMusic.src && bgMusic.paused) {
-                bgMusic.volume = gameState.bgMusicVolume / 100;
-                bgMusic.play().catch(e => console.log('Background music play failed:', e));
-            }
-        }
-
-        function stopBgMusic() {
-            if (bgMusic.src && !bgMusic.paused) {
-                bgMusic.pause();
-            }
-        }
-
-// Replace existing audio functions
-function playCorrectSound() {
-    playAudioBuffer(audioFiles.correctSound, 0.8);
-}
-
-function playIncorrectSound() {
-    playAudioBuffer(audioFiles.incorrectSound, 0.8);
-}
-
-function playCountdownBeep() {
-    playAudioBuffer(audioFiles.countdownBeep, 1);
-}
-
-function playCongratsSound() {
-    playAudioBuffer(audioFiles.congratsSound, 1);
-}
-
-// For game audio, replace the audio.src and audio.play() calls
-function playGameAudio(audioUrl) {
-    // Stop any currently playing game audio
-    stopAllGameAudio();
+// Replace playBgMusic function
+async function playBgMusic() {
+    if (!audioFiles.bgMusic || bgMusicSource) return;
     
-    const source = playAudioBuffer(audioUrl, 1);
-    if (source) {
-        // Store reference for potential stopping
-        window.currentGameAudioSource = source;
+    if (!audioContext) {
+        initWebAudio();
+        setTimeout(playBgMusic, 500);
+        return;
+    }
+    
+    try {
+        const buffer = await loadAudioBuffer(audioFiles.bgMusic);
+        if (!buffer) return;
+        
+        bgMusicSource = audioContext.createBufferSource();
+        bgMusicSource.buffer = buffer;
+        bgMusicSource.loop = true;
+        bgMusicSource.connect(bgMusicGainNode);
+        bgMusicSource.start(0);
+    } catch (e) {
+        console.log('Background music play failed:', e);
     }
 }
 
-function stopAllGameAudio() {
-    if (window.currentGameAudioSource) {
+// Replace stopBgMusic function
+function stopBgMusic() {
+    if (bgMusicSource) {
         try {
-            window.currentGameAudioSource.stop();
+            bgMusicSource.stop();
         } catch (e) {
-            // Audio already stopped
+            // Ignore if already stopped
         }
-        window.currentGameAudioSource = null;
+        bgMusicSource = null;
+    }
+}
+
+// Replace playCorrectSound function
+function playCorrectSound() {
+    if (audioFiles.correctSound) {
+        playWebAudioSound(audioFiles.correctSound, 0.8);
+    }
+}
+
+// Replace playIncorrectSound function
+function playIncorrectSound() {
+    if (audioFiles.incorrectSound) {
+        playWebAudioSound(audioFiles.incorrectSound, 0.8);
+    }
+}
+
+// Replace playCountdownBeep function
+function playCountdownBeep() {
+    if (audioFiles.countdownBeep) {
+        playWebAudioSound(audioFiles.countdownBeep, 1.0);
+    }
+}
+
+// Replace playCountdownGo function
+function playCountdownGo() {
+    if (audioFiles.countdownGo) {
+        playWebAudioSound(audioFiles.countdownGo, 1.0);
+    }
+}
+
+// Replace playCongratsSound function
+function playCongratsSound() {
+    if (audioFiles.congratsSound) {
+        playWebAudioSound(audioFiles.congratsSound, 1.0);
     }
 }
 
@@ -3945,28 +3886,28 @@ function loadGameState() {
             lastTouchEnd = now;
         }, false);
 
-function initializeAudio() {
-    const unlockAudio = async () => {
-        initializeWebAudio();
-        unlockAudioContext();
-        
-        // Wait a bit for context to be ready, then preload
-        setTimeout(async () => {
-            await preloadGameAudio();
-            setTimeout(() => {
-                playBgMusic();
-            }, 500);
-        }, 100);
-        
-        document.removeEventListener('touchstart', unlockAudio);
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('keydown', unlockAudio);
-    };
+        function initializeAudio() {
+            const unlockAudio = () => {
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(e => {
+                    console.log('Audio unlock failed:', e);
+                });
+                
+                setTimeout(() => {
+                    playBgMusic();
+                }, 500);
+                
+                document.removeEventListener('touchstart', unlockAudio);
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('keydown', unlockAudio);
+            };
 
-    document.addEventListener('touchstart', unlockAudio, { once: true });
-    document.addEventListener('click', unlockAudio, { once: true });
-    document.addEventListener('keydown', unlockAudio, { once: true });
-}        
+            document.addEventListener('touchstart', unlockAudio, { once: true });
+            document.addEventListener('click', unlockAudio, { once: true });
+            document.addEventListener('keydown', unlockAudio, { once: true });
+        }
 
 function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
@@ -4380,20 +4321,33 @@ function selectPlayers(count) {
                 generatePlayerBubbles(`options${i}`, allOptions, correctAnswer.text);
             }
 
-            showPlayerCountdowns(async () => {
-                await loadAudioBuffer(correctAnswer.audio); // Ensure loaded
-                
-                gameState.audioReady = true;
-                gameState.roundStartTime = Date.now();
-                
-                document.querySelectorAll('.bubble').forEach(bubble => {
-                    bubble.classList.add('active');
-                });
-                
-                playGameAudio(correctAnswer.audio);
-                document.getElementById('gameStatus').textContent = gameTexts.listen;
-                updateRoundInfoForBothPlayers();
-            });
+// Replace the audio playback part in showPlayerCountdowns callback
+showPlayerCountdowns(async () => {
+    // Play the game audio using Web Audio API
+    if (!audioContext) {
+        initWebAudio();
+    }
+    
+    const correctAnswer = gameState.currentQuestion.correct;
+    
+    try {
+        await playWebAudioSound(correctAnswer.audio, 1.0, false);
+        gameState.audioReady = true;
+        gameState.roundStartTime = Date.now();
+        
+        document.querySelectorAll('.bubble').forEach(bubble => {
+            bubble.classList.add('active');
+        });
+        
+        document.getElementById('gameStatus').textContent = gameTexts.listen;
+        updateRoundInfoForBothPlayers();
+    } catch (e) {
+        console.error('Error playing audio:', e);
+        document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
+        updateRoundInfoForBothPlayers();
+    }
+});            
+
         }
 
         function generatePlayerBubbles(containerId, options, correctText) {
@@ -4737,7 +4691,7 @@ function updateRoundInfo() {
 
         function pauseGame() {
             gameState.isPaused = true;
-            stopAllGameAudio(); // Stop current game audio
+            audio.pause();
             document.getElementById('gameStatus').textContent = gameTexts.pausedMessage;
             
             document.body.classList.add('paused');
@@ -4769,12 +4723,10 @@ function updateRoundInfo() {
                     bubble.classList.remove('paused');
                     bubble.classList.add('active');
                 });
-                
-                // Replay the current question audio
-                playGameAudio(gameState.currentQuestion.correct.audio);
+                audio.play().catch(e => console.log('Resume audio error:', e));
                 document.getElementById('gameStatus').textContent = gameTexts.listen;
             }
-
+            
             updateStartPauseButton();
             saveGameState();
 
