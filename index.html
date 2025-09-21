@@ -2582,133 +2582,11 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     }
 }
 
-.loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #ff9a9e 75%, #fad0c4 100%);
-    background-size: 400% 400%;
-    animation: gradientShift 8s ease infinite;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.loading-content {
-    max-width: 500px;
-    width: 100%;
-}
-
-.loading-title {
-    font-family: 'Fredoka One', 'Chiron GoRound TC', cursive;
-    font-size: clamp(24px, 6vw, 48px);
-    margin-bottom: 40px;
-    color: #fff;
-    text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
-    animation: titlePulse 2s ease-in-out infinite;
-}
-
-@keyframes titlePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.loading-progress-container {
-    margin-bottom: 30px;
-}
-
-.loading-progress {
-    width: 100%;
-    height: 12px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 15px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.loading-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #00C851, #2ECC71, #00C851);
-    background-size: 200% 100%;
-    border-radius: 20px;
-    width: 0%;
-    transition: width 0.3s ease;
-    animation: progressShimmer 2s ease-in-out infinite;
-}
-
-@keyframes progressShimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-
-.loading-text {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(14px, 3vw, 18px);
-    font-weight: 600;
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading-screen.loaded {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease-out;
-}
-
-/* Hide main content while loading */
-.loading .player-selection,
-.loading .game-container,
-.loading .settings-panel {
-    display: none !important;
-}
-
     </style>
 </head>
-<body class="layout-2players loading">
-
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <div class="loading-title">
-                <div>Jyutping Bubbles</div>
-                <div style="font-size: 0.8em; margin-top: 10px;">粵拼泡泡</div>
-            </div>
-            <div class="loading-progress-container">
-                <div class="loading-progress">
-                    <div class="loading-progress-bar" id="loadingBar"></div>
-                </div>
-                <div class="loading-text" id="loadingText">Loading audio files... 0%</div>
-            </div>
-            <div class="loading-spinner"></div>
-        </div>
-    </div>
-
+<body class="layout-2players">
     <!-- Keep all your existing HTML exactly the same -->
     <!-- Main Menu -->
-     
     <div class="player-selection" id="playerSelection">
         <h1 id="gameTitle">Jyutping Bubbles</h1>
         <h1 id="gameTitleChinese">粵拼泡泡</h1>
@@ -3177,6 +3055,12 @@ detectViewableArea();
             if (audioFiles.bgMusic) {
                 bgMusic.src = audioFiles.bgMusic;
                 bgMusic.volume = gameState.bgMusicVolume / 100;
+                // Create separate audio context for background music
+                bgMusic.addEventListener('canplaythrough', () => {
+                    setTimeout(() => {
+                        playBgMusic();
+                    }, 100);
+                });
             }
             if (audioFiles.correctSound) {
                 correctSound.src = audioFiles.correctSound;
@@ -3607,16 +3491,12 @@ function backToMainMenu() {
 }
 
         // FIXED: Background music lag prevention
-function playBgMusic() {
-    if (audioFiles.bgMusic && bgMusic.src && bgMusic.paused) {
-        bgMusic.volume = gameState.bgMusicVolume / 100;
-        bgMusic.play().catch(e => {
-            console.log('Background music play failed:', e);
-            // Retry after a short delay if it fails
-            setTimeout(() => playBgMusic(), 1000);
-        });
-    }
-}
+        function playBgMusic() {
+            if (audioFiles.bgMusic && bgMusic.src && bgMusic.paused) {
+                bgMusic.volume = gameState.bgMusicVolume / 100;
+                bgMusic.play().catch(e => console.log('Background music play failed:', e));
+            }
+        }
 
         function stopBgMusic() {
             if (bgMusic.src && !bgMusic.paused) {
@@ -3955,38 +3835,28 @@ function loadGameState() {
             lastTouchEnd = now;
         }, false);
 
- function initializeAudio() {
-    const unlockAudio = () => {
-        // Play and pause all preloaded sounds to unlock them
-        if (window.preloadedSounds) {
-            window.preloadedSounds.forEach((audio, key) => {
-                if (key !== 'bgMusic') {
-                    audio.play().then(() => {
-                        audio.pause();
-                        audio.currentTime = 0;
-                    }).catch(() => {});
-                }
-            });
-        }
-        
-        // Unlock main audio element
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-        }).catch(() => {});
-        
-        // Start background music
-        playBgMusic();
-        
-        document.removeEventListener('touchstart', unlockAudio);
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('keydown', unlockAudio);
-    };
+        function initializeAudio() {
+            const unlockAudio = () => {
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(e => {
+                    console.log('Audio unlock failed:', e);
+                });
+                
+                setTimeout(() => {
+                    playBgMusic();
+                }, 500);
+                
+                document.removeEventListener('touchstart', unlockAudio);
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('keydown', unlockAudio);
+            };
 
-    document.addEventListener('touchstart', unlockAudio, { once: true });
-    document.addEventListener('click', unlockAudio, { once: true });
-    document.addEventListener('keydown', unlockAudio, { once: true });
-}       
+            document.addEventListener('touchstart', unlockAudio, { once: true });
+            document.addEventListener('click', unlockAudio, { once: true });
+            document.addEventListener('keydown', unlockAudio, { once: true });
+        }
 
 function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
@@ -4798,7 +4668,6 @@ function updateRoundInfo() {
         function pauseGame() {
             gameState.isPaused = true;
             audio.pause();
-            audio.currentTime = 0;
             document.getElementById('gameStatus').textContent = gameTexts.pausedMessage;
             
             document.body.classList.add('paused');
@@ -4994,133 +4863,21 @@ function endGame() {
     }, 1000);
 }
 
-function initializeAfterLoading() {
-    initializeAudioFiles();
-    loadGameState();
-    initializeUI();
-}
+        initializeAudio();
+        initializeAudioFiles();
+        loadGameState();
+        initializeUI();
+
+        
+        setTimeout(() => {
+            playBgMusic();
+        }, 1000);
 
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
             document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
             gameState.audioReady = false;
         });
-
-// Audio preloading with loading screen
-async function preloadAllAudio() {
-    const loadingScreen = document.getElementById('loadingScreen');
-    const loadingBar = document.getElementById('loadingBar');
-    const loadingText = document.getElementById('loadingText');
-    
-    // Create a map to store preloaded audio objects
-    const preloadedSounds = new Map();
-    
-    // Collect all audio files to preload
-    const audioFilesToLoad = [
-        { url: audioFiles.bgMusic, id: 'bgMusic' },
-        { url: audioFiles.correctSound, id: 'correctSound' },
-        { url: audioFiles.incorrectSound, id: 'incorrectSound' },
-        { url: audioFiles.countdownBeep, id: 'countdownBeep' },
-        { url: audioFiles.congratsSound, id: 'congratsSound' },
-        ...gameData.map(item => ({ url: item.audio, id: item.audio }))
-    ].filter(item => item.url); // Remove empty URLs
-    
-    let loadedCount = 0;
-    const totalFiles = audioFilesToLoad.length;
-    
-    // Function to update loading progress
-    function updateProgress() {
-        loadedCount++;
-        const percentage = Math.round((loadedCount / totalFiles) * 100);
-        loadingBar.style.width = percentage + '%';
-        loadingText.textContent = `Loading audio files... ${percentage}%`;
-        
-        if (loadedCount === totalFiles) {
-            // All files loaded, store preloaded sounds and hide loading screen
-            window.preloadedSounds = preloadedSounds;
-            
-            setTimeout(() => {
-                loadingScreen.classList.add('loaded');
-                document.body.classList.remove('loading');
-                
-                // Initialize the game after loading
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    initializeAfterLoading();
-                    initializeAudio();
-                    playBgMusic();
-                }, 500);
-            }, 500);
-        }
-    }
-    
-    // Preload each audio file
-    for (const item of audioFilesToLoad) {
-        try {
-            const audio = new Audio();
-            audio.preload = 'auto';
-            
-            await new Promise((resolve, reject) => {
-                audio.addEventListener('canplaythrough', () => {
-                    preloadedSounds.set(item.id, audio);
-                    
-                    // For sound effects, create clones for multiple simultaneous plays
-                    if (item.id !== 'bgMusic') {
-                        audio.volume = 0.8;
-                    }
-                    
-                    updateProgress();
-                    resolve();
-                }, { once: true });
-                
-                audio.addEventListener('error', () => {
-                    console.warn(`Failed to load: ${item.url}`);
-                    updateProgress();
-                    resolve();
-                }, { once: true });
-                
-                // Set a timeout to prevent infinite waiting
-                setTimeout(() => {
-                    updateProgress();
-                    resolve();
-                }, 5000);
-                
-                audio.src = item.url;
-                audio.load();
-            });
-        } catch (e) {
-            console.warn(`Error loading audio: ${item.url}`, e);
-            updateProgress();
-        }
-    }
-}
-
-// Initialize after audio preloading
-function initializeAfterLoading() {
-    initializeAudioFiles();
-    loadGameState();
-    initializeUI();
-    
-    // Ensure all audio elements are properly initialized with preloaded sources
-    if (window.preloadedSounds) {
-        // Set up the main audio elements with preloaded sources
-        const sounds = ['correctSound', 'incorrectSound', 'countdownBeep', 'congratsSound'];
-        sounds.forEach(soundId => {
-            const element = document.getElementById(soundId);
-            const preloaded = window.preloadedSounds.get(soundId);
-            if (element && preloaded) {
-                element.src = preloaded.src;
-                element.load();
-            }
-        });
-    }
-}
-
-// Start preloading when page loads
-window.addEventListener('load', () => {
-    preloadAllAudio();
-});       
-
     </script>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
