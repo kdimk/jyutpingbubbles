@@ -2582,144 +2582,10 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     }
 }
 
-/* Start Page Styles */
-.start-page {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #ff9a9e 75%, #fad0c4 100%);
-    background-size: 400% 400%;
-    animation: gradientShift 8s ease infinite;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    color: white;
-    text-align: center;
-    padding: max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))) max(env(safe-area-inset-right), var(--dynamic-safe-right, env(safe-area-inset-right))) max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))) max(env(safe-area-inset-left), var(--dynamic-safe-left, env(safe-area-inset-left)));
-}
-
-.start-page h1 {
-    font-family: 'Fredoka One', 'Chiron GoRound TC', cursive;
-    font-size: clamp(32px, 8vw, 64px);
-    margin-bottom: 15px;
-    color: #fff;
-    text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
-    animation: titlePulse 3s ease-in-out infinite;
-}
-
-.start-page p {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(16px, 4vw, 24px);
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.start-btn {
-    padding: 20px 40px;
-    font-family: 'Fredoka One', cursive;
-    font-size: clamp(20px, 4vw, 32px);
-    font-weight: 700;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
-    margin-top: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-    animation: buttonGlow 2s ease-in-out infinite alternate;
-}
-
-.start-btn:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.4);
-    background: linear-gradient(135deg, #764ba2, #667eea);
-    border-color: rgba(255, 255, 255, 0.6);
-}
-
-.start-btn:active {
-    transform: translateY(-1px) scale(1.02);
-}
-
-@keyframes titlePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-@keyframes buttonGlow {
-    0% { 
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 0 20px rgba(102, 126, 234, 0.3); 
-    }
-    100% { 
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 0 30px rgba(118, 75, 162, 0.5); 
-    }
-}
-
-/* Hide other elements when start page is shown */
-.start-page.active ~ .player-selection,
-.start-page.active ~ .game-container,
-.start-page.active ~ .settings-panel {
-    display: none !important;
-}
-
-/* Responsive adjustments for start page */
-@media (max-width: 768px) {
-    .start-page h1 {
-        font-size: clamp(24px, 6vw, 48px);
-        margin-bottom: 10px;
-    }
-    
-    .start-page p {
-        font-size: clamp(14px, 3vw, 20px);
-        margin-bottom: 8px;
-    }
-    
-    .start-btn {
-        padding: 15px 30px;
-        font-size: clamp(16px, 3vw, 24px);
-        margin-top: 30px;
-    }
-}
-
-@media (max-width: 480px) and (orientation: landscape) {
-    .start-page h1 {
-        font-size: clamp(20px, 5vw, 36px);
-        margin-bottom: 8px;
-    }
-    
-    .start-page p {
-        font-size: clamp(12px, 2.5vw, 16px);
-        margin-bottom: 6px;
-    }
-    
-    .start-btn {
-        padding: 12px 24px;
-        font-size: clamp(14px, 2.5vw, 20px);
-        margin-top: 20px;
-    }
-}
-
     </style>
 </head>
 <body class="layout-2players">
-    <!-- Start Page -->
-    <div class="start-page" id="startPage">
-        <h1 id="startTitle">Jyutping Bubbles</h1>
-        <h1 id="startTitleChinese">粵拼泡泡</h1>
-        <p id="startDescription">A mini game for learning Jyutping</p>
-        <p id="startDescriptionChinese">一隻學粵拼嘅小遊戲</p>
-        <button class="start-btn" onclick="showMainMenu()" id="startGameBtn">
-            🎮 Start Game 🎮
-        </button>
-    </div>
+    <!-- Keep all your existing HTML exactly the same -->
     <!-- Main Menu -->
     <div class="player-selection" id="playerSelection">
         <h1 id="gameTitle">Jyutping Bubbles</h1>
@@ -2955,12 +2821,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             gameRestored: "🎮 Game paused after correct answer - Click Continue to proceed! 🎮",
             gameRestoredContinue: "🎵 Game restored - Continue playing! 🎵",
             gameRestoredGeneral: "🎵 Game restored - Continue or Reset! 🎵",
-            audioNotFound: "❌ Audio file not found! Check file path.",
-            startTitle: "Jyutping Bubbles",
-            startTitleChinese: "粵拼泡泡", 
-            startDescription: "A mini game for learning Jyutping",
-            startDescriptionChinese: "一隻學粵拼嘅小遊戲",
-            startGameBtn: "🎮 Start Game 🎮",
+            audioNotFound: "❌ Audio file not found! Check file path."
         };
 
         const groupNames = {
@@ -3110,17 +2971,139 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             tempBgMusicVolume: 30
         };
 
-// Add this function to show the main menu
-function showMainMenu() {
-    document.getElementById('startPage').style.display = 'none';
-    document.getElementById('playerSelection').style.display = 'flex';
-    
-    // Start background music when entering the main menu
-    setTimeout(() => {
-        playBgMusic();
-    }, 300);
+// Replace the existing audio declarations with Web Audio API
+let audioContext = null;
+let audioBuffers = new Map();
+let currentSources = new Set();
+
+// Initialize Web Audio API
+function initializeWebAudio() {
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log('Web Audio API initialized');
+    } catch (e) {
+        console.error('Web Audio API not supported:', e);
+        // Fallback to HTML5 audio if needed
+    }
 }
 
+// Unlock audio context on user interaction (required for iOS)
+function unlockAudioContext() {
+    if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume().then(() => {
+            console.log('Audio context resumed');
+        });
+    }
+}
+
+// Load audio file as buffer
+async function loadAudioBuffer(url) {
+    if (audioBuffers.has(url)) {
+        return audioBuffers.get(url);
+    }
+    
+    try {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        audioBuffers.set(url, audioBuffer);
+        return audioBuffer;
+    } catch (error) {
+        console.error('Error loading audio:', url, error);
+        return null;
+    }
+}
+
+// Preload all game audio files
+async function preloadGameAudio() {
+    const audioPromises = [];
+    
+    // Load sound effects
+    if (audioFiles.correctSound) audioPromises.push(loadAudioBuffer(audioFiles.correctSound));
+    if (audioFiles.incorrectSound) audioPromises.push(loadAudioBuffer(audioFiles.incorrectSound));
+    if (audioFiles.countdownBeep) audioPromises.push(loadAudioBuffer(audioFiles.countdownBeep));
+    if (audioFiles.congratsSound) audioPromises.push(loadAudioBuffer(audioFiles.congratsSound));
+    
+    // Load game data audio files
+    gameData.forEach(item => {
+        audioPromises.push(loadAudioBuffer(item.audio));
+    });
+    
+    await Promise.all(audioPromises);
+    console.log('All audio preloaded');
+}
+
+// Play audio buffer
+function playAudioBuffer(url, volume = 1, loop = false) {
+    if (!audioContext) return null;
+    
+    const buffer = audioBuffers.get(url);
+    if (!buffer) {
+        console.error('Audio buffer not found:', url);
+        return null;
+    }
+    
+    const source = audioContext.createBufferSource();
+    const gainNode = audioContext.createGain();
+    
+    source.buffer = buffer;
+    source.loop = loop;
+    gainNode.gain.value = volume;
+    
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    source.start(0);
+    currentSources.add(source);
+    
+    source.onended = () => {
+        currentSources.delete(source);
+    };
+    
+    return source;
+}
+
+// Background music with volume control
+let bgMusicSource = null;
+let bgMusicGainNode = null;
+
+function playBgMusic() {
+    if (!audioFiles.bgMusic || bgMusicSource) return;
+    
+    const buffer = audioBuffers.get(audioFiles.bgMusic);
+    if (!buffer) return;
+    
+    bgMusicSource = audioContext.createBufferSource();
+    bgMusicGainNode = audioContext.createGain();
+    
+    bgMusicSource.buffer = buffer;
+    bgMusicSource.loop = true;
+    bgMusicGainNode.gain.value = gameState.bgMusicVolume / 100;
+    
+    bgMusicSource.connect(bgMusicGainNode);
+    bgMusicGainNode.connect(audioContext.destination);
+    
+    bgMusicSource.start(0);
+    
+    bgMusicSource.onended = () => {
+        bgMusicSource = null;
+        bgMusicGainNode = null;
+    };
+}
+
+function stopBgMusic() {
+    if (bgMusicSource) {
+        bgMusicSource.stop();
+        bgMusicSource = null;
+        bgMusicGainNode = null;
+    }
+}
+
+function setBgMusicVolume(volume) {
+    if (bgMusicGainNode) {
+        bgMusicGainNode.gain.value = volume / 100;
+    }
+}
 
         // Add this function right after your gameState declaration
 function detectViewableArea() {
@@ -3175,11 +3158,6 @@ detectViewableArea();
 
         function initializeUI() {
             document.title = gameTexts.pageTitle;
-            document.getElementById('startTitle').textContent = gameTexts.startTitle;
-            document.getElementById('startTitleChinese').textContent = gameTexts.startTitleChinese;
-            document.getElementById('startDescription').textContent = gameTexts.startDescription;
-            document.getElementById('startDescriptionChinese').textContent = gameTexts.startDescriptionChinese;
-            document.getElementById('startGameBtn').textContent = gameTexts.startGameBtn;
             document.getElementById('gameTitle').textContent = gameTexts.title;
             document.getElementById('gameTitleChinese').textContent = gameTexts.titleChinese;
             document.getElementById('player1Btn').textContent = gameTexts.player1;
@@ -3397,19 +3375,15 @@ function changeVolume(delta) {
     let currentValue = parseInt(volumeDisplay.textContent.replace('%', '')) || 30;
     let newValue = currentValue + delta;
     
-    // Ensure value stays within bounds
     if (newValue < 0) newValue = 0;
     if (newValue > 100) newValue = 100;
     
-    // Only update if value actually changed
     if (newValue !== currentValue) {
         volumeDisplay.textContent = newValue + '%';
         gameState.tempBgMusicVolume = newValue;
         
         // Update background music volume immediately
-        if (bgMusic.src) {
-            bgMusic.volume = newValue / 100;
-        }
+        setBgMusicVolume(newValue);
     }
 }
 
@@ -3624,15 +3598,12 @@ function backToMainMenu() {
     document.body.className = '';
     
     // Use requestAnimationFrame to ensure layout is clean before showing menu
-     requestAnimationFrame(() => {
-        // Show start page instead of main menu
-        const startPage = document.getElementById('startPage');
-        startPage.style.display = 'flex';
+    requestAnimationFrame(() => {
+        // Force show main menu
+        const playerSelection = document.getElementById('playerSelection');
+        playerSelection.style.display = 'flex';
         
-        // Hide other elements
-        document.getElementById('playerSelection').style.display = 'none';
-        
-        // Reset game container display after start page is shown
+        // Reset game container display after menu is shown
         setTimeout(() => {
             gameContainer.style.display = ''; // Reset to CSS default
         }, 100);
@@ -3663,65 +3634,45 @@ function backToMainMenu() {
             }
         }
 
-        // FIXED: Sound effects with lag prevention
-        function playCorrectSound() {
-            if (audioFiles.correctSound && correctSound.src) {
-                // Lower background music temporarily to prevent lag
-                const originalVolume = bgMusic.volume;
-                bgMusic.volume = originalVolume * 0.3;
-                
-                correctSound.currentTime = 0;
-                correctSound.play().then(() => {
-                    // Restore background music volume after effect
-                    setTimeout(() => {
-                        bgMusic.volume = originalVolume;
-                    }, 500);
-                }).catch(e => {
-                    bgMusic.volume = originalVolume;
-                    console.log('Correct sound play failed:', e);
-                });
-            }
-        }
+// Replace existing audio functions
+function playCorrectSound() {
+    playAudioBuffer(audioFiles.correctSound, 0.8);
+}
 
-        function playIncorrectSound() {
-            if (audioFiles.incorrectSound && incorrectSound.src) {
-                // Lower background music temporarily to prevent lag
-                const originalVolume = bgMusic.volume;
-                bgMusic.volume = originalVolume * 0.3;
-                
-                incorrectSound.currentTime = 0;
-                incorrectSound.play().then(() => {
-                    // Restore background music volume after effect
-                    setTimeout(() => {
-                        bgMusic.volume = originalVolume;
-                    }, 500);
-                }).catch(e => {
-                    bgMusic.volume = originalVolume;
-                    console.log('Incorrect sound play failed:', e);
-                });
-            }
-        }
+function playIncorrectSound() {
+    playAudioBuffer(audioFiles.incorrectSound, 0.8);
+}
 
-        function playCountdownBeep() {
-            if (audioFiles.countdownBeep && countdownBeep.src) {
-                countdownBeep.currentTime = 0;
-                countdownBeep.play().catch(e => console.log('Countdown beep play failed:', e));
-            }
-        }
+function playCountdownBeep() {
+    playAudioBuffer(audioFiles.countdownBeep, 1);
+}
 
-        function playCountdownGo() {
-            if (audioFiles.countdownGo && countdownGo.src) {
-                countdownGo.currentTime = 0;
-                countdownGo.play().catch(e => console.log('Countdown go sound play failed:', e));
-            }
-        }
+function playCongratsSound() {
+    playAudioBuffer(audioFiles.congratsSound, 1);
+}
 
-        function playCongratsSound() {
-            if (audioFiles.congratsSound && congratsSound.src) {
-                congratsSound.currentTime = 0;
-                congratsSound.play().catch(e => console.log('Congratulations sound play failed:', e));
-            }
+// For game audio, replace the audio.src and audio.play() calls
+function playGameAudio(audioUrl) {
+    // Stop any currently playing game audio
+    stopAllGameAudio();
+    
+    const source = playAudioBuffer(audioUrl, 1);
+    if (source) {
+        // Store reference for potential stopping
+        window.currentGameAudioSource = source;
+    }
+}
+
+function stopAllGameAudio() {
+    if (window.currentGameAudioSource) {
+        try {
+            window.currentGameAudioSource.stop();
+        } catch (e) {
+            // Audio already stopped
         }
+        window.currentGameAudioSource = null;
+    }
+}
 
         function getFilteredGameData() {
             return gameData.filter(item => gameState.selectedGroups.includes(item.group));
@@ -3944,8 +3895,7 @@ function loadGameState() {
     
     // FIXED: Always reset to clean menu state on page load
     document.body.className = '';
-    document.getElementById('startPage').style.display = 'flex';
-    document.getElementById('playerSelection').style.display = 'none';
+    document.getElementById('playerSelection').style.display = 'flex';
     document.getElementById('gameContainer').classList.remove('active');
     document.getElementById('settingsPanel').style.display = 'none';
 }
@@ -3995,28 +3945,28 @@ function loadGameState() {
             lastTouchEnd = now;
         }, false);
 
-        function initializeAudio() {
-            const unlockAudio = () => {
-                audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }).catch(e => {
-                    console.log('Audio unlock failed:', e);
-                });
-                
-                setTimeout(() => {
-                    playBgMusic();
-                }, 500);
-                
-                document.removeEventListener('touchstart', unlockAudio);
-                document.removeEventListener('click', unlockAudio);
-                document.removeEventListener('keydown', unlockAudio);
-            };
+function initializeAudio() {
+    const unlockAudio = async () => {
+        initializeWebAudio();
+        unlockAudioContext();
+        
+        // Wait a bit for context to be ready, then preload
+        setTimeout(async () => {
+            await preloadGameAudio();
+            setTimeout(() => {
+                playBgMusic();
+            }, 500);
+        }, 100);
+        
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+    };
 
-            document.addEventListener('touchstart', unlockAudio, { once: true });
-            document.addEventListener('click', unlockAudio, { once: true });
-            document.addEventListener('keydown', unlockAudio, { once: true });
-        }
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('keydown', unlockAudio, { once: true });
+}        
 
 function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
@@ -4430,59 +4380,19 @@ function selectPlayers(count) {
                 generatePlayerBubbles(`options${i}`, allOptions, correctAnswer.text);
             }
 
-            showPlayerCountdowns(() => {
-                // FIXED: Use preloaded audio for first round
-                const cachedAudio = audioCache.get(correctAnswer.audio);
-                if (cachedAudio) {
-                    audio.src = correctAnswer.audio;
-                    audio.load();
-                    
-                    // Ensure audio is ready before proceeding
-                    const audioReadyCheck = () => {
-                        if (audio.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
-                            gameState.audioReady = true;
-                            gameState.roundStartTime = Date.now();
-                            
-                            document.querySelectorAll('.bubble').forEach(bubble => {
-                                bubble.classList.add('active');
-                            });
-                            
-                            audio.play().then(() => {
-                                document.getElementById('gameStatus').textContent = gameTexts.listen;
-                                // Add this line
-                                updateRoundInfoForBothPlayers();                                
-                            }).catch(e => {
-                                console.error('Error playing audio:', e);
-                                document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
-                                // Add this line
-                                updateRoundInfoForBothPlayers();                                
-                            });
-                        } else {
-                            setTimeout(audioReadyCheck, 50);
-                        }
-                    };
-                    audioReadyCheck();
-                } else {
-                    // Fallback for non-preloaded audio
-                    audio.src = correctAnswer.audio;
-                    gameState.audioReady = true;
-                    gameState.roundStartTime = Date.now();
-                    
-                    document.querySelectorAll('.bubble').forEach(bubble => {
-                        bubble.classList.add('active');
-                    });
-                    
-                    audio.play().then(() => {
-                        document.getElementById('gameStatus').textContent = gameTexts.listen;
-                        // Add this line
-                        updateRoundInfoForBothPlayers();                        
-                    }).catch(e => {
-                        console.error('Error playing audio:', e);
-                        document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
-                        // Add this line
-                        updateRoundInfoForBothPlayers();
-                    });
-                }
+            showPlayerCountdowns(async () => {
+                await loadAudioBuffer(correctAnswer.audio); // Ensure loaded
+                
+                gameState.audioReady = true;
+                gameState.roundStartTime = Date.now();
+                
+                document.querySelectorAll('.bubble').forEach(bubble => {
+                    bubble.classList.add('active');
+                });
+                
+                playGameAudio(correctAnswer.audio);
+                document.getElementById('gameStatus').textContent = gameTexts.listen;
+                updateRoundInfoForBothPlayers();
             });
         }
 
@@ -4827,7 +4737,7 @@ function updateRoundInfo() {
 
         function pauseGame() {
             gameState.isPaused = true;
-            audio.pause();
+            stopAllGameAudio(); // Stop current game audio
             document.getElementById('gameStatus').textContent = gameTexts.pausedMessage;
             
             document.body.classList.add('paused');
@@ -4859,10 +4769,12 @@ function updateRoundInfo() {
                     bubble.classList.remove('paused');
                     bubble.classList.add('active');
                 });
-                audio.play().catch(e => console.log('Resume audio error:', e));
+                
+                // Replay the current question audio
+                playGameAudio(gameState.currentQuestion.correct.audio);
                 document.getElementById('gameStatus').textContent = gameTexts.listen;
             }
-            
+
             updateStartPauseButton();
             saveGameState();
 
