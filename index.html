@@ -2608,17 +2608,13 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
                         onmousedown="startHold(changeRounds, -1)" 
                         onmouseup="stopHold()" 
                         onmouseleave="stopHold()"
-                        ontouchstart="startHold(changeRounds, -1)" 
-                        ontouchend="stopHold()" 
-                        ontouchcancel="stopHold()">−</button>
+                        ontouch="changeRounds(-1)">−</button>
                 <span id="roundsDisplay" class="rounds-display">10</span>
                 <button type="button" class="rounds-btn" 
                         onmousedown="startHold(changeRounds, 1)" 
                         onmouseup="stopHold()" 
                         onmouseleave="stopHold()"
-                        ontouchstart="startHold(changeRounds, 1)" 
-                        ontouchend="stopHold()" 
-                        ontouchcancel="stopHold()">+</button>
+                        ontouch="changeRounds(1)">+</button>
             </div>
         </div>
         
@@ -3182,25 +3178,25 @@ function startProgressiveHold() {
 }
 
 function getIntervalForDuration(duration) {
-    // Very gradual acceleration
-    if (duration < 500) return 300;       // First 0.5 seconds: 300ms intervals
-    if (duration < 1000) return 250;      // 0.5-1 second: 250ms intervals
-    if (duration < 1500) return 200;      // 1-1.5 seconds: 200ms intervals
-    if (duration < 2000) return 150;      // 1.5-2 seconds: 150ms intervals
-    if (duration < 3000) return 100;      // 2-3 seconds: 100ms intervals
-    return 80;                            // After 3 seconds: 80ms intervals
+    // Much faster acceleration
+    if (duration < 500) return 120;       // First 0.5 seconds: 120ms intervals
+    if (duration < 1000) return 80;       // 0.5-1 second: 80ms intervals
+    if (duration < 1500) return 50;       // 1-1.5 seconds: 50ms intervals
+    if (duration < 2000) return 30;       // 1.5-2 seconds: 30ms intervals
+    if (duration < 3000) return 20;       // 2-3 seconds: 20ms intervals
+    return 15;                            // After 3 seconds: 15ms intervals (super fast)
 }
 
 function getMultiplierForDuration(duration) {
-    // Gentle multiplier ramp-up with whole numbers
+    // Much more aggressive multiplier increase
     if (duration < 400) return 1;         // First 0.4 seconds: normal steps
-    if (duration < 800) return 1;         // 0.4-0.8 seconds: still normal
-    if (duration < 1200) return 2;        // 0.8-1.2 seconds: 2x steps
-    if (duration < 1600) return 3;        // 1.2-1.6 seconds: 3x steps
-    if (duration < 2000) return 4;        // 1.6-2 seconds: 4x steps
-    if (duration < 2500) return 5;        // 2-2.5 seconds: 5x steps
-    if (duration < 3000) return 6;        // 2.5-3 seconds: 6x steps
-    return 8;                             // After 3 seconds: 8x steps
+    if (duration < 800) return 2;         // 0.4-0.8 seconds: 2x steps
+    if (duration < 1200) return 5;        // 0.8-1.2 seconds: 5x steps
+    if (duration < 1600) return 10;       // 1.2-1.6 seconds: 10x steps
+    if (duration < 2000) return 20;       // 1.6-2 seconds: 20x steps
+    if (duration < 2500) return 30;       // 2-2.5 seconds: 30x steps
+    if (duration < 3000) return 50;       // 2.5-3 seconds: 50x steps
+    return 100;                           // After 3 seconds: 100x steps (ultra fast)
 }
 
 function stopHold() {
