@@ -3955,33 +3955,28 @@ function loadGameState() {
             lastTouchEnd = now;
         }, false);
 
-function initializeAudio() {
+ function initializeAudio() {
     const unlockAudio = () => {
+        // Play and pause all preloaded sounds to unlock them
+        if (window.preloadedSounds) {
+            window.preloadedSounds.forEach((audio, key) => {
+                if (key !== 'bgMusic') {
+                    audio.play().then(() => {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }).catch(() => {});
+                }
+            });
+        }
+        
         // Unlock main audio element
         audio.play().then(() => {
             audio.pause();
             audio.currentTime = 0;
-        }).catch(e => {
-            console.log('Main audio unlock failed:', e);
-        });
+        }).catch(() => {});
         
-        // Also unlock background music element specifically
-        if (bgMusic.src && bgMusic.paused) {
-            bgMusic.volume = 0; // Start muted to avoid audible pop
-            bgMusic.play().then(() => {
-                bgMusic.pause();
-                bgMusic.currentTime = 0;
-                setTimeout(() => {
-                    playBgMusic(); // Now play with proper volume after unlock
-                }, 100);
-            }).catch(e => {
-                console.log('Background music unlock failed:', e);
-            });
-        } else {
-            setTimeout(() => {
-                playBgMusic();
-            }, 100);
-        }
+        // Start background music
+        playBgMusic();
         
         document.removeEventListener('touchstart', unlockAudio);
         document.removeEventListener('click', unlockAudio);
@@ -3991,8 +3986,7 @@ function initializeAudio() {
     document.addEventListener('touchstart', unlockAudio, { once: true });
     document.addEventListener('click', unlockAudio, { once: true });
     document.addEventListener('keydown', unlockAudio, { once: true });
-}
-
+}       
 
 function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
@@ -5012,21 +5006,24 @@ function initializeAfterLoading() {
             gameState.audioReady = false;
         });
 
- // Audio preloading with loading screen
+// Audio preloading with loading screen
 async function preloadAllAudio() {
     const loadingScreen = document.getElementById('loadingScreen');
     const loadingBar = document.getElementById('loadingBar');
     const loadingText = document.getElementById('loadingText');
     
+    // Create a map to store preloaded audio objects
+    const preloadedSounds = new Map();
+    
     // Collect all audio files to preload
     const audioFilesToLoad = [
-        audioFiles.bgMusic,
-        audioFiles.correctSound,
-        audioFiles.incorrectSound,
-        audioFiles.countdownBeep,
-        audioFiles.congratsSound,
-        ...gameData.map(item => item.audio)
-    ].filter(url => url); // Remove empty URLs
+        { url: audioFiles.bgMusic, id: 'bgMusic' },
+        { url: audioFiles.correctSound, id: 'correctSound' },
+        { url: audioFiles.incorrectSound, id: 'incorrectSound' },
+        { url: audioFiles.countdownBeep, id: 'countdownBeep' },
+        { url: audioFiles.congratsSound, id: 'congratsSound' },
+        ...gameData.map(item => ({ url: item.audio, id: item.audio }))
+    ].filter(item => item.url); // Remove empty URLs
     
     let loadedCount = 0;
     const totalFiles = audioFilesToLoad.length;
@@ -5039,7 +5036,9 @@ async function preloadAllAudio() {
         loadingText.textContent = `Loading audio files... ${percentage}%`;
         
         if (loadedCount === totalFiles) {
-            // All files loaded, hide loading screen
+            // All files loaded, store preloaded sounds and hide loading screen
+            window.preloadedSounds = preloadedSounds;
+            
             setTimeout(() => {
                 loadingScreen.classList.add('loaded');
                 document.body.classList.remove('loading');
@@ -5047,30 +5046,37 @@ async function preloadAllAudio() {
                 // Initialize the game after loading
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
+                    initializeAfterLoading();
                     initializeAudio();
                     playBgMusic();
-                    initializeAfterLoading();
                 }, 500);
             }, 500);
         }
     }
     
     // Preload each audio file
-    for (const audioUrl of audioFilesToLoad) {
+    for (const item of audioFilesToLoad) {
         try {
             const audio = new Audio();
             audio.preload = 'auto';
             
             await new Promise((resolve, reject) => {
                 audio.addEventListener('canplaythrough', () => {
+                    preloadedSounds.set(item.id, audio);
+                    
+                    // For sound effects, create clones for multiple simultaneous plays
+                    if (item.id !== 'bgMusic') {
+                        audio.volume = 0.8;
+                    }
+                    
                     updateProgress();
                     resolve();
                 }, { once: true });
                 
                 audio.addEventListener('error', () => {
-                    console.warn(`Failed to load: ${audioUrl}`);
-                    updateProgress(); // Still update progress even if file fails
-                    resolve(); // Don't reject, continue loading other files
+                    console.warn(`Failed to load: ${item.url}`);
+                    updateProgress();
+                    resolve();
                 }, { once: true });
                 
                 // Set a timeout to prevent infinite waiting
@@ -5079,13 +5085,34 @@ async function preloadAllAudio() {
                     resolve();
                 }, 5000);
                 
-                audio.src = audioUrl;
+                audio.src = item.url;
                 audio.load();
             });
         } catch (e) {
-            console.warn(`Error loading audio: ${audioUrl}`, e);
+            console.warn(`Error loading audio: ${item.url}`, e);
             updateProgress();
         }
+    }
+}
+
+// Initialize after audio preloading
+function initializeAfterLoading() {
+    initializeAudioFiles();
+    loadGameState();
+    initializeUI();
+    
+    // Ensure all audio elements are properly initialized with preloaded sources
+    if (window.preloadedSounds) {
+        // Set up the main audio elements with preloaded sources
+        const sounds = ['correctSound', 'incorrectSound', 'countdownBeep', 'congratsSound'];
+        sounds.forEach(soundId => {
+            const element = document.getElementById(soundId);
+            const preloaded = window.preloadedSounds.get(soundId);
+            if (element && preloaded) {
+                element.src = preloaded.src;
+                element.load();
+            }
+        });
     }
 }
 
