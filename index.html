@@ -4074,12 +4074,14 @@ function positionBubblesRandomly(container, bubbles, playerId) {
                 <div class="stats-grid">
                     <div><strong>${gameTexts.gamesPlayed}</strong>&nbsp;${gameState.gamesPlayed}</div>
                     <div><strong>${gameTexts.bestScore}</strong>&nbsp;${gameState.bestScore}</div>
-                    <div><strong>${gameTexts.totalRounds}</strong>&nbsp;${gameState.maxRounds}</div>
-                    <div><strong>${gameTexts.currentRound}</strong>&nbsp;${gameState.currentRound}</div>
                 </div>
                 ${createAccuracyTable()}
             `;
         }
+
+        // Game stat backup
+        // <div><strong>${gameTexts.totalRounds}</strong>&nbsp;${gameState.maxRounds}</div>
+        // <div><strong>${gameTexts.currentRound}</strong>&nbsp;${gameState.currentRound}</div>
 
 function selectPlayers(count) {
     // Apply layout class FIRST to prevent flicker
