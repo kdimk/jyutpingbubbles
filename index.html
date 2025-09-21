@@ -29,7 +29,7 @@
             position: relative;
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
-            /* ENHANCED: Use dynamic safe area variables  */
+            /* ENHANCED: Use dynamic safe area variables */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
@@ -2582,10 +2582,70 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     }
 }
 
+.start-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+    color: white;
+    text-align: center;
+    padding: max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))) max(env(safe-area-inset-right), var(--dynamic-safe-right, env(safe-area-inset-right))) max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))) max(env(safe-area-inset-left), var(--dynamic-safe-left, env(safe-area-inset-left)));
+}
+
+.start-page h1 {
+    font-family: 'Fredoka One', 'Chiron GoRound TC', cursive;
+    font-size: clamp(32px, 6vw, 56px);
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+}
+
+.start-btn {
+    padding: 20px 40px;
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(20px, 4vw, 32px);
+    font-weight: 700;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    min-width: 200px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    margin-top: 30px;
+}
+
+.start-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    background: linear-gradient(135deg, #764ba2, #667eea);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.start-btn:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
     </style>
 </head>
 <body class="layout-2players">
-    <!-- Keep all your existing HTML exactly the same -->
+    <!-- Start Page -->
+    <div class="start-page" id="startPage">
+        <h1 id="startTitle">Jyutping Bubbles</h1>
+        <h1 id="startTitleChinese">粵拼泡泡</h1>
+        <button class="start-btn" onclick="showGameModes()" id="startBtn">Start</button>
+    </div>
+
     <!-- Main Menu -->
     <div class="player-selection" id="playerSelection">
         <h1 id="gameTitle">Jyutping Bubbles</h1>
@@ -2821,7 +2881,10 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             gameRestored: "🎮 Game paused after correct answer - Click Continue to proceed! 🎮",
             gameRestoredContinue: "🎵 Game restored - Continue playing! 🎵",
             gameRestoredGeneral: "🎵 Game restored - Continue or Reset! 🎵",
-            audioNotFound: "❌ Audio file not found! Check file path."
+            audioNotFound: "❌ Audio file not found! Check file path.",
+            startBtnText: "Start",
+            startPageTitle: "Jyutping Bubbles",
+            startPageTitleChinese: "粵拼泡泡",
         };
 
         const groupNames = {
@@ -3045,6 +3108,9 @@ detectViewableArea();
             document.getElementById('instructionLine1').textContent = gameTexts.instructionLine1;
             document.getElementById('instructionLine2').textContent = gameTexts.instructionLine2;
             document.getElementById('gameStatus').textContent = gameTexts.startMessage;
+            document.getElementById('startTitle').textContent = gameTexts.startPageTitle;
+            document.getElementById('startTitleChinese').textContent = gameTexts.startPageTitleChinese;
+            document.getElementById('startBtn').textContent = gameTexts.startBtnText;
             
             updateStartPauseButton();
             generateGroupCheckboxes();
@@ -3055,13 +3121,10 @@ detectViewableArea();
             if (audioFiles.bgMusic) {
                 bgMusic.src = audioFiles.bgMusic;
                 bgMusic.volume = gameState.bgMusicVolume / 100;
-                // Create separate audio context for background music
-                bgMusic.addEventListener('canplaythrough', () => {
-                    setTimeout(() => {
-                        playBgMusic();
-                    }, 100);
-                });
+                bgMusic.preload = 'auto';  // Ensure it's preloaded
+                bgMusic.load();  // Force load the audio
             }
+
             if (audioFiles.correctSound) {
                 correctSound.src = audioFiles.correctSound;
                 correctSound.preload = 'auto';
@@ -3470,9 +3533,11 @@ function backToMainMenu() {
     // Use requestAnimationFrame to ensure layout is clean before showing menu
     requestAnimationFrame(() => {
         // Force show main menu
+        const startPage = document.getElementById('startPage');
+        startPage.style.display = 'flex';
         const playerSelection = document.getElementById('playerSelection');
-        playerSelection.style.display = 'flex';
-        
+        playerSelection.style.display = 'none';
+                
         // Reset game container display after menu is shown
         setTimeout(() => {
             gameContainer.style.display = ''; // Reset to CSS default
@@ -3783,11 +3848,22 @@ function loadGameState() {
     gameState.bubbleStates = {};
     gameState.needsResume = false;
     
-    // FIXED: Always reset to clean menu state on page load
+    // FIXED: Always reset to clean start state on page load
     document.body.className = '';
-    document.getElementById('playerSelection').style.display = 'flex';
+    document.getElementById('startPage').style.display = 'flex';  // Show start page
+    document.getElementById('playerSelection').style.display = 'none';  // Hide menu
     document.getElementById('gameContainer').classList.remove('active');
     document.getElementById('settingsPanel').style.display = 'none';
+
+}
+
+function showGameModes() {
+    // Hide start page
+    document.getElementById('startPage').style.display = 'none';
+    // Show player selection menu
+    document.getElementById('playerSelection').style.display = 'flex';
+    // Play background music when Start is clicked
+    playBgMusic();
 }
 
         function calculateScore(responseTime, isCorrect) {
@@ -4868,11 +4944,6 @@ function endGame() {
         loadGameState();
         initializeUI();
 
-        
-        setTimeout(() => {
-            playBgMusic();
-        }, 1000);
-
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
             document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
@@ -4885,4 +4956,3 @@ function endGame() {
     <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
-
