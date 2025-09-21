@@ -2636,9 +2636,90 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     transform: translateY(-1px) scale(1.02);
 }
 
+.loading-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #ff9a9e 75%, #fad0c4 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    color: white;
+}
+
+.loading-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-content h1 {
+    font-family: 'Fredoka One', 'Chiron GoRound TC', cursive;
+    font-size: clamp(28px, 5vw, 48px);
+    margin-bottom: 15px;
+    color: #fff;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    margin: 30px auto;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top: 6px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(14px, 2.5vw, 18px);
+    margin: 20px 0;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.loading-progress {
+    width: 200px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.loading-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
     </style>
 </head>
 <body class="layout-2players">
+    <!-- Loading Page -->
+    <div class="loading-page" id="loadingPage">
+        <div class="loading-content">
+            <h1>Jyutping Bubbles</h1>
+            <h1>粵拼泡泡</h1>
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">Loading audio files...</div>
+            <div class="loading-progress">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+        </div>
+    </div>
     <!-- Start Page -->
     <div class="start-page" id="startPage">
         <h1 id="startTitle">Jyutping Bubbles</h1>
@@ -3117,45 +3198,80 @@ detectViewableArea();
         }
 
         // FIXED: Preload audio with separate channels to prevent lag
-        function initializeAudioFiles() {
-            if (audioFiles.bgMusic) {
-                bgMusic.src = audioFiles.bgMusic;
-                bgMusic.volume = gameState.bgMusicVolume / 100;
-                bgMusic.preload = 'auto';  // Ensure it's preloaded
-                bgMusic.load();  // Force load the audio
-            }
-
-            if (audioFiles.correctSound) {
-                correctSound.src = audioFiles.correctSound;
-                correctSound.preload = 'auto';
-                correctSound.volume = 0.8; // Lower volume to prevent lag
-            }
-            if (audioFiles.incorrectSound) {
-                incorrectSound.src = audioFiles.incorrectSound;
-                incorrectSound.preload = 'auto';
-                incorrectSound.volume = 0.8; // Lower volume to prevent lag
-            }
-            if (audioFiles.countdownBeep) {
-                countdownBeep.src = audioFiles.countdownBeep;
-                countdownBeep.preload = 'auto';
-            }
-            if (audioFiles.countdownGo) {
-                countdownGo.src = audioFiles.countdownGo;
-                countdownGo.preload = 'auto';
-            }
-            if (audioFiles.congratsSound) {
-                congratsSound.src = audioFiles.congratsSound;
-                congratsSound.preload = 'auto';
-            }
-            
-            // FIXED: Preload game audio files
-            gameData.forEach(item => {
-                const preloadAudio = new Audio();
-                preloadAudio.src = item.audio;
-                preloadAudio.preload = 'auto';
-                audioCache.set(item.audio, preloadAudio);
-            });
+function initializeAudioFiles() {
+    const totalFiles = gameData.length + 6; // game audio + 6 sound effects
+    let loadedFiles = 0;
+    
+    function updateLoadingProgress() {
+        loadedFiles++;
+        const progress = (loadedFiles / totalFiles) * 100;
+        const loadingBar = document.getElementById('loadingBar');
+        if (loadingBar) {
+            loadingBar.style.width = progress + '%';
         }
+        
+        // Check if all files are loaded
+        if (loadedFiles >= totalFiles) {
+            setTimeout(() => {
+                document.getElementById('loadingPage').style.display = 'none';
+                document.getElementById('startPage').style.display = 'flex';
+            }, 500); // Small delay for smooth transition
+        }
+    }
+    
+    // Preload background music
+    if (audioFiles.bgMusic) {
+        bgMusic.src = audioFiles.bgMusic;
+        bgMusic.volume = gameState.bgMusicVolume / 100;
+        bgMusic.preload = 'auto';
+        bgMusic.addEventListener('canplaythrough', updateLoadingProgress, { once: true });
+        bgMusic.addEventListener('error', updateLoadingProgress, { once: true });
+        bgMusic.load();
+    } else {
+        updateLoadingProgress();
+    }
+    
+    // Preload sound effects
+    const soundEffects = [
+        { audio: correctSound, src: audioFiles.correctSound, volume: 0.8 },
+        { audio: incorrectSound, src: audioFiles.incorrectSound, volume: 0.8 },
+        { audio: countdownBeep, src: audioFiles.countdownBeep, volume: 1 },
+        { audio: countdownGo, src: audioFiles.countdownGo, volume: 1 },
+        { audio: congratsSound, src: audioFiles.congratsSound, volume: 1 }
+    ];
+    
+    soundEffects.forEach(effect => {
+        if (effect.src) {
+            effect.audio.src = effect.src;
+            effect.audio.preload = 'auto';
+            effect.audio.volume = effect.volume;
+            effect.audio.addEventListener('canplaythrough', updateLoadingProgress, { once: true });
+            effect.audio.addEventListener('error', updateLoadingProgress, { once: true });
+            effect.audio.load();
+        } else {
+            updateLoadingProgress();
+        }
+    });
+    
+    // Preload all game audio files
+    gameData.forEach((item, index) => {
+        const preloadAudio = new Audio();
+        preloadAudio.src = item.audio;
+        preloadAudio.preload = 'auto';
+        
+        preloadAudio.addEventListener('canplaythrough', () => {
+            audioCache.set(item.audio, preloadAudio);
+            updateLoadingProgress();
+        }, { once: true });
+        
+        preloadAudio.addEventListener('error', () => {
+            console.error(`Failed to load: ${item.audio}`);
+            updateLoadingProgress(); // Still update progress even on error
+        }, { once: true });
+        
+        preloadAudio.load();
+    });
+}
 
         function generateGroupCheckboxes() {
             const container = document.getElementById('groupCheckboxes');
@@ -3850,7 +3966,8 @@ function loadGameState() {
     
     // FIXED: Always reset to clean start state on page load
     document.body.className = '';
-    document.getElementById('startPage').style.display = 'flex';  // Show start page
+    document.getElementById('loadingPage').style.display = 'flex';  // Show loading page first
+    document.getElementById('startPage').style.display = 'none';     // Hide start page
     document.getElementById('playerSelection').style.display = 'none';  // Hide menu
     document.getElementById('gameContainer').classList.remove('active');
     document.getElementById('settingsPanel').style.display = 'none';
