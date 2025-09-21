@@ -3193,12 +3193,11 @@ function getIntervalForDuration(duration) {
 
 function getMultiplierForDuration(duration) {
     // Much more aggressive multiplier increase
-    if (duration < 800) return 1;         // 0.4-0.8 seconds: 2x steps
-    if (duration < 1200) return 2;        // 0.8-1.2 seconds: 5x steps
-    if (duration < 1600) return 5;       // 1.2-1.6 seconds: 10x steps
-    if (duration < 2000) return 10;       // 1.6-2 seconds: 20x steps
-    if (duration < 2500) return 20;       // 2-2.5 seconds: 30x steps
-    if (duration < 3000) return 30;       // 2.5-3 seconds: 50x steps
+    if (duration < 1200) return 1;        // 0.8-1.2 seconds: 5x steps
+    if (duration < 1600) return 2;       // 1.2-1.6 seconds: 10x steps
+    if (duration < 2000) return 5;       // 1.6-2 seconds: 20x steps
+    if (duration < 2500) return 10;       // 2-2.5 seconds: 30x steps
+    if (duration < 3000) return 20;       // 2.5-3 seconds: 50x steps
     return 100;                           // After 3 seconds: 100x steps (ultra fast)
 }
 
