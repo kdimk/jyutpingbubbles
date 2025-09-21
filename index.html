@@ -3055,6 +3055,12 @@ detectViewableArea();
             if (audioFiles.bgMusic) {
                 bgMusic.src = audioFiles.bgMusic;
                 bgMusic.volume = gameState.bgMusicVolume / 100;
+                // Create separate audio context for background music
+                bgMusic.addEventListener('canplaythrough', () => {
+                    setTimeout(() => {
+                        playBgMusic();
+                    }, 100);
+                });
             }
             if (audioFiles.correctSound) {
                 correctSound.src = audioFiles.correctSound;
@@ -3485,16 +3491,12 @@ function backToMainMenu() {
 }
 
         // FIXED: Background music lag prevention
-function playBgMusic() {
-    if (audioFiles.bgMusic && bgMusic.src && bgMusic.paused) {
-        bgMusic.volume = gameState.bgMusicVolume / 100;
-        bgMusic.play().catch(e => {
-            console.log('Background music play failed:', e);
-            // Retry after a short delay if it fails
-            setTimeout(() => playBgMusic(), 1000);
-        });
-    }
-}
+        function playBgMusic() {
+            if (audioFiles.bgMusic && bgMusic.src && bgMusic.paused) {
+                bgMusic.volume = gameState.bgMusicVolume / 100;
+                bgMusic.play().catch(e => console.log('Background music play failed:', e));
+            }
+        }
 
         function stopBgMusic() {
             if (bgMusic.src && !bgMusic.paused) {
@@ -3833,44 +3835,28 @@ function loadGameState() {
             lastTouchEnd = now;
         }, false);
 
-function initializeAudio() {
-    const unlockAudio = () => {
-        // Unlock main audio element
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-        }).catch(e => {
-            console.log('Main audio unlock failed:', e);
-        });
-        
-        // Also unlock background music element specifically
-        if (bgMusic.src && bgMusic.paused) {
-            bgMusic.volume = 0; // Start muted to avoid audible pop
-            bgMusic.play().then(() => {
-                bgMusic.pause();
-                bgMusic.currentTime = 0;
+        function initializeAudio() {
+            const unlockAudio = () => {
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }).catch(e => {
+                    console.log('Audio unlock failed:', e);
+                });
+                
                 setTimeout(() => {
-                    playBgMusic(); // Now play with proper volume after unlock
-                }, 100);
-            }).catch(e => {
-                console.log('Background music unlock failed:', e);
-            });
-        } else {
-            setTimeout(() => {
-                playBgMusic();
-            }, 100);
+                    playBgMusic();
+                }, 500);
+                
+                document.removeEventListener('touchstart', unlockAudio);
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('keydown', unlockAudio);
+            };
+
+            document.addEventListener('touchstart', unlockAudio, { once: true });
+            document.addEventListener('click', unlockAudio, { once: true });
+            document.addEventListener('keydown', unlockAudio, { once: true });
         }
-        
-        document.removeEventListener('touchstart', unlockAudio);
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('keydown', unlockAudio);
-    };
-
-    document.addEventListener('touchstart', unlockAudio, { once: true });
-    document.addEventListener('click', unlockAudio, { once: true });
-    document.addEventListener('keydown', unlockAudio, { once: true });
-}
-
 
 function positionBubblesRandomly(container, bubbles, playerId) {
     const bubbleSize = bubbles[0].offsetWidth || 100;
@@ -4882,12 +4868,16 @@ function endGame() {
         loadGameState();
         initializeUI();
 
+        
+        setTimeout(() => {
+            playBgMusic();
+        }, 1000);
+
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
             document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
             gameState.audioReady = false;
         });
-
     </script>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
