@@ -2688,9 +2688,27 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 
     </style>
 </head>
-<body class="layout-2players">
+<body class="layout-2players loading">
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-title">
+                <div>Jyutping Bubbles</div>
+                <div style="font-size: 0.8em; margin-top: 10px;">粵拼泡泡</div>
+            </div>
+            <div class="loading-progress-container">
+                <div class="loading-progress">
+                    <div class="loading-progress-bar" id="loadingBar"></div>
+                </div>
+                <div class="loading-text" id="loadingText">Loading audio files... 0%</div>
+            </div>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
     <!-- Keep all your existing HTML exactly the same -->
     <!-- Main Menu -->
+     
     <div class="player-selection" id="playerSelection">
         <h1 id="gameTitle">Jyutping Bubbles</h1>
         <h1 id="gameTitleChinese">粵拼泡泡</h1>
@@ -4982,16 +5000,99 @@ function endGame() {
     }, 1000);
 }
 
-        initializeAudio();
-        initializeAudioFiles();
-        loadGameState();
-        initializeUI();
+function initializeAfterLoading() {
+    initializeAudioFiles();
+    loadGameState();
+    initializeUI();
+}
 
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
             document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
             gameState.audioReady = false;
         });
+
+ // Audio preloading with loading screen
+async function preloadAllAudio() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loadingBar = document.getElementById('loadingBar');
+    const loadingText = document.getElementById('loadingText');
+    
+    // Collect all audio files to preload
+    const audioFilesToLoad = [
+        audioFiles.bgMusic,
+        audioFiles.correctSound,
+        audioFiles.incorrectSound,
+        audioFiles.countdownBeep,
+        audioFiles.congratsSound,
+        ...gameData.map(item => item.audio)
+    ].filter(url => url); // Remove empty URLs
+    
+    let loadedCount = 0;
+    const totalFiles = audioFilesToLoad.length;
+    
+    // Function to update loading progress
+    function updateProgress() {
+        loadedCount++;
+        const percentage = Math.round((loadedCount / totalFiles) * 100);
+        loadingBar.style.width = percentage + '%';
+        loadingText.textContent = `Loading audio files... ${percentage}%`;
+        
+        if (loadedCount === totalFiles) {
+            // All files loaded, hide loading screen
+            setTimeout(() => {
+                loadingScreen.classList.add('loaded');
+                document.body.classList.remove('loading');
+                
+                // Initialize the game after loading
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    initializeAudio();
+                    playBgMusic();
+                    initializeAfterLoading();
+                }, 500);
+            }, 500);
+        }
+    }
+    
+    // Preload each audio file
+    for (const audioUrl of audioFilesToLoad) {
+        try {
+            const audio = new Audio();
+            audio.preload = 'auto';
+            
+            await new Promise((resolve, reject) => {
+                audio.addEventListener('canplaythrough', () => {
+                    updateProgress();
+                    resolve();
+                }, { once: true });
+                
+                audio.addEventListener('error', () => {
+                    console.warn(`Failed to load: ${audioUrl}`);
+                    updateProgress(); // Still update progress even if file fails
+                    resolve(); // Don't reject, continue loading other files
+                }, { once: true });
+                
+                // Set a timeout to prevent infinite waiting
+                setTimeout(() => {
+                    updateProgress();
+                    resolve();
+                }, 5000);
+                
+                audio.src = audioUrl;
+                audio.load();
+            });
+        } catch (e) {
+            console.warn(`Error loading audio: ${audioUrl}`, e);
+            updateProgress();
+        }
+    }
+}
+
+// Start preloading when page loads
+window.addEventListener('load', () => {
+    preloadAllAudio();
+});       
 
     </script>
     <script>
