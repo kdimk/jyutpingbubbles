@@ -2744,8 +2744,9 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     <audio id="countdownGo" preload="auto"></audio>
     <audio id="congratsSound" preload="auto"></audio>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
     <script>
-        console.log("Debug version: 8");    
+        console.log("Debug version: 9");    
 
         // ===========================================
         // ENHANCED VIEWPORT DETECTION - ADD THIS ONLY
@@ -3055,10 +3056,13 @@ detectViewableArea();
         // FIXED: Preload audio with separate channels to prevent lag
         function initializeAudioFiles() {
             if (audioFiles.bgMusic) {
+
                 console.log("initializeAudioFiles yes");
                 bgMusic.src = audioFiles.bgMusic;
                 bgMusic.volume = gameState.bgMusicVolume / 100;
-                document.body.append(bgMusic);
+                bgMusic.load();
+                bgMusic.play();
+                bgMusic.pause();
                 // Create separate audio context for background music
                 bgMusic.addEventListener('loadedmetadata', () => {
                      console.log("initializeAudioFiles bg Music outside Timeout");
@@ -4093,6 +4097,11 @@ function positionBubblesRandomly(container, bubbles, playerId) {
 function selectPlayers(count) {
     if (bgMusic) {
         console.log("SelectPlayers: bgMusic exist");
+        var bgMusicHowl = new Howl({
+            src: [bgMusic.src]
+        });
+
+        bgMusicHowl.play();
     }
 
     bgMusic.addEventListener('canplaythrough', () => {        
