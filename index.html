@@ -2422,7 +2422,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 /* Phone-specific changes for Portrait 4 Player Mode */
 @media (orientation: portrait) and (max-width: 767px) {
     .layout-4players::before {
-        top: calc(50% - 80px) !important; /* Move further from center */
+        top: calc(50% - 70px) !important; /* Move further from center */
         font-size: clamp(8px, 1.6vw, 10px) !important; /* Smaller text */
         padding: 2px 6px !important; /* Less padding */
         min-width: 120px !important; /* Smaller box */
@@ -2431,7 +2431,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     }
     
     .layout-4players::after {
-        top: calc(50% + 80px) !important; /* Move further from center */
+        top: calc(50% + 70px) !important; /* Move further from center */
         font-size: clamp(8px, 1.2vw, 10px) !important;
         padding: 2px 6px !important;
         min-width: 120px !important;
