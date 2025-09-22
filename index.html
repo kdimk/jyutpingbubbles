@@ -1780,13 +1780,14 @@
         z-index: 200;
     }
     
-    /* Slightly larger bubbles for better usability */
+    /* Larger bubbles for better usability */
     .layout-2players .bubble {
-        width: clamp(55px, 7.5vw, 95px) !important; /* Increased from 50px to 55px */
-        height: clamp(55px, 7.5vw, 95px) !important;
-        font-size: clamp(13px, 2.3vw, 20px) !important; /* Increased from 12px to 13px */
-        padding: clamp(4px, 0.9vw, 7px) !important; /* Slightly more padding */
+        width: clamp(70px, 9.5vw, 120px) !important; /* Increased from 55px to 70px */
+        height: clamp(70px, 9.5vw, 120px) !important;
+        font-size: clamp(16px, 3vw, 25px) !important; /* Increased from 13px to 16px */
+        padding: clamp(5px, 1.2vw, 9px) !important; /* More padding */
     }
+
     
     /* Optimize instructions for landscape */
     .instructions {
@@ -1811,10 +1812,10 @@
 /* For very wide phones in landscape */
 @media (min-width: 700px) and (max-width: 896px) and (orientation: landscape) {
     .layout-2players .bubble {
-        width: clamp(60px, 8vw, 105px) !important; /* Increased for wider phones */
-        height: clamp(60px, 8vw, 105px) !important;
-        font-size: clamp(15px, 2.5vw, 22px) !important; /* Increased font size */
-        padding: clamp(4px, 1vw, 8px) !important; /* More padding */
+        width: clamp(80px, 10vw, 135px) !important; /* Increased significantly */
+        height: clamp(80px, 10vw, 135px) !important;
+        font-size: clamp(18px, 3.2vw, 28px) !important; /* Larger font */
+        padding: clamp(6px, 1.3vw, 10px) !important; /* More padding */
     }
     
     .layout-2players .round-info {
