@@ -584,6 +584,23 @@
             padding: clamp(6px, 1.5vw, 12px);
         }
 
+        /* iPad Landscape Mode - Larger bubbles for 1-player and 2-player modes */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+            .layout-1player .bubble {
+                width: clamp(150px, 25vw, 300px) !important; /* 25% larger */
+                height: clamp(150px, 25vw, 300px) !important;
+                font-size: clamp(35px, 7.5vw, 60px) !important;
+                padding: clamp(15px, 3vw, 25px) !important;
+            }
+            
+            .layout-2players .bubble {
+                width: clamp(120px, 20vw, 200px) !important; /* 25% larger */
+                height: clamp(120px, 20vw, 200px) !important;
+                font-size: clamp(27px, 5vw, 40px) !important;
+                padding: clamp(12px, 2.5vw, 20px) !important;
+            }
+        }
+
         @media (max-width: 768px) {
             .layout-1player .bubble {
                 width: clamp(96px, 24vw, 160px);
@@ -843,7 +860,10 @@
             flex-direction: column;
             align-items: center;
             gap: clamp(15px, 3vw, 25px);
-            margin: clamp(20px, 4vw, 30px) 0;
+            margin-top: clamp(25px, 5vw, 50px);
+            margin-bottom: clamp(5px, 2vw, 10px);
+            margin-left: 0;
+            margin-right: 0;
             width: 100%;
             max-width: 600px;
         }
@@ -910,7 +930,7 @@
         .podium-rank-1::before {
             content: "🏆";
             position: absolute;
-            top: -30px;
+            top: -40px;
             font-size: clamp(24px, 5vw, 40px);
             animation: trophyBounce 2s ease-in-out infinite;
         }
@@ -970,7 +990,7 @@
             color: #333;
             padding: clamp(15px, 3vw, 25px);
             border-radius: 20px;
-            margin-top: clamp(20px, 4vw, 30px);
+            /* margin-top: clamp(20px, 4vw, 30px); */
             text-shadow: none;
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
             width: 100%;
@@ -988,6 +1008,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             font-size: clamp(12px, 2.5vw, 16px);
+            margin-bottom: 16px;
         }
 
         .stats-grid div {
@@ -1226,12 +1247,12 @@
         padding: 5px !important;
     }
     
-    /* Bubbles 20% bigger */
+    /* Bubbles 45% bigger than original */
     .layout-1player .bubble {
-        width: clamp(84px, 16.8vw, 132px) !important; /* 20% bigger */
-        height: clamp(84px, 16.8vw, 132px) !important;
-        font-size: clamp(19px, 4.2vw, 26px) !important;
-        padding: clamp(5px, 1.2vw, 10px) !important;
+        width: clamp(105px, 21vw, 165px) !important; /* Increased from 84px to 105px */
+        height: clamp(105px, 21vw, 165px) !important;
+        font-size: clamp(24px, 5.2vw, 32px) !important; /* Increased from 19px to 24px */
+        padding: clamp(6px, 1.5vw, 12px) !important;
     }
     
     /* Instructions 20% bigger - keep each line intact */
@@ -2348,13 +2369,13 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 @media (orientation: portrait) and (max-width: 767px) {
     /* Force smaller bubbles and better spacing for 4-player mode */
     .layout-4players .bubble {
-        width: clamp(45px, 9vw, 70px) !important;
-        height: clamp(45px, 9vw, 70px) !important;
-        font-size: clamp(12px, 2.5vw, 16px) !important;
-        padding: clamp(2px, 0.5vw, 4px) !important;
+        width: clamp(58px, 11.7vw, 91px) !important; /* Increased from 45px to 58px */
+        height: clamp(58px, 11.7vw, 91px) !important;
+        font-size: clamp(15px, 3.2vw, 20px) !important; /* Increased from 12px to 15px */
+        padding: clamp(3px, 0.7vw, 5px) !important;
         border: 2px solid rgba(255, 255, 255, 0.6) !important;
     }
-    
+
     /* Adjust play areas for better bubble positioning */
     .layout-4players .options-container {
         margin-top: 50px !important;
@@ -2636,6 +2657,43 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         font-size: clamp(7px, 1.3vw, 10px);
         padding: clamp(3px, 0.8vw, 5px) clamp(6px, 1.5vw, 8px);
         margin-bottom: 10px;
+    }
+}
+
+/* iPad-specific portrait mode adjustments */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .layout-1player .player-header {
+        top: 60px; /* Your custom position for iPad */
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .layout-1player .round-info {
+        top: 120px; /* Your custom position for iPad */
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .layout-1player .options-container {
+        margin-top: 120px !important; /* Adjust play area accordingly */
+    }
+}
+
+/* Improved bubble spacing for larger sizes */
+@media (orientation: portrait) {
+    .layout-1player .options-container {
+        padding: 8px !important; /* Increased from 5px */
+    }
+    
+    .layout-4players .options-container {
+        padding: 10px !important; /* Increased from 8px */
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .layout-1player .options-container,
+    .layout-2players .options-container {
+        padding: 12px !important;
     }
 }
 
