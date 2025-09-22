@@ -1781,12 +1781,14 @@
     }
     
     /* Smaller bubbles for landscape */
+    /* Smaller bubbles for landscape */
     .layout-2players .bubble {
-        width: clamp(60px, 8vw, 100px);
-        height: clamp(60px, 8vw, 100px);
-        font-size: clamp(14px, 2.5vw, 20px);
-        padding: clamp(4px, 1vw, 8px);
+        width: clamp(50px, 6.5vw, 85px) !important; /* Reduced from 60px to 50px */
+        height: clamp(50px, 6.5vw, 85px) !important;
+        font-size: clamp(12px, 2vw, 18px) !important; /* Reduced from 14px to 12px */
+        padding: clamp(3px, 0.8vw, 6px) !important; /* Reduced padding */
     }
+
     
     /* Optimize instructions for landscape */
     .instructions {
@@ -1811,9 +1813,10 @@
 /* For very wide phones in landscape */
 @media (min-width: 700px) and (max-width: 896px) and (orientation: landscape) {
     .layout-2players .bubble {
-        width: clamp(70px, 9vw, 120px);
-        height: clamp(70px, 9vw, 120px);
-        font-size: clamp(16px, 3vw, 24px);
+        width: clamp(55px, 7vw, 95px) !important; /* Reduced from 70px to 55px */
+        height: clamp(55px, 7vw, 95px) !important;
+        font-size: clamp(13px, 2.2vw, 20px) !important; /* Reduced from 16px to 13px */
+        padding: clamp(3px, 0.8vw, 6px) !important;
     }
     
     .layout-2players .round-info {
@@ -2753,6 +2756,74 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         margin-top: 45px !important; /* Reduced since headers moved up */
         height: calc(50vh - 65px) !important;
         height: calc(50dvh - 65px) !important;
+    }
+}
+
+/* Landscape iPhone 4-Player Mode - Smaller headers, scores, and round info */
+@media (max-width: 896px) and (orientation: landscape) {
+    /* Smaller player names for 4-player landscape */
+    .layout-4players .player-name {
+        font-size: clamp(8px, 1.5vw, 12px) !important; /* Reduced from default */
+        margin-bottom: clamp(2px, 0.4vw, 4px) !important;
+    }
+    
+    /* Smaller scores for 4-player landscape */
+    .layout-4players .score {
+        font-size: clamp(14px, 2.8vw, 20px) !important; /* Reduced from default */
+    }
+    
+    /* Smaller player headers */
+    .layout-4players .player-header {
+        margin-bottom: clamp(3px, 0.6vw, 6px) !important; /* Reduced spacing */
+    }
+    
+    /* Smaller round info for 4-player landscape */
+    .layout-4players::before {
+        font-size: clamp(6px, 1.2vw, 8px) !important; /* Reduced from 8px */
+        padding: clamp(1px, 0.3vw, 2px) clamp(3px, 0.6vw, 4px) !important; /* Reduced padding */
+        max-width: 90% !important;
+        top: calc(50% - 28px) !important; /* Adjusted position */
+    }
+    
+    .layout-4players::after {
+        font-size: clamp(6px, 1.2vw, 8px) !important; /* Reduced from 8px */
+        padding: clamp(1px, 0.3vw, 2px) clamp(3px, 0.6vw, 4px) !important; /* Reduced padding */
+        max-width: 90% !important;
+        top: calc(50% + 28px) !important; /* Adjusted position */
+    }
+    
+    /* Adjust play area for smaller headers */
+    .layout-4players .options-container {
+        height: calc(100% - 45px) !important; /* Reduced from 60px */
+        width: 100% !important;
+        padding: 2px !important; /* Reduced padding */
+    }
+}
+
+/* Very small landscape phones - Extra compact 4-player mode */
+@media (max-width: 640px) and (orientation: landscape) {
+    .layout-4players .player-name {
+        font-size: clamp(7px, 1.3vw, 10px) !important; /* Even smaller */
+        margin-bottom: clamp(1px, 0.2vw, 2px) !important;
+    }
+    
+    .layout-4players .score {
+        font-size: clamp(12px, 2.4vw, 16px) !important; /* Even smaller */
+    }
+    
+    .layout-4players::before,
+    .layout-4players::after {
+        font-size: clamp(5px, 1vw, 7px) !important; /* Very small text */
+        padding: 1px 2px !important; /* Minimal padding */
+        min-width: 80px !important; /* Smaller boxes */
+    }
+    
+    .layout-4players::before {
+        top: calc(50% - 24px) !important; /* Closer to center */
+    }
+    
+    .layout-4players::after {
+        top: calc(50% + 24px) !important; /* Closer to center */
     }
 }
 
