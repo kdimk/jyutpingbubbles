@@ -2745,7 +2745,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     <audio id="congratsSound" preload="auto"></audio>
 
     <script>
-        console.log("Debug version: 5");    
+        console.log("Debug version: 6");    
 
         // ===========================================
         // ENHANCED VIEWPORT DETECTION - ADD THIS ONLY
@@ -3060,7 +3060,7 @@ detectViewableArea();
                 bgMusic.volume = gameState.bgMusicVolume / 100;
                 bgMusic.load();
                 // Create separate audio context for background music
-                bgMusic.addEventListener('canplay', () => {
+                bgMusic.addEventListener('loadedmetadata', () => {
                     setTimeout(() => {
                         playBgMusic();
                         console.log("initializeAudioFiles bg Music Timeout");
