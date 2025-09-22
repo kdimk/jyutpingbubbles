@@ -2802,10 +2802,13 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     </div>
 
     <script>
+        let countInterval = null; // Define the count interval here
+        let countdownActive = false; 
+
         // ===========================================
         // ENHANCED VIEWPORT DETECTION - ADD THIS ONLY
         // ===========================================
-        
+
         function detectActualViewport() {
             const root = document.documentElement;
             
@@ -3012,7 +3015,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             audioReady: false,
             roundInProgress: false,
             correctAnswers: new Set(),
-            answerWindow: 200000,
+            answerWindow: 150,
             totalScore: 0,
             gamesPlayed: 0,
             bestScore: 0,
@@ -3480,7 +3483,7 @@ function saveSettings() {
 function backToMainMenu() {
     // FIXED: Complete game state reset and cleanup
     gameState.isPlaying = false;
-    gameState.isPaused = false;
+    gameState.isPaused = true;
     gameState.roundInProgress = false;
     gameState.answered = false;
     gameState.audioReady = false;
@@ -3584,7 +3587,7 @@ function stopBgMusic() {
 }
 
 function playCorrectSound() {
-    if (correctSound) {
+    if (correctSound && !gameState.isPaused) {
         // Lower background music temporarily
         const originalVolume = bgMusic ? bgMusic.volume() : 0;
         // if (bgMusic) bgMusic.volume(originalVolume * 0.3);
@@ -3599,7 +3602,7 @@ function playCorrectSound() {
 }
 
 function playIncorrectSound() {
-    if (incorrectSound) {
+    if (incorrectSound && !gameState.isPaused) {
         // Lower background music temporarily
         const originalVolume = bgMusic ? bgMusic.volume() : 0;
         // if (bgMusic) bgMusic.volume(originalVolume * 0.3);
@@ -3614,13 +3617,13 @@ function playIncorrectSound() {
 }
 
 function playCountdownBeep() {
-    if (countdownBeep) {
+    if (countdownBeep && !gameState.isPaused) {
         countdownBeep.play();
     }
 }
 
 function playCountdownGo() {
-    if (countdownGo) {
+    if (countdownGo && !gameState.isPaused) {
         countdownGo.play();
     }
 }
@@ -4308,6 +4311,10 @@ function selectPlayers(count) {
                 roundEndTimeout = null;
             }
 
+            document.getElementById('gameStatus').textContent = gameTexts.getReady;
+            updateRoundInfoForBothPlayers();
+
+
             const filteredData = getFilteredGameData();
             if (filteredData.length === 0) {
                 alert('No sound groups selected! Please check settings.');
@@ -4334,85 +4341,92 @@ function selectPlayers(count) {
                 generatePlayerBubbles(`options${i}`, allOptions, correctAnswer.text);
             }
 
-            showPlayerCountdowns(() => {
-                // Create or get cached audio
-                let gameAudio = audioCache.get(correctAnswer.audio);
-                if (!gameAudio) {
-                    gameAudio = new Howl({
-                        src: [correctAnswer.audio],
-                        preload: true
-                    });
-                    audioCache.set(correctAnswer.audio, gameAudio);
-                }
-                
-                const audioReadyCheck = () => {
-                    if (gameAudio.state() === 'loaded') {
-                        gameState.audioReady = true;
-                        gameState.roundStartTime = Date.now();
-                        
-                        document.querySelectorAll('.bubble').forEach(bubble => {
-                            bubble.classList.add('active');
-                        });
-                        
-                        // Store reference for pause/resume
-                        audio = gameAudio;
-                        
-                        gameAudio.play();
-                        document.getElementById('gameStatus').textContent = gameTexts.listen;
-                        updateRoundInfoForBothPlayers();
-                    } else {
-                        setTimeout(audioReadyCheck, 50);
+            // **FIX: Load the audio immediately when the round starts**
+            audio = audioCache.get(correctAnswer.audio);
+            if (!audio) {
+                audio = new Howl({
+                    src: [correctAnswer.audio],
+                    onload: function() {
+                        console.log('Audio loaded successfully');
+                    },
+                    onloaderror: function() {
+                        console.error('Audio failed to load:', correctAnswer.audio);
                     }
-                };
-                audioReadyCheck();
+                });
+                audioCache.set(correctAnswer.audio, audio);
+            }
+
+            showPlayerCountdowns(() => {
+                // **FIX: Only play audio if game is still active and not paused**
+                if (gameState.isPlaying && !gameState.isPaused && gameState.roundInProgress) {
+                    gameState.roundStartTime = Date.now();
+                    gameState.audioReady = true;
+                    
+                    document.querySelectorAll('.bubble').forEach(bubble => {
+                        bubble.classList.add('active');
+                    });
+                    
+                    if (audio) {
+                        audio.play();
+                    }
+                    
+                    document.getElementById('gameStatus').textContent = gameTexts.listen;
+                    updateRoundInfoForBothPlayers();
+                }
             });
         }
 
-        function generatePlayerBubbles(containerId, options, correctText) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            
-            container.innerHTML = '';
+        function generatePlayerBubbles(containerId, options, correctText, skipAnimation = false) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = '';
 
-            const bubbles = [];
-            options.forEach((option, index) => {
-                const bubble = document.createElement('div');
-                bubble.className = `bubble color-${index + 1}`;
-                bubble.textContent = option.text;
-                
-                // Hide bubble initially to prevent flicker
-                bubble.style.opacity = '0';
-                bubble.style.visibility = 'hidden';
-                
-                const handleClick = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleAnswer(containerId, option.text === correctText, bubble);
-                };
-                
-                bubble.addEventListener('click', handleClick, { passive: false });
-                bubble.addEventListener('touchstart', handleClick, { passive: false });
-                
-                container.appendChild(bubble);
-                bubbles.push(bubble);
-            });
+    const bubbles = [];
+    options.forEach((option, index) => {
+        const bubble = document.createElement('div');
+        bubble.className = `bubble color-${index + 1}`;
+        bubble.textContent = option.text;
+        
+        // **FIX: Control initial visibility based on skipAnimation**
+        if (skipAnimation) {
+            bubble.style.opacity = '1';
+            bubble.style.visibility = 'visible';
+        } else {
+            bubble.style.opacity = '0';
+            bubble.style.visibility = 'hidden';
+        }
+        
+        const handleClick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAnswer(containerId, option.text === correctText, bubble);
+        };
+        
+        bubble.addEventListener('click', handleClick, { passive: false });
+        bubble.addEventListener('touchstart', handleClick, { passive: false });
+        
+        container.appendChild(bubble);
+        bubbles.push(bubble);
+    });
 
-            // Position bubbles immediately, then show them
+    // **FIX: Position bubbles and handle visibility**
+    requestAnimationFrame(() => {
+        positionBubblesRandomly(container, bubbles, containerId);
+        
+        if (!skipAnimation) {
+            // **FIX: Animate bubbles in only if they weren't visible before**
             setTimeout(() => {
-                positionBubblesRandomly(container, bubbles, containerId);
-                
-                // Show bubbles after positioning with smooth fade-in
-                setTimeout(() => {
-                    bubbles.forEach((bubble, index) => {
-                        setTimeout(() => {
-                            bubble.style.opacity = '1';
-                            bubble.style.visibility = 'visible';
-                            bubble.style.transition = 'opacity 0.1s ease-in';
-                        }, index * 100); // Staggered appearance
-                    });
-                }, 50);
-            }, 10); // Minimal delay to ensure DOM is ready
-    }
+                bubbles.forEach((bubble, index) => {
+                    bubble.style.opacity = '1';
+                    bubble.style.visibility = 'visible';
+                    bubble.style.transition = 'opacity 0.2s ease-in';
+                });
+            }, 50);
+        }
+        // If skipAnimation is true, bubbles are already visible
+    });
+}
 
         let pendingAnswers = [];
         let processingAnswers = false;
@@ -4584,50 +4598,53 @@ function selectPlayers(count) {
         }
 
         // FIXED: Slower countdown with better timing
-        function showPlayerCountdowns(callback) {
-            let count = 3;
-            
+
+function showPlayerCountdowns(callback) {
+    abortCountdown(); // Ensure any existing countdown is aborted
+
+    let count = 3; // Start from 3
+
+    for (let i = 1; i <= gameState.playerCount; i++) {
+        const countdownEl = document.getElementById(`countdown${i}`);
+        if (countdownEl) {
+            countdownEl.style.display = 'block';
+            countdownEl.textContent = count;
+        }
+    }
+    
+    playCountdownBeep();
+
+    countInterval = setInterval(() => { // Use the defined countInterval
+        if (count > 1) {
+            count--;
+            playCountdownBeep();
             for (let i = 1; i <= gameState.playerCount; i++) {
                 const countdownEl = document.getElementById(`countdown${i}`);
                 if (countdownEl) {
-                    countdownEl.style.display = 'block';
                     countdownEl.textContent = count;
                 }
             }
-
-            playCountdownBeep();
-
-            const countInterval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    playCountdownBeep();
-                    for (let i = 1; i <= gameState.playerCount; i++) {
-                        const countdownEl = document.getElementById(`countdown${i}`);
-                        if (countdownEl) {
-                            countdownEl.textContent = count;
-                        }
-                    }
-                } else {
-                    playCountdownGo();
-                    for (let i = 1; i <= gameState.playerCount; i++) {
-                        const countdownEl = document.getElementById(`countdown${i}`);
-                        if (countdownEl) {
-                            countdownEl.textContent = gameTexts.countdownGo;
-                        }
-                    }
-                    setTimeout(() => {
-                        for (let i = 1; i <= gameState.playerCount; i++) {
-                            const countdownEl = document.getElementById(`countdown${i}`);
-                            if (countdownEl) {
-                                countdownEl.style.display = 'none';
-                            }
-                        }
-                        callback();
-                    }, 600); // SLOWER for better audio sync
-                    clearInterval(countInterval);
+        } else {
+            playCountdownGo();
+            for (let i = 1; i <= gameState.playerCount; i++) {
+                const countdownEl = document.getElementById(`countdown${i}`);
+                if (countdownEl) {
+                    countdownEl.textContent = gameTexts.countdownGo;
                 }
-            }, 1400); // SLOWER countdown - 1.4 second intervals
+            }
+            setTimeout(() => {
+                for (let i = 1; i <= gameState.playerCount; i++) {
+                    const countdownEl = document.getElementById(`countdown${i}`);
+                    if (countdownEl) {
+                        countdownEl.style.display = 'none';
+                    }
+                }
+                callback();
+            }, 600);
+            clearInterval(countInterval);
         }
+    }, 1400);
+}
 
         function updateScores() {
             for (let i = 1; i <= 4; i++) {
@@ -4707,16 +4724,36 @@ function updateRoundInfo() {
     updateRoundInfoForBothPlayers();
 }
 
+function abortCountdown() {
+    // Hide countdown elements and clear intervals
+    for (let i = 1; i <= gameState.playerCount; i++) {
+        const countdownEl = document.getElementById(`countdown${i}`);
+        if (countdownEl) {
+            countdownEl.style.display = 'none';
+        }
+    }
+    clearInterval(countInterval); // Clear the previous countdown interval
+    countdownActive = false; // Reset active state
+}
+
 function pauseGame() {
+    abortCountdown();
     gameState.isPaused = true;
     if (audio) audio.pause();
     document.getElementById('gameStatus').textContent = gameTexts.pausedMessage;
     
     document.body.classList.add('paused');
-    
+
+    for (let i = 1; i <= gameState.playerCount; i++) {
+        const countdownEl = document.getElementById(`countdown${i}`);
+        if (countdownEl) countdownEl.style.display = 'none'; // Hide countdown
+    }
+
+    // **FIX: Don't remove bubbles, just disable them**
     document.querySelectorAll('.bubble').forEach(bubble => {
         bubble.classList.remove('active');
         bubble.classList.add('paused');
+        // Keep bubbles visible but disabled
     });
     
     if (roundEndTimeout) {
@@ -4730,25 +4767,253 @@ function pauseGame() {
 }
 
 function resumeGame() {
-    gameState.isPaused = false;
-    
+    gameState.isPaused = false;   
     document.body.classList.remove('paused');
     
-    if (gameState.currentQuestion && gameState.audioReady && gameState.roundInProgress) {
-        document.querySelectorAll('.bubble:not(.answered)').forEach(bubble => {
-            bubble.classList.remove('paused');
-            bubble.classList.add('active');
-        });
-        if (audio) audio.play();
-        document.getElementById('gameStatus').textContent = gameTexts.listen;
+    abortCountdown(); // Ensure any current countdown is aborted
+
+    // **FIX: Update status to "Get Ready" immediately when resume starts**
+    document.getElementById('gameStatus').textContent = gameTexts.getReady;
+    updateRoundInfoForBothPlayers();
+
+    // **FIX: Check if bubbles were already visible before pausing**
+    let bubblesWereVisible = false;
+    for (let i = 1; i <= gameState.playerCount; i++) {
+        const container = document.getElementById(`options${i}`);
+        if (container && container.children.length > 0) {
+            // Check if any bubble was visible
+            const firstBubble = container.children[0];
+            if (firstBubble && firstBubble.style.opacity === '1') {
+                bubblesWereVisible = true;
+                break;
+            }
+        }
+    }
+
+    // **FIX: Check if we need to continue from where we left off or restart the round**
+    if (gameState.currentQuestion && gameState.roundInProgress && gameState.isPlaying) {
+        // We have a question in progress - regenerate bubbles and continue
+        
+        // Clear all existing bubbles first
+        for (let i = 1; i <= gameState.playerCount; i++) {
+            const container = document.getElementById(`options${i}`);
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
+        
+        // Regenerate all bubbles - skip animation if they were already visible
+        for (let i = 1; i <= gameState.playerCount; i++) {
+            generatePlayerBubbles(`options${i}`, gameState.currentQuestion.options, gameState.currentQuestion.correct.text, bubblesWereVisible);
+        }
+        
+        // Wait for bubbles to be positioned, then start countdown
+        setTimeout(() => {
+            startResumeCountdown();
+        }, bubblesWereVisible ? 50 : 150); // Shorter delay if no animation needed
+        
+    } else if (gameState.isPlaying && !gameState.roundInProgress) {
+        // **NEW FIX: Game was paused before round even started - restart the round**
+        gameState.roundInProgress = true;
+        gameState.answered = false;
+        gameState.audioReady = false;
+        gameState.correctAnswers.clear();
+        gameState.roundStartTime = 0;
+        gameState.bubbleStates = {};
+
+        if (roundEndTimeout) {
+            clearTimeout(roundEndTimeout);
+            roundEndTimeout = null;
+        }
+
+        const filteredData = getFilteredGameData();
+        if (filteredData.length === 0) {
+            alert('No sound groups selected! Please check settings.');
+            return;
+        }
+
+        // Generate new question if we don't have one
+        if (!gameState.currentQuestion) {
+            const correctAnswer = filteredData[Math.floor(Math.random() * filteredData.length)];
+            
+            const wrongAnswers = filteredData
+                .filter(item => item.text !== correctAnswer.text)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3);
+
+            const allOptions = [correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+            
+            gameState.currentQuestion = {
+                correct: correctAnswer,
+                options: allOptions
+            };
+
+            gameState.roundSeed = Math.floor(Math.random() * 1000000);
+
+            // Load the audio
+            audio = audioCache.get(correctAnswer.audio);
+            if (!audio) {
+                audio = new Howl({
+                    src: [correctAnswer.audio],
+                    onload: function() {
+                        console.log('Audio loaded successfully');
+                    },
+                    onloaderror: function() {
+                        console.error('Audio failed to load:', correctAnswer.audio);
+                    }
+                });
+                audioCache.set(correctAnswer.audio, audio);
+            }
+        }
+
+        // Generate bubbles for the question - these should always animate since it's a new round
+        for (let i = 1; i <= gameState.playerCount; i++) {
+            generatePlayerBubbles(`options${i}`, gameState.currentQuestion.options, gameState.currentQuestion.correct.text, false);
+        }
+
+        // Wait for bubbles to be positioned, then start countdown
+        setTimeout(() => {
+            startResumeCountdown();
+        }, 150);
+        
+    } else {
+        // Fallback - just start the countdown
+        startResumeCountdown();
     }
     
     updateStartPauseButton();
     saveGameState();
+}
+
+// **NEW FUNCTION: Handle the resume countdown separately**
+function startResumeCountdown() {
+    countdownResumeGame(() => {
+        if (gameState.currentQuestion && gameState.roundInProgress && gameState.isPlaying) {
+            // Enable all bubbles
+            document.querySelectorAll('.bubble').forEach(bubble => {
+                bubble.classList.remove('paused');
+                bubble.classList.add('active');
+                bubble.style.opacity = '1';
+                bubble.style.visibility = 'visible';
+            });
+
+            // Play the audio
+            if (audio) {
+                audio.stop();
+            }
+            
+            audio = audioCache.get(gameState.currentQuestion.correct.audio);
+            if (!audio) {
+                audio = new Howl({
+                    src: [gameState.currentQuestion.correct.audio],
+                    onload: function() {
+                        gameState.roundStartTime = Date.now();
+                        gameState.audioReady = true;
+                        audio.play();
+                    }
+                });
+                audioCache.set(gameState.currentQuestion.correct.audio, audio);
+            } else {
+                gameState.roundStartTime = Date.now();
+                gameState.audioReady = true;
+                audio.play();
+            }
+            
+            document.getElementById('gameStatus').textContent = gameTexts.listen;
+            updateRoundInfoForBothPlayers();
+        }
+    });
+}
+
+// **NEW FUNCTION: Extract the resume continuation logic**
+function continueResumeGame() {
+    // Re-enable all bubbles that haven't been answered
+    document.querySelectorAll('.bubble:not(.answered)').forEach(bubble => {
+        bubble.classList.remove('paused');
+        bubble.classList.add('active');
+        bubble.style.opacity = '1';
+        bubble.style.visibility = 'visible';
+    });
+
+    // **FIX: Always play the audio after resume countdown**
+    if (audio) {
+        audio.stop(); // Stop any existing playback
+    }
+    
+    // Get or create the audio for the current question
+    audio = audioCache.get(gameState.currentQuestion.correct.audio);
+    if (!audio) {
+        audio = new Howl({
+            src: [gameState.currentQuestion.correct.audio],
+            onload: function() {
+                gameState.roundStartTime = Date.now();
+                gameState.audioReady = true;
+                audio.play();
+            }
+        });
+        audioCache.set(gameState.currentQuestion.correct.audio, audio);
+    } else {
+        gameState.roundStartTime = Date.now();
+        gameState.audioReady = true;
+        audio.play();
+    }
+    
+    // **FIX: Update status to "Listen" only after countdown finishes and audio starts**
+    document.getElementById('gameStatus').textContent = gameTexts.listen;
     updateRoundInfoForBothPlayers();
 }
 
+function countdownResumeGame(callback) {
+    let count = 3; // Start from 3
+    const countdownAudio = [];
+
+    for (let i = 1; i <= gameState.playerCount; i++) {
+        const countdownEl = document.getElementById(`countdown${i}`);
+        if (countdownEl) {
+            countdownEl.style.display = 'block';  // Show countdown
+            countdownEl.textContent = count;  // Set current count
+        }
+    }
+
+    countdownAudio.push(playCountdownBeep()); // Play sound for countdown start
+
+    countInterval = setInterval(() => {
+        if (count > 1) {
+            count--; // Decrement count
+            countdownAudio.push(playCountdownBeep()); // Play sound for countdown
+            for (let i = 1; i <= gameState.playerCount; i++) {
+                const countdownEl = document.getElementById(`countdown${i}`);
+                if (countdownEl) {
+                    countdownEl.textContent = count; // Update countdown text
+                }
+            }
+        } else {
+            playCountdownGo(); // Play "Go" sound
+            for (let i = 1; i <= gameState.playerCount; i++) {
+                const countdownEl = document.getElementById(`countdown${i}`);
+                if (countdownEl) {
+                    countdownEl.textContent = gameTexts.countdownGo; // Display "Listen"
+                }
+            }
+            setTimeout(() => {
+                // Hide countdown elements after displaying "Listen"
+                for (let i = 1; i <= gameState.playerCount; i++) {
+                    const countdownEl = document.getElementById(`countdown${i}`);
+                    if (countdownEl) {
+                        countdownEl.style.display = 'none';
+                    }
+                }
+                callback(); // Resume the game
+            }, 600); // Timing for better sync
+            clearInterval(countInterval); // Clear the interval when done
+        }
+    }, 1400); // Time between each countdown display
+}
+
 function resetGame() {
+    // **FIX: Abort any ongoing countdown first**
+    abortCountdown();
+    
     gameState.isPlaying = false;
     gameState.isPaused = false;
     gameState.currentRound = 1;
