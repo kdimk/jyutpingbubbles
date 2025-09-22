@@ -2745,6 +2745,8 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     <audio id="congratsSound" preload="auto"></audio>
 
     <script>
+        console.log("Debug version: 2");    
+
         // ===========================================
         // ENHANCED VIEWPORT DETECTION - ADD THIS ONLY
         // ===========================================
@@ -3053,7 +3055,7 @@ detectViewableArea();
         // FIXED: Preload audio with separate channels to prevent lag
         function initializeAudioFiles() {
             if (audioFiles.bgMusic) {
-                console.log("initializeAudioFiles has bgMusic");
+                console.log("initializeAudioFiles yes");
                 bgMusic.src = audioFiles.bgMusic;
                 bgMusic.volume = gameState.bgMusicVolume / 100;
                 // Create separate audio context for background music
@@ -4087,6 +4089,13 @@ function positionBubblesRandomly(container, bubbles, playerId) {
         // <div><strong>${gameTexts.currentRound}</strong>&nbsp;${gameState.currentRound}</div>
 
 function selectPlayers(count) {
+    bgMusic.addEventListener('canplaythrough', () => {
+        setTimeout(() => {
+            playBgMusic();
+            console.log("SelectPlayers bg Music Timeout");
+        }, 100);
+    });
+
     // Apply layout class FIRST to prevent flicker
     document.body.className = `layout-${count}player${count > 1 ? 's' : ''}`;
     
@@ -4869,8 +4878,6 @@ function endGame() {
         initializeAudioFiles();
         loadGameState();
         initializeUI();
-
-        console.log("Debug version: 1");
         
         setTimeout(() => {
             playBgMusic();
