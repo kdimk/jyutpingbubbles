@@ -2745,7 +2745,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     <audio id="congratsSound" preload="auto"></audio>
 
     <script>
-        console.log("Debug version: 7");    
+        console.log("Debug version: 8");    
 
         // ===========================================
         // ENHANCED VIEWPORT DETECTION - ADD THIS ONLY
@@ -3060,11 +3060,12 @@ detectViewableArea();
                 bgMusic.volume = gameState.bgMusicVolume / 100;
                 document.body.append(bgMusic);
                 // Create separate audio context for background music
-                bgMusic.addEventListener('canplaythrough', () => {
+                bgMusic.addEventListener('loadedmetadata', () => {
+                     console.log("initializeAudioFiles bg Music outside Timeout");
                     setTimeout(() => {
                         playBgMusic();
                         console.log("initializeAudioFiles bg Music Timeout");
-                    }, 100);
+                    }, 1000);
                 });
             }
             if (audioFiles.correctSound) {
