@@ -2746,7 +2746,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
     <script>
-        console.log("Debug version: 9");    
+        console.log("Debug version: 10");    
 
         // ===========================================
         // ENHANCED VIEWPORT DETECTION - ADD THIS ONLY
@@ -4097,10 +4097,11 @@ function positionBubblesRandomly(container, bubbles, playerId) {
 function selectPlayers(count) {
     if (bgMusic) {
         console.log("SelectPlayers: bgMusic exist");
+        console.log(bgMusic.src);
         var bgMusicHowl = new Howl({
             src: [bgMusic.src]
         });
-
+        console.log(bgMusicHowl);
         bgMusicHowl.play();
     }
 
