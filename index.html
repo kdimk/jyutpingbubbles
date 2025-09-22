@@ -3012,7 +3012,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             audioReady: false,
             roundInProgress: false,
             correctAnswers: new Set(),
-            answerWindow: 150,
+            answerWindow: 2000,
             totalScore: 0,
             gamesPlayed: 0,
             bestScore: 0,
@@ -4369,50 +4369,50 @@ function selectPlayers(count) {
         }
 
         function generatePlayerBubbles(containerId, options, correctText) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    container.innerHTML = '';
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            container.innerHTML = '';
 
-    const bubbles = [];
-    options.forEach((option, index) => {
-        const bubble = document.createElement('div');
-        bubble.className = `bubble color-${index + 1}`;
-        bubble.textContent = option.text;
-        
-        // Hide bubble initially to prevent flicker
-        bubble.style.opacity = '0';
-        bubble.style.visibility = 'hidden';
-        
-        const handleClick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleAnswer(containerId, option.text === correctText, bubble);
-        };
-        
-        bubble.addEventListener('click', handleClick, { passive: false });
-        bubble.addEventListener('touchstart', handleClick, { passive: false });
-        
-        container.appendChild(bubble);
-        bubbles.push(bubble);
-    });
-
-    // Position bubbles immediately, then show them
-    setTimeout(() => {
-        positionBubblesRandomly(container, bubbles, containerId);
-        
-        // Show bubbles after positioning with smooth fade-in
-        setTimeout(() => {
-            bubbles.forEach((bubble, index) => {
-                setTimeout(() => {
-                    bubble.style.opacity = '1';
-                    bubble.style.visibility = 'visible';
-                    bubble.style.transition = 'opacity 0.1s ease-in';
-                }, index * 100); // Staggered appearance
+            const bubbles = [];
+            options.forEach((option, index) => {
+                const bubble = document.createElement('div');
+                bubble.className = `bubble color-${index + 1}`;
+                bubble.textContent = option.text;
+                
+                // Hide bubble initially to prevent flicker
+                bubble.style.opacity = '0';
+                bubble.style.visibility = 'hidden';
+                
+                const handleClick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAnswer(containerId, option.text === correctText, bubble);
+                };
+                
+                bubble.addEventListener('click', handleClick, { passive: false });
+                bubble.addEventListener('touchstart', handleClick, { passive: false });
+                
+                container.appendChild(bubble);
+                bubbles.push(bubble);
             });
-        }, 50);
-    }, 10); // Minimal delay to ensure DOM is ready
-}
+
+            // Position bubbles immediately, then show them
+            setTimeout(() => {
+                positionBubblesRandomly(container, bubbles, containerId);
+                
+                // Show bubbles after positioning with smooth fade-in
+                setTimeout(() => {
+                    bubbles.forEach((bubble, index) => {
+                        setTimeout(() => {
+                            bubble.style.opacity = '1';
+                            bubble.style.visibility = 'visible';
+                            bubble.style.transition = 'opacity 0.1s ease-in';
+                        }, index * 100); // Staggered appearance
+                    });
+                }, 50);
+            }, 10); // Minimal delay to ensure DOM is ready
+        }
 
         let pendingAnswers = [];
         let processingAnswers = false;
