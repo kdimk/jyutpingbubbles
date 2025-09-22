@@ -3013,6 +3013,7 @@ detectViewableArea();
         
         // FIXED: Preload audio cache for first round
         let audioCache = new Map();
+        let roundEndTimeout = null; // Add this line
 
         function initializeUI() {
             document.title = gameTexts.pageTitle;
@@ -3390,8 +3391,8 @@ function saveSettings() {
     gameState.bgMusicVolume = volume;
     
     // Update background music volume
-    if (bgMusic.src) {
-        bgMusic.volume = gameState.bgMusicVolume / 100;
+    if (bgMusic) {
+        bgMusic.volume(gameState.bgMusicVolume / 100);
     }
     
     // Save to cookies
@@ -3441,8 +3442,6 @@ function backToMainMenu() {
         audio.stop();
         audio = null;
     }
-    audio.currentTime = 0;
-    audio.src = '';
 
     // CLEAR all visual elements completely
     for (let i = 1; i <= 4; i++) {
@@ -4078,6 +4077,8 @@ function positionBubblesRandomly(container, bubbles, playerId) {
         // <div><strong>${gameTexts.currentRound}</strong>&nbsp;${gameState.currentRound}</div>
 
 function selectPlayers(count) {
+    console.log('selectPlayers called with count:', count); // Debug line
+    
     // Apply layout class FIRST to prevent flicker
     document.body.className = `layout-${count}player${count > 1 ? 's' : ''}`;
     
@@ -4092,8 +4093,11 @@ function selectPlayers(count) {
     gameState.roundSeed = 0;
     gameState.needsResume = false;
     
-    audio.pause();
-    audio.currentTime = 0;
+    // FIX: Use Howler methods only
+    if (audio) {
+        audio.stop();
+        audio = null;
+    }
     
     if (roundEndTimeout) {
         clearTimeout(roundEndTimeout);
@@ -4119,6 +4123,8 @@ function selectPlayers(count) {
     document.getElementById('playerSelection').style.display = 'none';
     document.getElementById('settingsPanel').style.display = 'none';
     document.getElementById('gameContainer').classList.add('active');
+    
+    console.log('Game container should now be visible'); // Debug line
     
     // Use requestAnimationFrame to ensure DOM is ready
     requestAnimationFrame(() => {
@@ -4264,64 +4270,36 @@ function selectPlayers(count) {
             }
 
             showPlayerCountdowns(() => {
-                // FIXED: Use preloaded audio for first round
-                const cachedAudio = audioCache.get(correctAnswer.audio);
-                if (cachedAudio) {
-                    audio.src = correctAnswer.audio;
-                    audio.load();
-                    
-                    // Ensure audio is ready before proceeding
-                    const audioReadyCheck = () => {
-                        // Create or get cached audio
-                        let gameAudio = audioCache.get(correctAnswer.audio);
-                        if (!gameAudio) {
-                            gameAudio = new Howl({
-                                src: [correctAnswer.audio],
-                                preload: true
-                            });
-                            audioCache.set(correctAnswer.audio, gameAudio);
-                        }
-                        
-                        if (gameAudio.state() === 'loaded') {
-                            gameState.audioReady = true;
-                            gameState.roundStartTime = Date.now();
-                            
-                            document.querySelectorAll('.bubble').forEach(bubble => {
-                                bubble.classList.add('active');
-                            });
-                            
-                            // Store reference for pause/resume
-                            audio = gameAudio;
-                            
-                            gameAudio.play();
-                            document.getElementById('gameStatus').textContent = gameTexts.listen;
-                            updateRoundInfoForBothPlayers();
-                        } else {
-                            setTimeout(audioReadyCheck, 50);
-                        }
-                    };
-                    audioReadyCheck();
-                } else {
-                    // Fallback for non-preloaded audio
-                    audio.src = correctAnswer.audio;
-                    gameState.audioReady = true;
-                    gameState.roundStartTime = Date.now();
-                    
-                    document.querySelectorAll('.bubble').forEach(bubble => {
-                        bubble.classList.add('active');
+                // Create or get cached audio
+                let gameAudio = audioCache.get(correctAnswer.audio);
+                if (!gameAudio) {
+                    gameAudio = new Howl({
+                        src: [correctAnswer.audio],
+                        preload: true
                     });
-                    
-                    audio.play().then(() => {
-                        document.getElementById('gameStatus').textContent = gameTexts.listen;
-                        // Add this line
-                        updateRoundInfoForBothPlayers();                        
-                    }).catch(e => {
-                        console.error('Error playing audio:', e);
-                        document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
-                        // Add this line
-                        updateRoundInfoForBothPlayers();
-                    });
+                    audioCache.set(correctAnswer.audio, gameAudio);
                 }
+                
+                const audioReadyCheck = () => {
+                    if (gameAudio.state() === 'loaded') {
+                        gameState.audioReady = true;
+                        gameState.roundStartTime = Date.now();
+                        
+                        document.querySelectorAll('.bubble').forEach(bubble => {
+                            bubble.classList.add('active');
+                        });
+                        
+                        // Store reference for pause/resume
+                        audio = gameAudio;
+                        
+                        gameAudio.play();
+                        document.getElementById('gameStatus').textContent = gameTexts.listen;
+                        updateRoundInfoForBothPlayers();
+                    } else {
+                        setTimeout(audioReadyCheck, 50);
+                    }
+                };
+                audioReadyCheck();
             });
         }
 
@@ -4734,7 +4712,6 @@ function resetGame() {
         audio.stop();
         audio = null;
     }
-    audio.currentTime = 0;
 
     // CLEAR any portrait mode round info attributes
     const player1 = document.querySelector('.player-1');
@@ -4871,11 +4848,6 @@ function endGame() {
             playBgMusic();
         }, 1000);
 
-        audio.addEventListener('error', function(e) {
-            console.error('Audio error:', e);
-            document.getElementById('gameStatus').textContent = gameTexts.audioNotFound;
-            gameState.audioReady = false;
-        });
     </script>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
