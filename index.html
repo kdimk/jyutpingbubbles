@@ -3012,7 +3012,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             audioReady: false,
             roundInProgress: false,
             correctAnswers: new Set(),
-            answerWindow: 2000,
+            answerWindow: 200000,
             totalScore: 0,
             gamesPlayed: 0,
             bestScore: 0,
@@ -4412,7 +4412,7 @@ function selectPlayers(count) {
                     });
                 }, 50);
             }, 10); // Minimal delay to ensure DOM is ready
-        }
+    }
 
         let pendingAnswers = [];
         let processingAnswers = false;
