@@ -3587,7 +3587,7 @@ function playCorrectSound() {
     if (correctSound) {
         // Lower background music temporarily
         const originalVolume = bgMusic ? bgMusic.volume() : 0;
-        if (bgMusic) bgMusic.volume(originalVolume * 0.3);
+        // if (bgMusic) bgMusic.volume(originalVolume * 0.3);
         
         correctSound.play();
         
@@ -3602,7 +3602,7 @@ function playIncorrectSound() {
     if (incorrectSound) {
         // Lower background music temporarily
         const originalVolume = bgMusic ? bgMusic.volume() : 0;
-        if (bgMusic) bgMusic.volume(originalVolume * 0.3);
+        // if (bgMusic) bgMusic.volume(originalVolume * 0.3);
         
         incorrectSound.play();
         
@@ -4920,4 +4920,3 @@ function endGame() {
     <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
-
