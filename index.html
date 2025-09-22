@@ -4089,10 +4089,19 @@ function positionBubblesRandomly(container, bubbles, playerId) {
         // <div><strong>${gameTexts.currentRound}</strong>&nbsp;${gameState.currentRound}</div>
 
 function selectPlayers(count) {
+    if (bgMusic) {
+        console.log("SelectPlayers: bgMusic exist");
+    }
+
+    bgMusic.addEventListener('canplaythrough', () => {        
+        playBgMusic();
+        console.log("SelectPlayers EventListener bg Music ");
+    });
+
     bgMusic.addEventListener('canplaythrough', () => {
         setTimeout(() => {
             playBgMusic();
-            console.log("SelectPlayers bg Music Timeout");
+            console.log("SelectPlayers EventListenerbg Music Timeout");
         }, 100);
     });
 
