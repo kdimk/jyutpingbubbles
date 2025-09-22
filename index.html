@@ -1524,6 +1524,7 @@
         gap: 0;
     }
     
+    /* 4-Player specific layout */
     .layout-4players .player-area {
         padding: 2px !important;
         width: 50vw !important;
@@ -1532,19 +1533,29 @@
         margin: 0 !important;
     }
     
-    /* Move Player headers higher */
+    /* Move Player headers further from center */
     .layout-4players .player-1 .player-header,
-    .layout-4players .player-2 .player-header,
-    .layout-4players .player-3 .player-header,
-    .layout-4players .player-4 .player-header {
+    .layout-4players .player-2 .player-header {
         position: absolute;
-        top: 15px;
+        top: 8px; /* Moved up from 15px for top players */
         left: 50%;
         transform: translateX(-50%);
         width: 100%;
         text-align: center;
         z-index: 50;
     }
+    
+    .layout-4players .player-3 .player-header,
+    .layout-4players .player-4 .player-header {
+        position: absolute;
+        top: 8px; /* Moved up from 15px for bottom players */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        text-align: center;
+        z-index: 50;
+    }
+
     
     /* Fix button container - center of screen */
     .layout-4players .game-controls {
@@ -1645,9 +1656,11 @@
     }
     
     .layout-4players .options-container {
-        margin-top: 80px !important;
-        height: calc(50vh - 100px) !important; /* Adjusted accordingly */
-        height: calc(50dvh - 100px) !important;
+        margin-top: 55px !important; /* Reduced from 60px since headers moved up */
+        height: calc(50vh - 75px) !important; /* Adjusted accordingly */
+        height: calc(50dvh - 75px) !important;
+        width: 100% !important;
+        padding: 3px !important;
     }
 
 }
@@ -2206,23 +2219,21 @@
 /* 4-Player mode - Phone-specific sizing */
 @media (orientation: portrait) and (max-width: 767px) {
     .layout-4players::before {
-        font-size: clamp(8px, 1.4vw, 10px) !important;
-        padding: 4px 12px !important;
-        min-width: 180px;
-        max-width: 85%;
-        backdrop-filter: blur(6px);
-        background: rgba(255, 255, 255, 0.96);
-        top: calc(50% - 100px) !important; /* ADJUST THIS - top box position for iPhone */
+        top: calc(50% - 80px) !important; /* Moved further up from -60px */
+        font-size: clamp(8px, 1.6vw, 10px) !important;
+        padding: 2px 6px !important;
+        min-width: 120px !important;
+        max-width: 80% !important;
+        background: rgba(255, 255, 255, 0.95) !important;
     }
     
     .layout-4players::after {
-        font-size: clamp(8px, 1.4vw, 10px) !important;
-        padding: 4px 12px !important;
-        min-width: 180px;
-        max-width: 85%;
-        backdrop-filter: blur(6px);
-        background: rgba(255, 255, 255, 0.96);
-        top: calc(50% + 100px) !important; /* ADJUST THIS - bottom box position for iPhone */
+        top: calc(50% + 80px) !important; /* Moved further down from +60px */
+        font-size: clamp(8px, 1.2vw, 10px) !important;
+        padding: 2px 6px !important;
+        min-width: 120px !important;
+        max-width: 80% !important;
+        background: rgba(255, 255, 255, 0.95) !important;
     }
 }
 
@@ -2663,19 +2674,22 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 /* iPad-specific portrait mode adjustments */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .layout-1player .player-header {
-        top: 60px; /* Your custom position for iPad */
+        top: 60px;
         left: 50%;
         transform: translateX(-50%);
     }
     
     .layout-1player .round-info {
-        top: 120px; /* Your custom position for iPad */
+        top: 140px; /* Moved down from 120px to match 2-player spacing */
         left: 50%;
         transform: translateX(-50%);
+        font-size: clamp(12px, 1.8vw, 16px) !important; /* Same as 2-player and 4-player */
+        padding: 6px 12px !important; /* Same as 2-player and 4-player */
     }
     
     .layout-1player .options-container {
-        margin-top: 120px !important; /* Adjust play area accordingly */
+        margin-top: 180px !important; /* Adjusted for new round info position */
+        height: calc(100% - 200px) !important; /* Adjusted accordingly */
     }
 }
 
@@ -2694,6 +2708,51 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     .layout-1player .options-container,
     .layout-2players .options-container {
         padding: 12px !important;
+    }
+}
+
+/* iPad Portrait 1 Player Mode - Large bubbles like landscape mode */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .layout-1player .bubble {
+        width: clamp(150px, 25vw, 300px) !important; /* Same as iPad landscape */
+        height: clamp(150px, 25vw, 300px) !important;
+        font-size: clamp(35px, 7.5vw, 60px) !important;
+        padding: clamp(15px, 3vw, 25px) !important;
+    }
+    
+    /* Increase container padding to accommodate larger bubbles */
+    .layout-1player .options-container {
+        padding: 15px !important;
+    }
+}
+
+/* iPhone Portrait 4 Player Mode - Headers further from center buttons */
+@media (orientation: portrait) and (max-width: 767px) {
+    .layout-4players .player-1 .player-header,
+    .layout-4players .player-2 .player-header {
+        top: 5px !important; /* Even further up for phones */
+    }
+    
+    .layout-4players .player-3 .player-header,
+    .layout-4players .player-4 .player-header {
+        top: 5px !important; /* Even further up for phones */
+    }
+    
+    /* Smaller text for phone 4-player headers */
+    .layout-4players .player-name {
+        font-size: clamp(9px, 1.8vw, 12px) !important; /* Reduced from 10px */
+        margin-bottom: clamp(2px, 0.4vw, 4px) !important;
+    }
+    
+    .layout-4players .score {
+        font-size: clamp(14px, 3vw, 20px) !important; /* Reduced from 16px */
+    }
+    
+    /* Adjust play area accordingly */
+    .layout-4players .options-container {
+        margin-top: 45px !important; /* Reduced since headers moved up */
+        height: calc(50vh - 65px) !important;
+        height: calc(50dvh - 65px) !important;
     }
 }
 
