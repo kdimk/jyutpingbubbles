@@ -3478,10 +3478,8 @@ function backToMainMenu() {
     
     updateStartPauseButton();
     saveGameState();
-    
-    setTimeout(() => {
-        playBgMusic();
-    }, 200);
+       
+    playBgMusic();
 }
 
         // FIXED: Background music lag prevention
@@ -3838,10 +3836,6 @@ function loadGameState() {
                     console.log('Audio unlock failed:', e);
                 });
                 
-                setTimeout(() => {
-                    playBgMusic();
-                }, 500);
-                
                 document.removeEventListener('touchstart', unlockAudio);
                 document.removeEventListener('click', unlockAudio);
                 document.removeEventListener('keydown', unlockAudio);
@@ -4147,12 +4141,7 @@ function selectPlayers(count) {
         // Update round info after everything is set
         updateRoundInfoForBothPlayers();
         
-        // Create separate audio context for background music
-        bgMusic.addEventListener('canplaythrough', () => {
-            setTimeout(() => {
-                playBgMusic();
-            }, 100);
-        });
+        playBgMusic();
     });
 }
 
@@ -4864,10 +4853,6 @@ function resetGame() {
         initializeAudioFiles();
         loadGameState();
         initializeUI();
-        
-        setTimeout(() => {
-            playBgMusic();
-        }, 1000);
 
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
