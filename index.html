@@ -3053,8 +3053,16 @@ detectViewableArea();
         // FIXED: Preload audio with separate channels to prevent lag
         function initializeAudioFiles() {
             if (audioFiles.bgMusic) {
+                console.log("initializeAudioFiles has bgMusic");
                 bgMusic.src = audioFiles.bgMusic;
                 bgMusic.volume = gameState.bgMusicVolume / 100;
+                // Create separate audio context for background music
+                bgMusic.addEventListener('canplaythrough', () => {
+                    setTimeout(() => {
+                        playBgMusic();
+                        console.log("initializeAudioFiles bg Music Timeout");
+                    }, 100);
+                });
             }
             if (audioFiles.correctSound) {
                 correctSound.src = audioFiles.correctSound;
@@ -3478,8 +3486,10 @@ function backToMainMenu() {
     
     updateStartPauseButton();
     saveGameState();
-       
-    playBgMusic();
+    
+    setTimeout(() => {
+        playBgMusic();
+    }, 200);
 }
 
         // FIXED: Background music lag prevention
@@ -3836,6 +3846,10 @@ function loadGameState() {
                     console.log('Audio unlock failed:', e);
                 });
                 
+                setTimeout(() => {
+                    playBgMusic();
+                }, 500);
+                
                 document.removeEventListener('touchstart', unlockAudio);
                 document.removeEventListener('click', unlockAudio);
                 document.removeEventListener('keydown', unlockAudio);
@@ -4141,7 +4155,9 @@ function selectPlayers(count) {
         // Update round info after everything is set
         updateRoundInfoForBothPlayers();
         
-        playBgMusic();
+        setTimeout(() => {
+            playBgMusic();
+        }, 100);
     });
 }
 
@@ -4762,97 +4778,103 @@ function resetGame() {
     }
 }
 
-        function endGame() {
-            gameState.isPlaying = false;
-            gameState.roundInProgress = false;
-            gameState.correctAnswers.clear();
-            gameState.gamesPlayed++;
-            gameState.gameInProgress = false;
-            gameState.currentQuestion = null;
-            gameState.bubbleStates = {};
-            gameState.needsResume = false;
-            
-            pendingAnswers = [];
-            processingAnswers = false;
-            
-            document.body.classList.remove('paused');
-            
-            // ADD THIS LINE - Add CSS class to hide all round info
-            document.body.classList.add('game-results-showing');
-            
-            // CLEAR all portrait mode round info attributes
-            const player1 = document.querySelector('.player-1');
-            const player2 = document.querySelector('.player-2');
-            const player3 = document.querySelector('.player-3');
-            const player4 = document.querySelector('.player-4');
-            if (player1) player1.removeAttribute('data-round-info');
-            if (player2) player2.removeAttribute('data-round-info');
-            if (player3) player3.removeAttribute('data-round-info');
-            if (player4) player4.removeAttribute('data-round-info');
-            document.body.removeAttribute('data-round-top');
-            document.body.removeAttribute('data-round-bottom');
-            
-            // Also clear the game container attributes
-            const gameContainer = document.getElementById('gameContainer');
-            if (gameContainer) {
-                gameContainer.removeAttribute('data-round-top');
-                gameContainer.removeAttribute('data-round-bottom');
-            }
-            
-            // HIDE the central round info box
-            const roundInfoElement = document.querySelector('.round-info');
-            if (roundInfoElement) {
-                roundInfoElement.style.display = 'none';
-            }
-            
-            const totalGameScore = Object.values(gameState.scores).reduce((sum, score) => sum + score, 0);
-            if (totalGameScore > gameState.bestScore) {
-                gameState.bestScore = totalGameScore;
-            }
-            
-            if (roundEndTimeout) {
-                clearTimeout(roundEndTimeout);
-                roundEndTimeout = null;
-            }
-            
-            document.getElementById('resumeButton').style.display = 'none';
-            updateStartPauseButton();
-            saveGameState();
-            
-            document.getElementById('instructions').classList.add('hidden');
-            
-            playCongratsSound();
-            
-            let maxScore = Math.max(...Object.values(gameState.scores).slice(0, gameState.playerCount));
-            let winners = [];
-            
-            for (let i = 1; i <= gameState.playerCount; i++) {
-                const score = gameState.scores[`player${i}`];
-                if (score === maxScore) {
-                    winners.push(`${gameTexts.player} ${i}`);
-                }
-            }
-            
-            let winnerText;
-            if (winners.length === 1) {
-                winnerText = gameTexts.playerWins.replace('{player}', winners[0]) + '<br>' + gameTexts.score.replace('{score}', maxScore);
-            } else {
-                winnerText = gameTexts.tieGame + '<br>' + gameTexts.winners.replace('{players}', winners.join(' & ')) + '<br>' + gameTexts.score.replace('{score}', maxScore);
-            }
-
-            document.getElementById('winnerText').innerHTML = winnerText;
-            
-            setTimeout(() => {
-                document.getElementById('championChart').innerHTML = '';
-                createChampionChart();
-                document.getElementById('winnerOverlay').style.display = 'flex';
-            }, 1000);
+function endGame() {
+    gameState.isPlaying = false;
+    gameState.roundInProgress = false;
+    gameState.correctAnswers.clear();
+    gameState.gamesPlayed++;
+    gameState.gameInProgress = false;
+    gameState.currentQuestion = null;
+    gameState.bubbleStates = {};
+    gameState.needsResume = false;
+    
+    pendingAnswers = [];
+    processingAnswers = false;
+    
+    document.body.classList.remove('paused');
+    
+    // ADD THIS LINE - Add CSS class to hide all round info
+    document.body.classList.add('game-results-showing');
+    
+    // CLEAR all portrait mode round info attributes
+    const player1 = document.querySelector('.player-1');
+    const player2 = document.querySelector('.player-2');
+    const player3 = document.querySelector('.player-3');
+    const player4 = document.querySelector('.player-4');
+    if (player1) player1.removeAttribute('data-round-info');
+    if (player2) player2.removeAttribute('data-round-info');
+    if (player3) player3.removeAttribute('data-round-info');
+    if (player4) player4.removeAttribute('data-round-info');
+    document.body.removeAttribute('data-round-top');
+    document.body.removeAttribute('data-round-bottom');
+    
+    // Also clear the game container attributes
+    const gameContainer = document.getElementById('gameContainer');
+    if (gameContainer) {
+        gameContainer.removeAttribute('data-round-top');
+        gameContainer.removeAttribute('data-round-bottom');
+    }
+    
+    // HIDE the central round info box
+    const roundInfoElement = document.querySelector('.round-info');
+    if (roundInfoElement) {
+        roundInfoElement.style.display = 'none';
+    }
+    
+    const totalGameScore = Object.values(gameState.scores).reduce((sum, score) => sum + score, 0);
+    if (totalGameScore > gameState.bestScore) {
+        gameState.bestScore = totalGameScore;
+    }
+    
+    if (roundEndTimeout) {
+        clearTimeout(roundEndTimeout);
+        roundEndTimeout = null;
+    }
+    
+    document.getElementById('resumeButton').style.display = 'none';
+    updateStartPauseButton();
+    saveGameState();
+    
+    document.getElementById('instructions').classList.add('hidden');
+    
+    playCongratsSound();
+    
+    let maxScore = Math.max(...Object.values(gameState.scores).slice(0, gameState.playerCount));
+    let winners = [];
+    
+    for (let i = 1; i <= gameState.playerCount; i++) {
+        const score = gameState.scores[`player${i}`];
+        if (score === maxScore) {
+            winners.push(`${gameTexts.player} ${i}`);
         }
+    }
+    
+    let winnerText;
+    if (winners.length === 1) {
+        winnerText = gameTexts.playerWins.replace('{player}', winners[0]) + '<br>' + gameTexts.score.replace('{score}', maxScore);
+    } else {
+        winnerText = gameTexts.tieGame + '<br>' + gameTexts.winners.replace('{players}', winners.join(' & ')) + '<br>' + gameTexts.score.replace('{score}', maxScore);
+    }
+
+    document.getElementById('winnerText').innerHTML = winnerText;
+    
+    setTimeout(() => {
+        document.getElementById('championChart').innerHTML = '';
+        createChampionChart();
+        document.getElementById('winnerOverlay').style.display = 'flex';
+    }, 1000);
+}
 
         initializeAudio();
         initializeAudioFiles();
         loadGameState();
         initializeUI();
+
+        console.log("Debug version: 1");
+        
+        setTimeout(() => {
+            playBgMusic();
+        }, 1000);
 
         audio.addEventListener('error', function(e) {
             console.error('Audio error:', e);
