@@ -2583,6 +2583,62 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     }
 }
 
+.audio-reminder {
+    color: #333333;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(12px, 2.5vw, 16px);
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.9);
+    padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 18px);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    max-width: 90%;
+    margin-bottom: 25px;
+}
+
+.reminder-line {
+    line-height: 1.4;
+    margin: 2px 0;
+}
+
+/* Responsive adjustments to match round info styling */
+@media (max-width: 480px) {
+    .audio-reminder {
+        font-size: clamp(10px, 2vw, 14px);
+        padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 12px);
+        max-width: 95%;
+        margin-bottom: 20px;
+    }
+}
+
+/* Landscape phone adjustments */
+@media (max-width: 896px) and (orientation: landscape) {
+    .audio-reminder {
+        font-size: clamp(8px, 1.5vw, 12px);
+        padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 10px);
+        margin-bottom: 15px;
+        max-width: 98%;
+    }
+    
+    .reminder-line {
+        line-height: 1.2;
+        margin: 1px 0;
+    }
+}
+
+/* For very small phones in landscape */
+@media (max-width: 640px) and (orientation: landscape) {
+    .audio-reminder {
+        font-size: clamp(7px, 1.3vw, 10px);
+        padding: clamp(3px, 0.8vw, 5px) clamp(6px, 1.5vw, 8px);
+        margin-bottom: 10px;
+    }
+}
+
     </style>
 </head>
 <body class="layout-2players">
@@ -2591,6 +2647,15 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     <div class="player-selection" id="playerSelection">
         <h1 id="gameTitle">Jyutping Bubbles</h1>
         <h1 id="gameTitleChinese">粵拼泡泡</h1>
+        <div class="audio-reminder" id="audioReminder">
+            <div class="audio-reminder-content">
+                <div class="audio-reminder-text">
+                    <div class="reminder-line">👆 Tap screen to enable sound</div>
+                    <div class="reminder-line"></div>
+                    <div class="reminder-line">iPhone/iPad: Turn off Silent Mode if there's no sound </div>
+                </div>
+            </div>
+        </div>
         <div class="player-options">
             <button class="player-btn" onclick="selectPlayers(1)" id="player1Btn">👤 1 Player</button>
             <button class="player-btn" onclick="selectPlayers(2)" id="player2Btn">👥 2 Players</button>
