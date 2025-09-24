@@ -4834,56 +4834,56 @@ function selectPlayers(count) {
         }
 
         function generatePlayerBubbles(containerId, options, correctText, skipAnimation = false) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    container.innerHTML = '';
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            container.innerHTML = '';
 
-    const bubbles = [];
-    options.forEach((option, index) => {
-        const bubble = document.createElement('div');
-        bubble.className = `bubble color-${index + 1}`;
-        bubble.textContent = option.text;
-        
-        // **FIX: Control initial visibility based on skipAnimation**
-        if (skipAnimation) {
-            bubble.style.opacity = '1';
-            bubble.style.visibility = 'visible';
-        } else {
-            bubble.style.opacity = '0';
-            bubble.style.visibility = 'hidden';
-        }
-        
-        const handleClick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleAnswer(containerId, option.text === correctText, bubble);
-        };
-        
-        bubble.addEventListener('click', handleClick, { passive: false });
-        bubble.addEventListener('touchstart', handleClick, { passive: false });
-        
-        container.appendChild(bubble);
-        bubbles.push(bubble);
-    });
-
-    // **FIX: Position bubbles and handle visibility**
-    requestAnimationFrame(() => {
-        positionBubblesRandomly(container, bubbles, containerId);
-        
-        if (!skipAnimation) {
-            // **FIX: Animate bubbles in only if they weren't visible before**
-            setTimeout(() => {
-                bubbles.forEach((bubble, index) => {
+            const bubbles = [];
+            options.forEach((option, index) => {
+                const bubble = document.createElement('div');
+                bubble.className = `bubble color-${index + 1}`;
+                bubble.textContent = option.text;
+                
+                // **FIX: Control initial visibility based on skipAnimation**
+                if (skipAnimation) {
                     bubble.style.opacity = '1';
                     bubble.style.visibility = 'visible';
-                    bubble.style.transition = 'opacity 0.2s ease-in';
-                });
-            }, 50);
+                } else {
+                    bubble.style.opacity = '0';
+                    bubble.style.visibility = 'hidden';
+                }
+                
+                const handleClick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAnswer(containerId, option.text === correctText, bubble);
+                };
+                
+                bubble.addEventListener('click', handleClick, { passive: false });
+                bubble.addEventListener('touchstart', handleClick, { passive: false });
+                
+                container.appendChild(bubble);
+                bubbles.push(bubble);
+            });
+
+            // **FIX: Position bubbles and handle visibility**
+            requestAnimationFrame(() => {
+                positionBubblesRandomly(container, bubbles, containerId);
+                
+                if (!skipAnimation) {
+                    // **FIX: Animate bubbles in only if they weren't visible before**
+                    setTimeout(() => {
+                        bubbles.forEach((bubble, index) => {
+                            bubble.style.opacity = '1';
+                            bubble.style.visibility = 'visible';
+                            bubble.style.transition = 'opacity 0.2s ease-in';
+                        });
+                    }, 50);
+                }
+                // If skipAnimation is true, bubbles are already visible
+            });
         }
-        // If skipAnimation is true, bubbles are already visible
-    });
-}
 
         let pendingAnswers = [];
         let processingAnswers = false;
@@ -5103,7 +5103,7 @@ function showPlayerCountdowns(callback) {
                     }
                 }
                 callback();
-            }, 600);
+            }, 500);
             clearInterval(countInterval);
         }
     }, 1000);
@@ -5467,7 +5467,7 @@ function countdownResumeGame(callback) {
                     }
                 }
                 callback(); // Resume the game
-            }, 600); // Timing for better sync
+            }, 500); // Timing for better sync
             clearInterval(countInterval); // Clear the interval when done
         }
     }, 1000); // Time between each countdown display
