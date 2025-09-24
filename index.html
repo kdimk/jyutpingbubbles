@@ -2292,17 +2292,17 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 @media (max-width: 896px) and (orientation: landscape) {
     .player-selection h1 {
         font-size: clamp(16px, 3.5vw, 24px) !important;
-        margin-bottom: 15px !important;
+        margin-bottom: 10px !important;
     }
     
     .player-options {
-        gap: 12px !important;
+        gap: 10px !important;
     }
     
     .player-btn {
-        padding: 4px 12px !important;
-        font-size: clamp(12px, 2.2vw, 16px) !important;
-        min-width: 140px !important;
+        padding: 2px 10px !important;
+        font-size: clamp(10px, 2.2vw, 14px) !important;
+        min-width: 100px !important;
     }
     
     /* Settings panel buttons smaller too */
@@ -3477,11 +3477,11 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             roundSeed: 0,
             needsResume: false,
             selectedGroups: getAvailableGroups(),
-            bgMusicVolume: 25,
+            bgMusicVolume: 30,
             playerAnswers: {},
             tempMaxRounds: 10,
             tempSelectedGroups: getAvailableGroups(),
-            tempBgMusicVolume: 25
+            tempBgMusicVolume: 30
         };
 
         // Add this function right after your gameState declaration
@@ -3606,7 +3606,6 @@ detectViewableArea();
                 countdownBeep = new Howl({
                     src: [audioFiles.countdownBeep],
                     preload: true,
-                    volume: 0.98,
                 });
             }
             
@@ -3620,7 +3619,6 @@ detectViewableArea();
             if (audioFiles.congratsSound) {
                 congratsSound = new Howl({
                     src: [audioFiles.congratsSound],
-                    volume: 0.8,
                     preload: true
                 });
             }
@@ -3634,7 +3632,6 @@ detectViewableArea();
                 audioCache.set(item.audio, preloadAudio);
             });
         }
-
 
         function generateGroupCheckboxes() {
             const container = document.getElementById('groupCheckboxes');
@@ -3833,7 +3830,7 @@ function updateSettingsDisplay() {
         
         const label = document.createElement('label');
         label.htmlFor = `group${groupId}`;
-        label.textContent = groupNames[groupId];
+        label.textContent = `${groupId}. ` + groupNames[groupId];
         
         checkboxItem.appendChild(checkbox);
         checkboxItem.appendChild(label);
@@ -4382,15 +4379,16 @@ function positionBubblesRandomly(container, bubbles, playerId) {
     const radius = bubbleSize / 2;
     const containerRect = container.getBoundingClientRect();
     
-    // Check if this is 4-player portrait mode on phone
+    // Check if this is 4-player / 1-player portrait mode on phone
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
     const isPhone = window.matchMedia("(max-width: 767px)").matches;
     const is4Player = gameState.playerCount === 4;
+    const is1Player = gameState.playerCount === 1;
     
     let positions;
     
-    if (isPortrait && isPhone && is4Player) {
-        // Use special 2x2 grid for 4-player portrait mode on phones
+    if ((isPortrait && isPhone && is4Player) || (isPortrait && isPhone && is1Player)) {
+        // Use special 2x2 grid for 4-player / 1-player portrait mode on phones
         positions = generatePhone4PlayerGrid(containerRect, bubbleSize, bubbles.length);
     } else {
         // Use existing grid positioning for other cases
@@ -5663,111 +5661,109 @@ function showLearnMode() {
     }, 100);
 }
 
-function generateLearnContent() {
-    const container = document.getElementById('learnContent');
-    container.innerHTML = '';
-    
-    // Group sounds by their group number
-    const soundsByGroup = {};
-    gameData.forEach(sound => {
-        if (!soundsByGroup[sound.group]) {
-            soundsByGroup[sound.group] = [];
+        function generateLearnContent() {
+            const container = document.getElementById('learnContent');
+            container.innerHTML = '';
+            
+            // Group sounds by their group number
+            const soundsByGroup = {};
+            gameData.forEach(sound => {
+                if (!soundsByGroup[sound.group]) {
+                    soundsByGroup[sound.group] = [];
+                }
+                soundsByGroup[sound.group].push(sound);
+            });
+            
+            // Create sections for each group
+            Object.keys(soundsByGroup).sort((a, b) => parseInt(a) - parseInt(b)).forEach(groupId => {
+                const groupData = soundsByGroup[groupId];
+                const groupName = groupNames[groupId];
+                
+                if (!groupName) return; // Skip if no group name defined
+                
+                const groupSection = document.createElement('div');
+                groupSection.className = 'learn-group';
+                
+                const groupTitle = document.createElement('h3');
+                groupTitle.textContent = `${groupId}. ${groupName}`; // ${groupId}
+                groupSection.appendChild(groupTitle);
+                
+                const bubblesContainer = document.createElement('div');
+                bubblesContainer.className = 'learn-bubbles';
+                
+                groupData.forEach((sound, index) => {
+                    const bubble = document.createElement('div');
+                    
+                    // Set text content FIRST, before adding classes
+                    bubble.textContent = sound.text;
+                    
+                    // Then add classes and attributes
+                    const colorIndex = ((parseInt(groupId) - 1) % 4) + 1;
+                    bubble.className = `learn-bubble color-${colorIndex}`;
+                    bubble.setAttribute('data-audio', sound.audio);
+                    
+                    // Add event listeners
+                    const handleLearnTouch = (e) => {
+                        e.preventDefault();
+                        playLearnSound(sound.audio);
+                    };
+                    bubble.addEventListener('click', handleLearnTouch, { passive: false });
+                    
+                    bubblesContainer.appendChild(bubble);
+                });
+                    
+                groupSection.appendChild(bubblesContainer);
+                container.appendChild(groupSection);
+            });
         }
-        soundsByGroup[sound.group].push(sound);
-    });
-    
-    // Create sections for each group
-    Object.keys(soundsByGroup).sort((a, b) => parseInt(a) - parseInt(b)).forEach(groupId => {
-        const groupData = soundsByGroup[groupId];
-        const groupName = groupNames[groupId];
-        
-        if (!groupName) return; // Skip if no group name defined
-        
-        const groupSection = document.createElement('div');
-        groupSection.className = 'learn-group';
-        
-        const groupTitle = document.createElement('h3');
-        groupTitle.textContent = `${groupId}. ${groupName}`;
-        groupSection.appendChild(groupTitle);
-        
-        const bubblesContainer = document.createElement('div');
-        bubblesContainer.className = 'learn-bubbles';
-        
-        groupData.forEach((sound, index) => {
-            const bubble = document.createElement('div');
-            
-            // Set text content FIRST, before adding classes
-            bubble.textContent = sound.text;
-            
-            // Then add classes and attributes
-            const colorIndex = ((parseInt(groupId) - 1) % 4) + 1;
-            bubble.className = `learn-bubble color-${colorIndex}`;
-            bubble.setAttribute('data-audio', sound.audio);
-            
-            // Add event listeners
-            const handleLearnTouch = (e) => {
-                e.preventDefault();
-                playLearnSound(sound.audio);
-            };
-            bubble.addEventListener('click', handleLearnTouch, { passive: false });
-            
-            bubblesContainer.appendChild(bubble);
-        });
-              
-        groupSection.appendChild(bubblesContainer);
-        container.appendChild(groupSection);
-    });
-}
 
-function playLearnSound(audioPath) {
-    if (bgMusic && bgMusic.playing()) {
-        bgMusic.fade(bgMusic.volume(), 0, 800); // Fade to 0 over 800ms
-        setTimeout(() => {
-            bgMusic.pause();
-            bgMusic.volume(gameState.bgMusicVolume / 100); // Restore volume
-        }, 800);
-    }
-    
-    // Get or create audio from cache
-    let learnAudio = audioCache.get(audioPath);
-    if (!learnAudio) {
-        learnAudio = new Howl({
-            src: [audioPath],
-            onload: function() {
-                learnAudio.play();
-            },
-            onloaderror: function() {
-                console.error(gameTexts.audioNotFound, audioPath);
+        function playLearnSound(audioPath) {
+            if (bgMusic && bgMusic.playing()) {
+                bgMusic.fade(bgMusic.volume(), 0, 800); // Fade to 0 over 800ms
+                setTimeout(() => {
+                    bgMusic.pause();
+                    bgMusic.volume(gameState.bgMusicVolume / 100); // Restore volume
+                }, 800);
             }
-        });
-        audioCache.set(audioPath, learnAudio);
-    } else {
-        learnAudio.play();
-    }
-}
+            
+            // Get or create audio from cache
+            let learnAudio = audioCache.get(audioPath);
+            if (!learnAudio) {
+                learnAudio = new Howl({
+                    src: [audioPath],
+                    onload: function() {
+                        learnAudio.play();
+                    },
+                    onloaderror: function() {
+                        console.error(gameTexts.audioNotFound, audioPath);
+                    }
+                });
+                audioCache.set(audioPath, learnAudio);
+            } else {
+                learnAudio.play();
+            }
+        }
 
-function backToMainMenuFromLearn() {
-    // Hide learn panel
-    document.getElementById('learnPanel').style.display = 'none';
-    
-    // Show main menu
-    document.getElementById('playerSelection').style.display = 'flex';
-    
-    musicShouldPlay = true;
+        function backToMainMenuFromLearn() {
+            // Hide learn panel
+            document.getElementById('learnPanel').style.display = 'none';
+            
+            // Show main menu
+            document.getElementById('playerSelection').style.display = 'flex';
+            
+            musicShouldPlay = true;
 
-    // Resume background music if needed
-    setTimeout(() => {
-        playBgMusic();
-    }, 200);
+            // Resume background music if needed
+            setTimeout(() => {
+                playBgMusic();
+            }, 200);
 
-}
-
+        }
 
         initializeAudio();
         initializeAudioFiles();
         loadGameState();
         initializeUI();
-
         
         setTimeout(() => {
             playBgMusic();
