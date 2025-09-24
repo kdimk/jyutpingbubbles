@@ -6,6 +6,7 @@
     <meta name="description" content="A mini game for learning Jyutping 一隻學粵拼嘅小遊戲">
     <title>Jyutping Bubbles 粵拼泡泡</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@900&family=Fredoka+One:wght@400&family=Nunito:wght@600;700;800&display=swap');
 
@@ -3076,6 +3077,103 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     }
 }
 
+/* --- Share Function ----*/
+
+.share-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.share-container {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    max-width: 90%;
+    width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+}
+
+.share-container h3 {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(16px, 3vw, 22px);
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.share-url-box {
+    position: relative;
+    margin: 15px 0;
+}
+
+.share-url {
+    width: 100%;
+    padding: 10px 40px 10px 10px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 10px;
+    font-size: clamp(12px, 2.5vw, 14px);
+    color: #333;
+    background: rgba(255, 255, 255, 0.95);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.copy-button {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #667eea;
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.copy-button:hover {
+    background: #4c5ed4;
+}
+
+.qrcode-container {
+    margin: 20px auto;
+    max-width: 300px;
+}
+
+.share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.success-message {
+    color: black;
+    font-size: 14px;
+    margin-top: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.success-message.show {
+    opacity: 1;
+}
+
     </style>
 </head>
 <body class="layout-2players">
@@ -3161,6 +3259,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 
         <div class="settings-buttons">
             <button class="player-btn" onclick="saveSettings()" id="saveSettingsBtn">Save Settings</button>
+            <button class="player-btn" onclick="showShareOverlay()" id="shareSettingsBtn">Share</button>
             <button class="player-btn" onclick="backToGame()" id="backToGameBtn">Back</button>
         </div>
     </div>
@@ -3173,6 +3272,23 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
         </div>
         <div class="learn-buttons">
             <button class="player-btn" onclick="backToMainMenuFromLearn()" id="backFromLearnBtn">Back</button>
+        </div>
+    </div>
+
+    <!-- Share -->
+    <div class="share-overlay" id="shareOverlay">
+        <div class="share-container">
+            <h3>Share Game Settings</h3>
+            <p>Share this URL to play with the same settings:</p>
+            <div class="share-url-box">
+                <input type="text" class="share-url" id="shareUrl" readonly>
+                <button class="copy-button" id="copyButton" title="Copy URL">📋</button>
+            </div>
+            <div class="success-message" id="copySuccess">URL copied to clipboard!</div>
+            <div class="qrcode-container" id="qrcodeContainer"></div>
+            <div class="share-buttons">
+                <button class="player-btn" onclick="closeShareOverlay()">Close</button>
+            </div>
         </div>
     </div>
 
@@ -3849,7 +3965,6 @@ function updateSettingsDisplay() {
         volumeDisplay.textContent = gameState.tempBgMusicVolume + '%';
     }
 }
-
 
 function showSettings() {
     if (gameState.isPlaying && !gameState.isPaused) {
@@ -5760,9 +5875,261 @@ function showLearnMode() {
 
         }
 
+        // Share function
+
+        // Generate a shareable URL with current settings
+        function generateShareableUrl() {
+            const baseUrl = window.location.origin + window.location.pathname;
+            
+            // Create URL parameters
+            const params = new URLSearchParams();
+            params.append('rounds', gameState.tempMaxRounds);
+            params.append('volume', gameState.tempBgMusicVolume);
+            params.append('groups', gameState.tempSelectedGroups.join(','));
+            
+            return `${baseUrl}?${params.toString()}`;
+        }
+
+        // Show the share overlay with URL and QR code
+        function showShareOverlay() {
+            // Generate a shorter URL by using more compact parameter names
+            const baseUrl = window.location.origin + window.location.pathname;
+            const params = new URLSearchParams();
+            params.append('r', gameState.tempMaxRounds); // shorter param name
+            params.append('v', gameState.tempBgMusicVolume); // shorter param name
+            params.append('g', gameState.tempSelectedGroups.join(',')); // shorter param name
+            
+            const shareUrl = `${baseUrl}?${params.toString()}`;
+            document.getElementById('shareUrl').value = shareUrl;
+            document.getElementById('copySuccess').classList.remove('show');
+            
+            // Generate QR code with lower error correction level
+            const qrcodeContainer = document.getElementById('qrcodeContainer');
+            qrcodeContainer.innerHTML = ''; // Clear previous QR code
+            
+            new QRCode(qrcodeContainer, {
+                text: shareUrl,
+                width: 300,
+                height: 300,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H  // Lower level = more data capacity
+            });
+            
+            document.getElementById('shareOverlay').style.display = 'flex';
+        }
+        
+        // Close the share overlay
+        function closeShareOverlay() {
+            document.getElementById('shareOverlay').style.display = 'none';
+        }
+
+        // Copy URL to clipboard
+        document.getElementById('copyButton').addEventListener('click', function() {
+            const shareUrlInput = document.getElementById('shareUrl');
+            shareUrlInput.select();
+            shareUrlInput.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                // Use the new Clipboard API if available
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(shareUrlInput.value).then(() => {
+                        showCopySuccess();
+                    });
+                } else {
+                    // Fallback for older browsers
+                    document.execCommand('copy');
+                    showCopySuccess();
+                }
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+        });
+
+        // Show copy success message
+        function showCopySuccess() {
+            const successMessage = document.getElementById('copySuccess');
+            successMessage.classList.add('show');
+            
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 2000);
+        }
+
+        // Parse URL parameters when page loads
+        function parseUrlParameters() {
+            console.log("Parsing URL parameters...");
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Support both full and shortened parameter names
+            const roundsParam = urlParams.get('rounds') || urlParams.get('r');
+            const volumeParam = urlParams.get('volume') || urlParams.get('v');
+            const groupsParam = urlParams.get('groups') || urlParams.get('g');
+            
+            // Log what parameters were found
+            console.log("URL parameters found:", {
+                rounds: roundsParam,
+                volume: volumeParam,
+                groups: groupsParam
+            });
+            
+            let settingsChanged = false;
+            
+            if (roundsParam || volumeParam || groupsParam) {
+                // Rounds parameter
+                if (roundsParam) {
+                    const rounds = parseInt(roundsParam);
+                    console.log("Parsed rounds:", rounds);
+                    if (!isNaN(rounds) && rounds >= 1 && rounds <= 100) {
+                        gameState.maxRounds = rounds;
+                        gameState.tempMaxRounds = rounds;
+                        settingsChanged = true;
+                        console.log("Setting rounds to:", rounds);
+                        
+                        // Update rounds display
+                        const roundsDisplay = document.getElementById('roundsDisplay');
+                        if (roundsDisplay) {
+                            roundsDisplay.textContent = rounds;
+                        }
+                    }
+                }
+                
+                // Volume parameter
+                if (volumeParam) {
+                    const volume = parseInt(volumeParam);
+                    console.log("Parsed volume:", volume);
+                    if (!isNaN(volume) && volume >= 0 && volume <= 100) {
+                        gameState.bgMusicVolume = volume;
+                        gameState.tempBgMusicVolume = volume;
+                        settingsChanged = true;
+                        console.log("Setting volume to:", volume);
+                        
+                        // Update volume display
+                        const volumeDisplay = document.getElementById('volumeDisplay');
+                        if (volumeDisplay) {
+                            volumeDisplay.textContent = volume + '%';
+                        }
+                        
+                        // Update actual music volume
+                        if (bgMusic) {
+                            bgMusic.volume(volume / 100);
+                        }
+                    }
+                }
+                
+                // Groups parameter
+                if (groupsParam) {
+                    const groupsStr = groupsParam;
+                    console.log("Parsed groups string:", groupsStr);
+                    const groups = groupsStr.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g));
+                    console.log("Parsed groups array:", groups);
+                    
+                    const availableGroups = getAvailableGroups();
+                    console.log("Available groups:", availableGroups);
+                    const validGroups = groups.filter(g => availableGroups.includes(g));
+                    console.log("Valid groups:", validGroups);
+                    
+                    if (validGroups.length > 0) {
+                        gameState.selectedGroups = validGroups;
+                        gameState.tempSelectedGroups = [...validGroups];
+                        settingsChanged = true;
+                        console.log("Setting groups to:", validGroups);
+                        
+                        // Update group checkboxes - with a slight delay to ensure DOM is ready
+                        setTimeout(() => {
+                            getAvailableGroups().forEach(groupId => {
+                                const checkbox = document.getElementById(`group${groupId}`);
+                                if (checkbox) {
+                                    checkbox.checked = validGroups.includes(groupId);
+                                }
+                            });
+                        }, 100);
+                    }
+                }
+                
+                // Update UI to reflect the parameters
+                if (settingsChanged) {
+                    console.log("Settings changed, updating UI...");
+                    
+                    // Force update settings display with a slight delay to ensure DOM is ready
+                    setTimeout(() => {
+                        updateSettingsDisplay();
+                    }, 200);
+                    
+                    // Save the imported settings to cookies
+                    saveGameState();
+                    
+                    // Show a notification that settings were imported
+                    showImportedSettingsNotification();
+                }
+                
+                // Clear URL parameters after processing
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            } else {
+                console.log("No relevant URL parameters found");
+            }
+        }
+
+        function forceUpdateUI() {
+            // Update rounds display
+            const roundsDisplay = document.getElementById('roundsDisplay');
+            if (roundsDisplay) {
+                roundsDisplay.textContent = gameState.tempMaxRounds;
+            }
+            
+            // Update volume display
+            const volumeDisplay = document.getElementById('volumeDisplay');
+            if (volumeDisplay) {
+                volumeDisplay.textContent = gameState.tempBgMusicVolume + '%';
+            }
+            
+            // Update group checkboxes
+            getAvailableGroups().forEach(groupId => {
+                const checkbox = document.getElementById(`group${groupId}`);
+                if (checkbox) {
+                    checkbox.checked = gameState.tempSelectedGroups.includes(groupId);
+                }
+            });
+        }
+
+        // Add this function to show a notification when settings are imported
+        function showImportedSettingsNotification() {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.backgroundColor = 'rgba(102, 126, 234, 0.9)';
+            notification.style.color = 'white';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '8px';
+            notification.style.zIndex = '2000';
+            notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            notification.style.fontWeight = 'bold';
+            notification.textContent = '✓ Settings imported from shared link!';
+            
+            // Add to document
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s ease-out';
+                
+                // Remove from DOM after fade out
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+
         initializeAudio();
         initializeAudioFiles();
         loadGameState();
+        parseUrlParameters();
         initializeUI();
         
         setTimeout(() => {
