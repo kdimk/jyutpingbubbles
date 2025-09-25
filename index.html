@@ -31,7 +31,6 @@
             position: relative;
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
-            /* ENHANCED: Use dynamic safe area variables */
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
             padding-left: env(safe-area-inset-left);
@@ -71,7 +70,6 @@
             z-index: 1000;
             color: white;
             text-align: center;
-            /* ENHANCED: Use dynamic safe area variables */
             padding: max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))) max(env(safe-area-inset-right), var(--dynamic-safe-right, env(safe-area-inset-right))) max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))) max(env(safe-area-inset-left), var(--dynamic-safe-left, env(safe-area-inset-left)));
         }
 
@@ -135,7 +133,6 @@
             color: white;
             text-align: center;
             padding: clamp(20px, 4vw, 40px);
-            /* ENHANCED: Use dynamic safe area variables */
             padding-top: calc(clamp(20px, 4vw, 40px) + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
             padding-bottom: calc(clamp(20px, 4vw, 40px) + max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))));
             overflow-y: auto;
@@ -171,8 +168,8 @@
         .group-checkboxes {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 4px;
+            /* margin-bottom: 15px; */
         }
 
         .checkbox-item {
@@ -184,12 +181,20 @@
             padding: 8px;
             background: none;
             border-radius: 10px;
-            cursor: pointer;
+            cursor: pointer; /* Keep this to show pointer on hover */
             transition: all 0.3s ease;
         }
 
         .checkbox-item:hover {
-            background: none;
+            background: rgba(102, 126, 234, 0.1); /* Subtle background on hover */
+        }
+
+        .checkbox-item label {
+            cursor: pointer; /* Make sure the label shows a pointer */
+            flex: 1; /* Make label take remaining space */
+            display: block; /* Ensure label takes full space */
+            padding: 4px 0; /* Add some padding for easier clicking */
+            text-align: left;
         }
 
         .checkbox-item input[type="checkbox"] {
@@ -198,64 +203,64 @@
             cursor: pointer;
         }
 
-.rounds-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #333;
-    gap: 8px;
-}
+        .rounds-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            gap: 8px;
+        }
 
-.rounds-btn {
-    width: 32px;
-    height: 32px;
-    border: 2px solid rgba(102, 126, 234, 0.3);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    color: #667eea;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-}
+        .rounds-btn {
+            width: 32px;
+            height: 32px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
 
-.rounds-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    border-color: #667eea;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
+        .rounds-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: #667eea;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-.rounds-btn:active {
-    transform: translateY(0);
-}
+        .rounds-btn:active {
+            transform: translateY(0);
+        }
 
-.rounds-display {
-    padding: 8px 12px;
-    border: 2px solid rgba(102, 126, 234, 0.3);
-    border-radius: 10px;
-    font-size: clamp(14px, 3vw, 18px);
-    font-weight: 700;
-    width: 80px;
-    text-align: center;
-    color: #333;
-    background: rgba(255, 255, 255, 0.95);
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 20px;
-}
+        .rounds-display {
+            padding: 8px 12px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            font-size: clamp(14px, 3vw, 18px);
+            font-weight: 700;
+            width: 80px;
+            text-align: center;
+            color: #333;
+            background: rgba(255, 255, 255, 0.95);
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 20px;
+        }
 
         .number-input {
             padding: 8px 12px;
@@ -319,14 +324,12 @@
             50% { opacity: 1; transform: scale(1.1); }
         }
 
-        /* RESTORED: Exact Game3 game-container approach */
         .game-container {
             display: none;
             height: 100vh;
             height: 100dvh;
             position: relative;
             z-index: 10;
-            /* ENHANCED: Only use dynamic safe area variables, no extra padding */
             padding: max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))) max(env(safe-area-inset-right), var(--dynamic-safe-right, env(safe-area-inset-right))) max(env(safe-area-inset-bottom), var(--dynamic-safe-bottom, env(safe-area-inset-bottom))) max(env(safe-area-inset-left), var(--dynamic-safe-left, env(safe-area-inset-left)));
         }
 
@@ -346,7 +349,6 @@
             margin: 0;
         }
 
-        /* RESTORED: Exact Game3 positioning calculations */
         .layout-1player .game-controls {
             position: absolute;
             top: calc(10px + max(env(safe-area-inset-top), var(--dynamic-safe-top, env(safe-area-inset-top))));
@@ -3174,6 +3176,39 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
     opacity: 1;
 }
 
+/* Select All and Clear All Buttons */
+
+.group-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.group-action-btn {
+    padding: 8px 15px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    min-width: 100px;
+}
+
+.group-action-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
     </style>
 </head>
 <body class="layout-2players">
@@ -3186,8 +3221,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
             <div class="audio-reminder-content">
                 <div class="audio-reminder-text">
                     <div class="reminder-line">👆 Tap screen to enable sound</div>
-                    <div class="reminder-line"></div>
-                    <div class="reminder-line">iPhone/iPad: Turn off "Silent Mode" if there is no sound </div>
+                    <div class="reminder-line">iPhone/iPad: Turn off "Silent Mode" if there is no sound</div>
                 </div>
             </div>
         </div>
@@ -3202,7 +3236,7 @@ body:has(.winner-overlay[style*="flex"]) .player-4::after {
 
     <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
-        <h2 id="settingsTitle">⚙️ Game Settings</h2>
+        <h2 id="settingsTitle">⚙️ Game</h2>
         
         <div class="settings-section">
             <h3 id="roundsTitle">🎯 Number of Rounds</h3>
@@ -3662,7 +3696,7 @@ detectViewableArea();
             document.getElementById('settingsBtn').textContent = gameTexts.settings;
             document.getElementById('settingsTitle').textContent = gameTexts.settingsTitle;
             document.getElementById('roundsTitle').textContent = gameTexts.roundsTitle;
-            document.getElementById('roundsLabel').textContent = gameTexts.roundsLabel;
+            // document.getElementById('roundsLabel').textContent = gameTexts.roundsLabel;
             document.getElementById('soundGroupsTitle').textContent = gameTexts.soundGroupsTitle;
             document.getElementById('musicVolumeTitle').textContent = gameTexts.musicVolumeTitle;
             document.getElementById('saveSettingsBtn').textContent = gameTexts.saveSettings;
@@ -3678,7 +3712,6 @@ detectViewableArea();
             document.getElementById('learnBtn').textContent = gameTexts.learn;
             document.getElementById('learnTitle').textContent = gameTexts.learnTitle;
             document.getElementById('backFromLearnBtn').textContent = gameTexts.backFromLearn;
-
             
             updateStartPauseButton();
             generateGroupCheckboxes();
@@ -3753,6 +3786,24 @@ detectViewableArea();
             const container = document.getElementById('groupCheckboxes');
             container.innerHTML = '';
             
+            // Create a dedicated container for the buttons with the new class
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'group-actions';
+            
+            const selectAllBtn = document.createElement('button');
+            selectAllBtn.className = 'group-action-btn';
+            selectAllBtn.textContent = 'Select All';
+            selectAllBtn.onclick = selectAllGroups;
+            
+            const clearAllBtn = document.createElement('button');
+            clearAllBtn.className = 'group-action-btn';
+            clearAllBtn.textContent = 'Clear All';
+            clearAllBtn.onclick = clearAllGroups;
+            
+            buttonContainer.appendChild(selectAllBtn);
+            buttonContainer.appendChild(clearAllBtn);
+            container.appendChild(buttonContainer);
+
             getAvailableGroups().forEach(groupId => {
                 const checkboxItem = document.createElement('div');
                 checkboxItem.className = 'checkbox-item';
@@ -3764,8 +3815,21 @@ detectViewableArea();
                 checkbox.onchange = () => updateTempGroups();
                 
                 const label = document.createElement('label');
-                label.htmlFor = `group${groupId}`;
+                label.htmlFor = `group${groupId}`; // This correctly associates the label with the checkbox
                 label.textContent = groupNames[groupId];
+                
+                // Make the entire div act as a label for the checkbox
+                checkboxItem.addEventListener('click', function(e) {
+                    // Only handle if the click wasn't on the checkbox itself
+                    if (e.target !== checkbox) {
+                        e.preventDefault(); // Prevent default behavior
+                        checkbox.checked = !checkbox.checked; // Toggle the checkbox
+                        
+                        // Manually trigger the change event
+                        const changeEvent = new Event('change', { bubbles: true });
+                        checkbox.dispatchEvent(changeEvent);
+                    }
+                });
                 
                 checkboxItem.appendChild(checkbox);
                 checkboxItem.appendChild(label);
@@ -3773,15 +3837,35 @@ detectViewableArea();
             });
         }
 
-function updateTempGroups() {
-    gameState.tempSelectedGroups = [];
-    getAvailableGroups().forEach(groupId => {
-        const checkbox = document.getElementById(`group${groupId}`);
-        if (checkbox && checkbox.checked) {
-            gameState.tempSelectedGroups.push(groupId);
+        function selectAllGroups() {
+            getAvailableGroups().forEach(groupId => {
+                const checkbox = document.getElementById(`group${groupId}`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+            updateTempGroups();
         }
-    });
-}
+
+        function clearAllGroups() {
+            getAvailableGroups().forEach(groupId => {
+                const checkbox = document.getElementById(`group${groupId}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
+            });
+            updateTempGroups();
+        }
+
+        function updateTempGroups() {
+            gameState.tempSelectedGroups = [];
+            getAvailableGroups().forEach(groupId => {
+                const checkbox = document.getElementById(`group${groupId}`);
+                if (checkbox && checkbox.checked) {
+                    gameState.tempSelectedGroups.push(groupId);
+                }
+            });
+        }
 
         function updateVolumeDisplay() {
             const volumeSlider = document.getElementById('bgMusicVolume');
@@ -3910,7 +3994,6 @@ function changeVolume(delta) {
     }
 }
 
-
 // Prevent context menu on long press for mobile
 document.addEventListener('contextmenu', function(e) {
     if (e.target.classList.contains('rounds-btn') || e.target.classList.contains('volume-btn')) {
@@ -3934,6 +4017,25 @@ function updateSettingsDisplay() {
     const container = document.getElementById('groupCheckboxes');
     container.innerHTML = '';
     
+    // Add the Select All and Clear All buttons first
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'group-actions';
+    
+    const selectAllBtn = document.createElement('button');
+    selectAllBtn.className = 'group-action-btn';
+    selectAllBtn.textContent = 'Select All';
+    selectAllBtn.onclick = selectAllGroups;
+    
+    const clearAllBtn = document.createElement('button');
+    clearAllBtn.className = 'group-action-btn';
+    clearAllBtn.textContent = 'Clear All';
+    clearAllBtn.onclick = clearAllGroups;
+    
+    buttonContainer.appendChild(selectAllBtn);
+    buttonContainer.appendChild(clearAllBtn);
+    container.appendChild(buttonContainer);
+    
+    // Then add the checkboxes
     getAvailableGroups().forEach(groupId => {
         const checkboxItem = document.createElement('div');
         checkboxItem.className = 'checkbox-item';
@@ -3945,9 +4047,22 @@ function updateSettingsDisplay() {
         checkbox.onchange = () => updateTempGroups();
         
         const label = document.createElement('label');
-        label.htmlFor = `group${groupId}`;
+        label.htmlFor = `group${groupId}`; // This correctly associates the label with the checkbox
         label.textContent = `${groupId}. ` + groupNames[groupId];
         
+        // Make the entire div act as a label for the checkbox
+        checkboxItem.addEventListener('click', function(e) {
+            // Only handle if the click wasn't on the checkbox itself
+            if (e.target !== checkbox) {
+                e.preventDefault(); // Prevent default behavior
+                checkbox.checked = !checkbox.checked; // Toggle the checkbox
+                
+                // Manually trigger the change event
+                const changeEvent = new Event('change', { bubbles: true });
+                checkbox.dispatchEvent(changeEvent);
+            }
+        });
+     
         checkboxItem.appendChild(checkbox);
         checkboxItem.appendChild(label);
         container.appendChild(checkboxItem);
@@ -6137,6 +6252,7 @@ function showLearnMode() {
         }, 1000);
 
     </script>
+
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
